@@ -12,7 +12,7 @@ README = (ROOT / "README.md").read_text()
 setup(
   name='ATtila',
   version='1.0.0',
-  description='Python module for to communicate easily with modems and rf modules using AT commands',
+  description='Python module to communicate easily with modems and rf modules using AT commands',
   long_description=README,
   long_description_content_type="text/markdown",
   author='Christian Visintin',
