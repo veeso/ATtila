@@ -2,12 +2,14 @@
 
 from setuptools import find_packages, setup
 from pathlib import Path
+from os import path
 
 # The directory containing this file
 ROOT = Path(__file__).parent
 
 # The text of the README file
-README = (ROOT / "README.md").read_text()
+with open(path.join(ROOT, 'README.md'), encoding='utf-8') as f:
+  README = f.read()
 
 setup(
   name='ATtila',
