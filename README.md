@@ -8,11 +8,11 @@ Current Version: **currently under development**
 
 ## Introduction
 
-ATtila is a Python module which purpose is to ease the communication with an RF module which uses AT commands. It is both possible to send single AT commands indicating what response is expected and AT scritps which indicate all the commands to send, the expected response for each command, what information to store for each command and define an alternative behaviour in case of unexpected responses.
+ATtila is a Python module which purpose is to ease the communication with an RF module which uses AT commands. It is both possible to send single AT commands indicating what response is expected and AT scritps which indicate all the commands to send, the expected response for each command, what information to store for each command and define an alternative behaviour in case of unexpected responses.  
 These are the main functionalities that ATtila provides:
 
-- Send of a single AT command to RF module/modem through serial port and get the response for them
-- Send of multiple AT commands using “ATScripts”. ATScripts in particular allows you to:
+- Sending individual AT command to RF module/modem through serial port and get the response for them
+- Sending of multiple AT commands using “ATScripts”. ATScripts in particular allows you to:
   - Define a set of commands to execute on the RF module
   - Get the response and choose what information to store for each commands
   - Use the response of a certain command in a command which will be executed later
