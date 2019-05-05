@@ -20,17 +20,18 @@
 # SOFTWARE.
 #
 
+from .atresponse import ATResponse
+
 class ATCommand(object):
   """
   This class represents an AT command
   """
   
-  def __init__(self, cmd, response, exp_response, tout = 10, delay = 0, collectables = None, dganger = None):
+  def __init__(self, cmd, exp_response, tout = 10, delay = 0, collectables = None, dganger = None):
     """
     Class constructor. Instantiates a new :class:`.ATCommand.` object with the provided parameters.
     
     :param cmd: command to execute
-    :param response: response received from command execution
     :param exp_response: expected response from command execution. a literal or a generic response can be provided
     :param tout (optional): command timeout execution.
     :param delay (optional): delay in milliseconds before command execution
@@ -56,6 +57,7 @@ class ATCommand(object):
       self._doppel_ganger = dganger
     else:
       self._doppel_ganger = None
+    self._response = None
 
   @property
   def command(self):
@@ -72,6 +74,17 @@ class ATCommand(object):
   @expected_response.setter
   def expected_response(self, exp_response):
     self._expected_response = exp_response
+
+  @property
+  def response(self):
+    return self._expected_response
+
+  @response.setter
+  def response(self, response):
+    if isinstance(response, ATResponse):
+      self._response = response
+    else:
+      self._response = None
 
   @property
   def timeout(self):
