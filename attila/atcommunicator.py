@@ -20,7 +20,10 @@
 # SOFTWARE.
 #
 
-from serial import Serial
+from .exceptions import ATSerialPortError
+
+from serial import Serial, SerialException
+from re import sub, search
 
 class ATCommunicator(object):
   """
@@ -47,5 +50,72 @@ class ATCommunicator(object):
     if default_timeout > 0:
       self._default_timeout = default_timeout
     else:
-      self._default_timeout = 1
+      self._default_timeout = 10
     self._line_break = line_break
+
+  @property
+  def serial_port(self):
+    return self._serial_port
+
+  @serial_port.setter
+  def serial_port(self, serial_port):
+    self._serial_port = serial_port
+
+  @property
+  def baud_rate(self):
+    return self._baud_rate
+
+  @baud_rate.setter
+  def baud_rate(self, baud_rate):
+    self._baud_rate = baud_rate
+
+  def open(self):
+    """
+    Open serial port
+
+    :raises ATSerialPortError
+    """
+    if not self._serial_port:
+      raise ATSerialPortError("Serial port is not set")
+    try:
+      self._device = Serial(self._serial_port, self._baud_rate, timeout = self._default_timeout)
+    except (OSError, SerialException) as error:
+      raise ATSerialPortError(error)
+    return
+
+  def close(self):
+    """
+    Close serial port
+
+    :raises ATSerialPortError
+    """
+    if not self._device:
+      raise ATSerialPortError("Serial port device is closed")
+    try:
+      self._device.close()
+    except (OSError, SerialException) as error:
+      raise ATSerialPortError(error)
+    return
+
+  def exec(self, command, timeout = None):
+    """
+    Execute AT command
+    
+    :param command: command to execute
+    :param timeout: timeout for command, if not set default will be used
+    :type command: str
+    :type timeout: int
+    :returns list of string: command response without line break; empty lines are ignored
+    :raises ATSerialPortError
+    """
+    if not self._device:
+      raise ATSerialPortError("Serial port device is closed")
+    self._device.timeout = timeout
+    self._device.write(b"%s%s" % (command, self._line_break))
+    lines = self._device.readlines()
+    for line in lines:
+      line = line.decode('utf-8')
+      #Remove newline
+      if search("(\\r|)\\n$", line):
+        line = sub("(\\r|)\\n$", "", line)
+    return lines
