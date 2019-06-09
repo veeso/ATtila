@@ -19,3 +19,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
+
+class ATSerialPortError(Exception):
+  """
+  ATSerialPortError class provides an exception in case of an error on the serial port
+  """
+
+  def __init__(self, message):
+    self.message = message
+
+  def __str__(self):
+    return repr(self.message)
+
+  def __repr__(self):
+    return str(self.message)
