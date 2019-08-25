@@ -40,6 +40,7 @@ class ATResponse(object):
     self._response = resp
     self._full_response = fullresponse
     self._execution_time = executiontime
+    self._collectables = {}
 
   @property
   def response(self):
@@ -67,3 +68,27 @@ class ATResponse(object):
       self._execution_time = executiontime
     else:
       self._execution_time = 0
+
+  def add_collectable(self, key, value):
+    """
+    Add a collectable to the response collectables
+
+    :param key: key of the collectable
+    :param value: value of the collectable
+    :type key: string
+    :type value: any
+    :returns void
+    """
+
+    self._collectables[key] = value
+    return
+
+  def get_collectable(self, key):
+    """
+    Returns the value associated to the collectable
+    
+    :param key: key of the collectable
+    :type key: string
+    :returns any
+    """
+    return self._collectables.get(key)
