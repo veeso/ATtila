@@ -139,9 +139,12 @@ We can rethink the previous example of CPIN using session values.
 The script which set the SIM PIN only if locked, could be a part of an image installed on plenty of devices, but we can’t have a different script for each device and using a script which replace runtime the text with the configured PIN is not such a good way to do things.
 Here is where the power of session values comes in help!
 The SIM pin could be for instance, written example in a configuration file and we want to set it as a session value.
-If before the execution of our script, we execute "export SIM_PIN=7782" and then we execute this row in ATila. We'll see in the next chapter that probably a better way to do that is using "GETENV", but be patient.
+If before the execution of our script, we execute “export SIM_PIN=7782” and then we execute this row in ATila using GETENV (we'll see what GETENV is in the next chapter) somewhere in the script before its execution.
 
+```txt
+GETENV SIM_PIN
 AT+CPIN;;READY;;0;;5;;AT+CPIN=${SIM_PIN}
+```
 
 SIM_PIN will be replaced by 7782.
 
@@ -149,7 +152,26 @@ But as we seen in the previous chapter, Session values can also be used to get c
 
 ### Environment Setup Keywords
 
+As said before, ATScripts are not made only up of commands, but also of another thing called **Environment Setup Keywords (ESKs)**.
+Let’s start from talking briefly about how ATtila works. ATtila has two main components: the **AT Runtime Environment (ATRE)** and the **ATSession**. The AT Runtime Environment instances a session and executes it following its commands, when the session execution ends, a new session can be instanced and the previous one gets destroyed, while the runtime environment persists. While **commands describe the ATSession execution path**, the **ESKs describe the setup for the AT Runtime Environment**, not only at the initial setup, but also at any time during runtime. ESKs can also be used to invoke the ATRE to execute some commands as we'll see..
+So, to summarize, **ESKs are commands you can put (but are not mandatory) in your scripts and tell the Runtime Environment how to configure its components or extra instructions to be executed**.
+Let’s see then which ESKs are supported.
+
+| ESK      | Value         | Description                                                                                              |
+|----------|---------------|----------------------------------------------------------------------------------------------------------|
+| DEVICE   | String        | Indicates the target device used to communicate (e.g. /dev/ttyUSB0)                                      |
+| BAUDRATE | Int           | Describes the baud rate used to communicate (e.g. 9600)                                                  |
+| TIMEOUT  | Int           | Describes the default command timeout (e.g. 5)                                                           |
+| BREAK    | "LF" / "CRLF" | Describes the line break used for commands between LF and CRLF                                           |
+| AOF      | True / False  | Abort on failure: describes whether the runtime environment shut abort on command failure                |
+| SET      | String=String | Tells ATRE to set a session value with a certain key and value: (e.g. SET SIM=7789)                      |
+| GETENV   | String        | Tells ATRE to store in session storage a certain environmental variable. (e.g. GETENV SIM_PIN)           |
+| PRINT    | String        | Tells ATRE to print to stdout a session value (e.g. PRINT SIM_PIN)                                       |
+| EXEC     | String        | Tells ATRE to execute a shell process (e.g. EXEC “export SIM_PIN=`cat /tmp/config.json | jq .modem.pin`” |
+
 ## Known Issues
+
+TBD
 
 ## Changelog
 
