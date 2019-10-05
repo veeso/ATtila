@@ -23,7 +23,7 @@
 from .exceptions import ATSerialPortError
 
 from serial import Serial, SerialException
-from re import sub, search
+import re
 
 class ATCommunicator(object):
   """
@@ -116,6 +116,6 @@ class ATCommunicator(object):
     for line in lines:
       line = line.decode('utf-8')
       #Remove newline
-      if search("(\\r|)\\n$", line):
-        line = sub("(\\r|)\\n$", "", line)
+      if re.search("(\\r|)\\n$", line):
+        line = re.sub("(\\r|)\\n$", "", line)
     return lines

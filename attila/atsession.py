@@ -24,7 +24,7 @@ from .exceptions import ATSerialPortError
 from .atcommand import ATCommand
 from .atresponse import ATResponse
 
-from re import sub, search, escape
+import re
 
 class ATSession(object):
   """
@@ -150,7 +150,7 @@ class ATSession(object):
     #Search for response
     for line in response:
       #Search for expected response in line
-      if search(expected_response, line):
+      if re.search(expected_response, line):
         response_str = line
         self._last_command_failed = False
         break
@@ -181,7 +181,7 @@ class ATSession(object):
   def __get_value_from_response(self, to_collect, response):
     """
     Get a value from response.
-    The collectable syntax is 'XXXXXXXX?{KEY_NAME}XXXXXX'
+    The collectable syntax is '...?{KEY_NAME}...'
     The ?{} part is replaced by (.*) in a regex
 
     :param to_collect: collectable syntax to match
@@ -190,7 +190,7 @@ class ATSession(object):
     :type response: list of string
     :returns tuple(string, string/int); None if not found
     """
-    reg_result = search("\\?{.*)", to_collect)
+    reg_result = re.search("\\?{.*)", to_collect)
     if reg_result:
       key_group = reg_result.group()
     else:
@@ -200,10 +200,10 @@ class ATSession(object):
     key_value = None
     regex = to_collect.replace(key_group, "")
     #Escape regex
-    regex = "%s%s" % (escape(regex), "(.*)")
+    regex = "%s%s" % (re.escape(regex), "(.*)")
     #Iterate over lines
     for line in response:
-      if search(regex, line):
+      if re.search(regex, line):
         key_value = regex.replace(part_to_remove, "")
         try:
           key_value = int(key_value)
@@ -225,8 +225,8 @@ class ATSession(object):
     current_command = self._commands.at(self._current_command)
     command_str = current_command.command
     #Get session variable
-    while search("\\${.*)", command_str):
-      reg_result = search("\\${.*)", command_str)
+    while re.search("\\${.*)", command_str):
+      reg_result = re.search("\\${.*)", command_str)
       key_group = reg_result.group()
       key_name = key_group[2:-1]
       #@! Okay, there is a session variable to replace
