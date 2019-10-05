@@ -110,9 +110,10 @@ class ATSession(object):
     :returns ATCommand
     """
     #Prepare command
-    self.prepare()
+    next_command = self._commands.at(self._current_command_index)
+    self.prepare(next_command)
     #Return command
-    return self._commands.at(self._current_command_index)
+    return next_command
 
   def get_command(self, index):
     """
@@ -181,6 +182,46 @@ class ATSession(object):
     current_command.response = atresponse
     return atresponse
 
+  def replace_session_keys(self, haystack):
+    """
+    Replace all the session keys with session values
+    :param haystack: string where keys have to be replaced with their values
+    :type haystack: string
+    :returns string
+    """
+    #Get session variable
+    while re.search("\\${.*)", haystack):
+      reg_result = re.search("\\${.*)", haystack)
+      key_group = reg_result.group()
+      key_name = key_group[2:-1]
+      #@! Okay, there is a session variable to replace
+      #Search for session variable
+      session_value = self._session_storage.get(key_name)
+      if not session_value:
+        #If not found set to empty
+        session_value = ""
+      #Replace session variable
+      haystack = haystack.replace(key_group, session_value)
+    return haystack
+
+  def prepare(self, command):
+    """
+    Prepare command to execute, replacing session variable with values in session;
+    if value is not in session, it will be replaced with an empty string
+
+    :param command
+    :type command: ATCommand
+    """
+    
+    command_str = command.command
+    #Get session variable
+    command_str = self.replace_session_keys(command_str)
+    #@!All sessions variables have been replaced
+    #Other stuff???
+    #Reassing command to ATCommand
+    self._commands.at(self._current_command_index).command = command_str
+    return
+
   def __get_value_from_response(self, to_collect, response):
     """
     Get a value from response.
@@ -220,41 +261,3 @@ class ATSession(object):
       return (key_name, key_value)
     else:
       return None
-
-  def prepare(self):
-    """
-    Prepare command to execute, replacing session variable with values in session;
-    if value is not in session, it will be replaced with an empty string
-    """
-    
-    current_command = self._commands.at(self._current_command_index)
-    command_str = current_command.command
-    #Get session variable
-    command_str = self.replace_session_keys(command_str)
-    #@!All sessions variables have been replaced
-    #Other stuff???
-    #Reassing command to ATCommand
-    self._commands.at(self._current_command_index).command = command_str
-    return
-
-  def replace_session_keys(self, haystack):
-    """
-    Replace all the session keys with session values
-    :param haystack: string where keys have to be replaced with their values
-    :type haystack: string
-    :returns string
-    """
-    #Get session variable
-    while re.search("\\${.*)", haystack):
-      reg_result = re.search("\\${.*)", haystack)
-      key_group = reg_result.group()
-      key_name = key_group[2:-1]
-      #@! Okay, there is a session variable to replace
-      #Search for session variable
-      session_value = self._session_storage.get(key_name)
-      if not session_value:
-        #If not found set to empty
-        session_value = ""
-      #Replace session variable
-      haystack = haystack.replace(key_group, session_value)
-    return haystack
