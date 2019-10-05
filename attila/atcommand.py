@@ -33,7 +33,7 @@ class ATCommand(object):
     
     :param cmd: command to execute
     :param exp_response: expected response from command execution. a literal or a generic response can be provided
-    :param tout (optional): command timeout execution.
+    :param tout (optional): command timeout execution in seconds.
     :param delay (optional): delay in milliseconds before command execution
     :param collectables (optional): values to store from response. Follow collectables syntax as specified in ATtila documentation
     :param dganger (optional): doppelganger command associated to this command (command to execute in case of this command fails)

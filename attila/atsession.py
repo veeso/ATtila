@@ -23,7 +23,6 @@
 from .exceptions import ATSerialPortError
 from .atcommand import ATCommand
 from .atresponse import ATResponse
-from os import environ
 
 import re
 
@@ -72,7 +71,7 @@ class ATSession(object):
 
     :param command: command to add
     :param exp_response: expected response from command execution. a literal or a generic response can be provided
-    :param tout (optional): command timeout execution.
+    :param tout (optional): command execution timeout in seconds.
     :param delay (optional): delay in milliseconds before command execution
     :param collectables (optional): values to store from response. Follow collectables syntax as specified in ATtila documentation
     :param dganger (optional): doppelganger command associated to this command (command to execute in case of this command fails)
@@ -254,11 +253,8 @@ class ATSession(object):
       #Search for session variable
       session_value = self._session_storage.get(key_name)
       if not session_value:
-        #Try to get from environment variables
-        try:
-          session_value = environ[key_name]
-        except KeyError:
-          session_value = ""
+        #If not found set to empty
+        session_value = ""
       #Replace session variable
       haystack = haystack.replace(key_group, session_value)
     return haystack
