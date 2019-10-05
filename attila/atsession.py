@@ -45,20 +45,29 @@ class ATSession(object):
     self._current_command_index = 0
     self._last_command_failed = False
 
+  @property
+  def last_command_failed(self):
+    return self._last_command_failed
+
   def reset(self):
     """
     Reset the AT session. It clears the command list and the session values
     """
-    self._commands = []
     self._session_storage = {}
-    self._current_command_index = 0
-    self._last_command_failed = False
+    self.clear_commands()
+    self.reset_execution()
 
   def clear_commands(self):
     """
     Removes all commands from AT session an restores command index to 0
     """
     self._commands = []
+    self.reset_execution()
+
+  def reset_execution(self):
+    """
+    Reset only execution parameters (last command failed and command index)
+    """
     self._current_command_index = 0
     self._last_command_failed = False
   
@@ -173,13 +182,14 @@ class ATSession(object):
         self._last_command_failed = True
     #Instance ATResponse
     atresponse = ATResponse(response_str, response, execution_time)
-    #If last command failed => set doppelganger as last command
+    #If last command failed => set doppelganger as next command
     if self._last_command_failed:
       #@! Response NOK
       doppelganger = current_command.doppel_ganger
       if doppelganger:
         #Add command to command list
-        self._commands.insert(doppelganger, self._current_command_index)
+        doppelganger_command = ATCommand(doppelganger, expected_response, current_command.timeout, current_command.delay, current_command.collectables)
+        self._commands.insert(doppelganger_command, self._current_command_index)
     else:
       #@! Response OK
       #Try to get collectables
