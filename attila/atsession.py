@@ -148,16 +148,18 @@ class ATSession(object):
     vars_to_collect = current_command.collectables
     #Variables for response object
     response_str = None
-    #Search for response
-    for line in response:
-      #Search for expected response in line
-      if re.search(expected_response, line):
-        response_str = line
-        self._last_command_failed = False
-        break
-    #If response hasn't been found => last command failed 
-    if not response_str:
-      self._last_command_failed = True
+    #If expected response is set, look for it
+    if expected_response:
+      #Search for response
+      for line in response:
+        #Search for expected response in line
+        if re.search(expected_response, line):
+          response_str = line
+          self._last_command_failed = False
+          break
+      #If response hasn't been found => last command failed 
+      if not response_str:
+        self._last_command_failed = True
     #Instance ATResponse
     atresponse = ATResponse(response_str, response, execution_time)
     #If last command failed => set doppelganger as last command
@@ -170,11 +172,12 @@ class ATSession(object):
     else:
       #@! Response OK
       #Try to get collectables
-      for to_collect in vars_to_collect: #String
-        collected = self.__get_value_from_response(to_collect, response) #collected => tuple(key, value)
-        if collected:
-          self._session_values[collected[0]] = collected[1]
-          atresponse.add_collectable(collected[0], collected[1])
+      if vars_to_collect:
+        for to_collect in vars_to_collect: #String
+          collected = self.__get_value_from_response(to_collect, response) #collected => tuple(key, value)
+          if collected:
+            self._session_values[collected[0]] = collected[1]
+            atresponse.add_collectable(collected[0], collected[1])
     #Instance response object
     current_command.response = atresponse
     return atresponse
