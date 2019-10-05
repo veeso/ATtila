@@ -33,7 +33,7 @@ class ATSession(object):
   and of validating the response of the last command. 
   """
 
-  def __init__(self, commands):
+  def __init__(self, commands = []):
     """
     Class constructor. Instantiates a new :class:`.ATSession.` object with the provided parameters.
 
@@ -110,7 +110,10 @@ class ATSession(object):
     :returns ATCommand
     """
     #Prepare command
-    next_command = self._commands.at(self._current_command_index)
+    try:
+      next_command = self._commands[self._current_command_index]
+    except IndexError:
+      return None
     self.prepare(next_command)
     #Return command
     return next_command
@@ -125,7 +128,7 @@ class ATSession(object):
     """
     if index >= len(self._commands):
       return None
-    return self._commands.at(index)
+    return self._commands[index]
 
   def validate_response(self, response, execution_time):
     """
@@ -140,7 +143,7 @@ class ATSession(object):
     :returns ATResponse
     """
     #Get current command expected response
-    current_command = self._commands.at(self._current_command_index)
+    current_command = self._commands[self._current_command_index]
     #Increment current command
     self._current_command_index += 1
     #Prepare variables for looking for response
@@ -219,7 +222,7 @@ class ATSession(object):
     #@!All sessions variables have been replaced
     #Other stuff???
     #Reassing command to ATCommand
-    self._commands.at(self._current_command_index).command = command_str
+    command.command = command_str
     return
 
   def __get_value_from_response(self, to_collect, response):
