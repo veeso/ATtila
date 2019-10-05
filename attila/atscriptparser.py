@@ -35,7 +35,7 @@ class ATScriptParser(object):
 
     :param script: lines of at script
     :type script: String
-    :returns Tuple of array of (ATCommand, execution index) and array of tuple of (ESKValue, execution index)
+    :returns Tuple of array of ATCommand and array of tuple of (ESKValue, execution index)
     :raises ATScriptSyntaxError
     """
     result = ([], [])
@@ -58,7 +58,7 @@ class ATScriptParser(object):
         #Try as ommand
         command, error = self.__parse_command(row)
         if command:
-          commands.append((command, execution_index))
+          commands.append(command)
           #Increment execution_index
           execution_index += 1
         elif error:
