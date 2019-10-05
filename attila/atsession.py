@@ -43,7 +43,7 @@ class ATSession(object):
     """
     self._commands = commands
     self._session_values = {}
-    self._current_command = 0
+    self._current_command_index = 0
     self._last_command_failed = False
 
   def reset(self):
@@ -52,7 +52,7 @@ class ATSession(object):
     """
     self._commands = []
     self._session_values = {}
-    self._current_command = 0
+    self._current_command_index = 0
     self._last_command_failed = False
   
   def add_command(self, command):
@@ -113,7 +113,7 @@ class ATSession(object):
     #Prepare command
     self.prepare()
     #Return command
-    return self._commands.at(self._current_command)
+    return self._commands.at(self._current_command_index)
 
   def get_command(self, index):
     """
@@ -140,9 +140,9 @@ class ATSession(object):
     :returns ATResponse
     """
     #Get current command expected response
-    current_command = self._commands.at(self._current_command)
+    current_command = self._commands.at(self._current_command_index)
     #Increment current command
-    self._current_command += 1
+    self._current_command_index += 1
     #Prepare variables for looking for response
     expected_response = current_command.expected_response
     vars_to_collect = current_command.collectables
@@ -168,7 +168,7 @@ class ATSession(object):
       doppelganger = current_command.doppel_ganger
       if doppelganger:
         #Add command to command list
-        self._commands.insert(doppelganger, self._current_command)
+        self._commands.insert(doppelganger, self._current_command_index)
     else:
       #@! Response OK
       #Try to get collectables
@@ -226,7 +226,7 @@ class ATSession(object):
     if value is not in session, it will be replaced with an empty string
     """
     
-    current_command = self._commands.at(self._current_command)
+    current_command = self._commands.at(self._current_command_index)
     command_str = current_command.command
     #Get session variable
     while re.search("\\${.*)", command_str):
@@ -247,5 +247,5 @@ class ATSession(object):
     #@!All sessions variables have been replaced
     #Other stuff???
     #Reassing command to ATCommand
-    self._commands.at(self._current_command).command = command_str
+    self._commands.at(self._current_command_index).command = command_str
     return
