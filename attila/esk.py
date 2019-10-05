@@ -69,3 +69,31 @@ class ESK(Enum):
   GETENV = auto()
   PRINT = auto()
   EXEC = auto()
+
+  @staticmethod
+  def get_esk_from_string(esk_string):
+    """
+    Get ESK enum value from its string representation
+
+    :param esk_string
+    :type esk_string: String
+    :returns ESK or None if invalid
+    """
+    if esk_string == "DEVICE":
+      return ESK.DEVICE
+    elif esk_string == "BAUDRATE":
+      return ESK.BAUDRATE
+    elif esk_string == "BREAK":
+      return ESK.BREAK
+    elif esk_string == "AOF":
+      return ESK.AOF
+    elif esk_string == "SET":
+      return ESK.SET
+    elif esk_string == "GETENV":
+      return ESK.GETENV
+    elif esk_string == "PRINT":
+      return ESK.PRINT
+    elif esk_string == "EXEC":
+      return ESK.EXEC
+    else:
+      return None
