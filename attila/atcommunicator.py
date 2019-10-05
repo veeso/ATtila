@@ -97,6 +97,14 @@ class ATCommunicator(object):
       raise ATSerialPortError(error)
     return
 
+  def is_open(self):
+    """
+    Returns whether the serial port is open
+
+    :returns bool
+    """
+    return self._device != None
+
   def exec(self, command, timeout = None):
     """
     Execute AT command
