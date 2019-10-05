@@ -27,7 +27,7 @@ class ATCommand(object):
   This class represents an AT command
   """
   
-  def __init__(self, cmd, exp_response = None, tout = 10, delay = 0, collectables = None, dganger = None):
+  def __init__(self, cmd, exp_response = None, tout = None, delay = 0, collectables = None, dganger = None):
     """
     Class constructor. Instantiates a new :class:`.ATCommand.` object with the provided parameters.
     

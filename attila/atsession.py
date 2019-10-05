@@ -65,7 +65,7 @@ class ATSession(object):
     self._commands.append(command)
     return True
 
-  def add_new_command(self, command, exp_response, tout = 10, delay = 0, collectables = None, dganger = None):
+  def add_new_command(self, command, exp_response, tout = None, delay = 0, collectables = None, dganger = None):
     """
     Add a new command at the end of the command list
 

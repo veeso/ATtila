@@ -20,6 +20,7 @@ Current Version: **currently under development**
       - [Collectables](#collectables)
       - [Session Values](#session-values)
     - [Environment Setup Keywords](#environment-setup-keywords)
+    - [Let's put it all together](#lets-put-it-all-together)
   - [Known Issues](#known-issues)
   - [Changelog](#changelog)
   - [License](#license)
@@ -48,10 +49,11 @@ TBD
 
 ATScript is the most important feature of ATtila, since it allows to execute a set of AT commands (*well, not only AT based to be honest...*) sequentially and evaluate, store and combine their output.
 
-Basically in an AT scripts there are two things:
+Basically in an AT scripts there are three things:
 
 - **Commands**: describe what you want to send to the device and how to treat its response.
 - **Environment Setup Keywords**: describes how to establish and manage the communication.
+- **Comments**: you can obviously put comments in the ATScripts, the ATScriptParser will just ignore them. A comment statement must start with '#' character.
 
 ### ATScript Commands
 
@@ -168,8 +170,43 @@ Let’s see then which ESKs are supported.
 | AOF      | True / False  | Abort on failure: describes whether the runtime environment shut abort on command failure                |
 | SET      | String=String | Tells ATRE to set a session value with a certain key and value: (e.g. SET SIM=7789)                      |
 | GETENV   | String        | Tells ATRE to store in session storage a certain environmental variable. (e.g. GETENV SIM_PIN)           |
-| PRINT    | String        | Tells ATRE to print to stdout a session value (e.g. PRINT SIM_PIN)                                       |
+| PRINT    | String        | Tells ATRE to print to stdout a string (e.g. PRINT SIM PIN: ${SIM_PIN})                                  |
 | EXEC     | String        | Tells ATRE to execute a shell process (e.g. EXEC “export SIM_PIN=`cat /tmp/config.json | jq .modem.pin`” |
+
+### Let's put it all together
+
+Now that we know everything about ATScripts, let's build a Modem dial script :D
+
+```txt
+#Set up communication parameters
+DEVICE /dev/ttyUSB0
+BAUDRATE 115200
+TIMEOUT 10
+BREAK CRLF
+#Abort on failure
+AOF True
+#Get the SIM PIN and the APN
+GETENV SIM_PIN
+GETENV APN
+#Let's start with modem setup
+PRINT "Dialing your ISP"
++++
+ATH0;;;;5000
+ATE0;;OK
+ATZ;;OK
+ATE0;;OK
+#I'm going to verify signal etc, we don't need to aof
+AOF False
+AT+CSQ;;OK;;;;;;;;["AT+CSQ=?{dbm},"]
+AT+CREG?;;OK
+#Now I'm configuring modem for dialup, so AOF it's important
+AOF True
+AT+CPIN?;;READY;;0;;5;;AT+CPIN=${SIM_PIN}
+AT+CGDCONT=1,"IP","${APN}";;OK;;1000
+#Dial APN
+AT+CGDATA="PPP",1;;CONNECT
+PRINT Modem is now connected to ${APN}
+```
 
 ## Known Issues
 
