@@ -122,6 +122,12 @@ class ESK(Enum):
         return ESKValue(esk, baud)
       except ValueError: #NaN
         return None
+    elif esk is ESK.TIMEOUT:
+      try:
+        timeout = int(attr)
+        return ESKValue(esk, timeout)
+      except ValueError: #NaN
+        return None
     elif esk is ESK.BREAK:
       if attr == "LF":
         return ESKValue(esk, "\n")
