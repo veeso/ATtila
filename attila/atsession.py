@@ -42,7 +42,7 @@ class ATSession(object):
     :type commands: list
     """
     self._commands = commands
-    self._session_values = {}
+    self._session_storage = {}
     self._current_command_index = 0
     self._last_command_failed = False
 
@@ -51,7 +51,7 @@ class ATSession(object):
     Reset the AT session. It clears the command list and the session values
     """
     self._commands = []
-    self._session_values = {}
+    self._session_storage = {}
     self._current_command_index = 0
     self._last_command_failed = False
   
@@ -176,7 +176,7 @@ class ATSession(object):
         for to_collect in vars_to_collect: #String
           collected = self.__get_value_from_response(to_collect, response) #collected => tuple(key, value)
           if collected:
-            self._session_values[collected[0]] = collected[1]
+            self._session_storage[collected[0]] = collected[1]
             atresponse.add_collectable(collected[0], collected[1])
     #Instance response object
     current_command.response = atresponse
@@ -194,6 +194,8 @@ class ATSession(object):
     :type response: list of string
     :returns tuple(string, string/int); None if not found
     """
+    #Replace session keys in response first
+    response = self.replace_session_keys(response)
     reg_result = re.search("\\?{.*)", to_collect)
     if reg_result:
       key_group = reg_result.group()
@@ -229,13 +231,28 @@ class ATSession(object):
     current_command = self._commands.at(self._current_command_index)
     command_str = current_command.command
     #Get session variable
-    while re.search("\\${.*)", command_str):
-      reg_result = re.search("\\${.*)", command_str)
+    command_str = self.replace_session_keys(command_str)
+    #@!All sessions variables have been replaced
+    #Other stuff???
+    #Reassing command to ATCommand
+    self._commands.at(self._current_command_index).command = command_str
+    return
+
+  def replace_session_keys(self, haystack):
+    """
+    Replace all the session keys with session values
+    :param haystack: string where keys have to be replaced with their values
+    :type haystack: string
+    :returns string
+    """
+    #Get session variable
+    while re.search("\\${.*)", haystack):
+      reg_result = re.search("\\${.*)", haystack)
       key_group = reg_result.group()
       key_name = key_group[2:-1]
       #@! Okay, there is a session variable to replace
       #Search for session variable
-      session_value = self._session_values.get(key_name)
+      session_value = self._session_storage.get(key_name)
       if not session_value:
         #Try to get from environment variables
         try:
@@ -243,9 +260,5 @@ class ATSession(object):
         except KeyError:
           session_value = ""
       #Replace session variable
-      command_str = command_str.replace(key_group, session_value)
-    #@!All sessions variables have been replaced
-    #Other stuff???
-    #Reassing command to ATCommand
-    self._commands.at(self._current_command_index).command = command_str
-    return
+      haystack = haystack.replace(key_group, session_value)
+    return haystack
