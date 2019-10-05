@@ -34,7 +34,7 @@ class ESKValue(object):
     :param keyword: keyword type
     :param value associated
     :type keyword: ESK
-    :type value: string
+    :type Any: string
     """
     self._keyword = keyword
     self._value = value
@@ -95,5 +95,61 @@ class ESK(Enum):
       return ESK.PRINT
     elif esk_string == "EXEC":
       return ESK.EXEC
+    else:
+      return None
+
+  @staticmethod
+  def to_ESKValue(esk, attr):
+    """
+    Check if attributes for this esk have a valid syntax
+
+    :param esk
+    :param attr
+    :type esk: ESK
+    :type attr: String
+    :returns ESKValue (None in case of errors)
+    """
+    if not esk:
+      return False
+    elif esk is ESK.DEVICE:
+      if attr:
+        return ESKValue(esk, attr)
+      else:
+        return None
+    elif esk is ESK.BAUDRATE:
+      try:
+        baud = int(attr)
+        return ESKValue(esk, baud)
+      except ValueError: #NaN
+        return None
+    elif esk is ESK.BREAK:
+      if attr == "LF" or attr == "CRLF":
+        return ESKValue(esk, attr)
+      else:
+        return None
+    elif esk is ESK.AOF:
+      check = attr.lower()
+      if check == "true":
+        ESKValue(esk, True)
+      elif check == "false":
+        ESKValue(esk, False)
+      else:
+        return None
+    elif esk is ESK.SET:
+      key_val = attr.split("=")
+      if len(key_val) == 2:
+        ESKValue(esk, (key_val[0], key_val[1])) #Tuple of key and value
+      else:
+        return None
+    elif esk is ESK.GETENV:
+      if attr:
+        ESKValue(esk, attr)
+      else:
+        return None
+    elif esk is ESK.PRINT:
+      if attr:
+        ESKValue(esk, attr)
+      else:
+        return None
     else:
       return None
