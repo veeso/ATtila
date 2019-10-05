@@ -99,7 +99,9 @@ We told ATtila that we expect to find “OK” in the command response.
 
 Then we can also add a delay before command execution (in milliseconds) and a timeout (in seconds)
 
+```txt
 AT;;OK;;1000;;5
+```
 
 These commands don’t have all the available parameters, we still need to go deep and the see **doppelgangers and collectables** concepts.
 
