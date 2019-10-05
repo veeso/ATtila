@@ -23,6 +23,7 @@
 from .exceptions import ATSerialPortError
 from .atcommand import ATCommand
 from .atresponse import ATResponse
+from os import environ
 
 import re
 
@@ -233,7 +234,11 @@ class ATSession(object):
       #Search for session variable
       session_value = self._session_values.get(key_name)
       if not session_value:
-        session_value = ""
+        #Try to get from environment variables
+        try:
+          session_value = environ[key_name]
+        except KeyError:
+          session_value = ""
       #Replace session variable
       command_str = command_str.replace(key_group, session_value)
     #@!All sessions variables have been replaced
