@@ -24,6 +24,7 @@ from .exceptions import ATSerialPortError
 
 from serial import Serial, SerialException
 import re
+from time import time
 
 class ATCommunicator(object):
   """
@@ -129,17 +130,21 @@ class ATCommunicator(object):
     :param timeout: timeout for command, if not set default will be used
     :type command: str
     :type timeout: int
-    :returns list of string: command response without line break; empty lines are ignored
+    :returns tuple of (list of string, execution time ms); list: command response without line break; empty lines are ignored
     :raises ATSerialPortError
     """
     if not self._device:
       raise ATSerialPortError("Serial port device is closed")
+    if not timeout:
+      timeout = self.default_timeout
+    t_start = int(time() * 1000)
     self._device.timeout = timeout
     self._device.write(b"%s%s" % (command, self._line_break))
     lines = self._device.readlines()
+    t_end = int(time() * 1000)
     for line in lines:
       line = line.decode('utf-8')
       #Remove newline
       if re.search("(\\r|)\\n$", line):
         line = re.sub("(\\r|)\\n$", "", line)
-    return lines
+    return (lines, t_end - t_start)
