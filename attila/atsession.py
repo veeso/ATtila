@@ -189,7 +189,7 @@ class ATSession(object):
       if doppelganger:
         #Add command to command list
         doppelganger_command = ATCommand(doppelganger, expected_response, current_command.timeout, current_command.delay, current_command.collectables)
-        self._commands.insert(doppelganger_command, self._current_command_index)
+        self._commands.insert(self._current_command_index, doppelganger_command)
     else:
       #@! Response OK
       #Try to get collectables
@@ -253,6 +253,20 @@ class ATSession(object):
     :type value: Any
     """
     self._session_storage[key] = value
+
+  def get_session_value(self, key):
+    """
+    Try to get a value from the current session storage
+    If key doesn't exist, KeyError is raised
+
+    :param key
+    :type key: String
+    :returns any
+    :raises KeyError
+    """
+    if not self._session_storage.get(key):
+      raise KeyError("Could not find %s in current session storage")
+    return self._session_storage.get(key)
 
   def __get_value_from_response(self, to_collect, response):
     """
