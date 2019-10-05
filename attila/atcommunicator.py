@@ -69,6 +69,22 @@ class ATCommunicator(object):
   def baud_rate(self, baud_rate):
     self._baud_rate = baud_rate
 
+  @property
+  def default_timeout(self):
+    return self._default_timeout
+
+  @default_timeout.setter
+  def default_timeout(self, timeout):
+    self._default_timeout = timeout
+
+  @property
+  def line_break(self):
+    return self._line_break
+
+  @line_break.setter
+  def line_break(self, brk):
+    self._line_break = brk
+
   def open(self):
     """
     Open serial port
