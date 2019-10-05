@@ -53,6 +53,14 @@ class ATSession(object):
     self._session_storage = {}
     self._current_command_index = 0
     self._last_command_failed = False
+
+  def clear_commands(self):
+    """
+    Removes all commands from AT session an restores command index to 0
+    """
+    self._commands = []
+    self._current_command_index = 0
+    self._last_command_failed = False
   
   def add_command(self, command):
     """
@@ -224,6 +232,17 @@ class ATSession(object):
     #Reassing command to ATCommand
     command.command = command_str
     return
+
+  def set_session_value(self, key, value):
+    """
+    Set a new key to session storage
+    
+    :param key
+    :param value
+    :type key: String
+    :type value: Any
+    """
+    self._session_storage[key] = value
 
   def __get_value_from_response(self, to_collect, response):
     """
