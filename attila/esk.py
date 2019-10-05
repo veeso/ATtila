@@ -123,8 +123,10 @@ class ESK(Enum):
       except ValueError: #NaN
         return None
     elif esk is ESK.BREAK:
-      if attr == "LF" or attr == "CRLF":
-        return ESKValue(esk, attr)
+      if attr == "LF":
+        return ESKValue(esk, "\n")
+      elif attr == "CRLF":
+        return ESKValue(esk, "\r\n")
       else:
         return None
     elif esk is ESK.AOF:
