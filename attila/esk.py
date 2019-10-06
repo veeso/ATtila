@@ -83,6 +83,8 @@ class ESK(Enum):
       return ESK.DEVICE
     elif esk_string == "BAUDRATE":
       return ESK.BAUDRATE
+    elif esk_string == "TIMEOUT":
+      return ESK.TIMEOUT
     elif esk_string == "BREAK":
       return ESK.BREAK
     elif esk_string == "AOF":
