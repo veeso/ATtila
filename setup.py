@@ -21,7 +21,7 @@ setup(
   author_email='christian.visintin1997@gmail.com',
   url='https://github.com/ChristianVisintin/ATtila',
   license="MIT",
-  python_requires='>=3',
+  python_requires='>=3.4',
   install_requires=[
     'pyserial>=3'
   ],
@@ -40,6 +40,6 @@ setup(
     'Programming Language :: Python :: 3',
     'Operating System :: OS Independent',
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.4",
   ]
 )

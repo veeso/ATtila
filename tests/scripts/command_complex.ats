@@ -3,3 +3,4 @@
 ATH0;;;;5000
 AT+CPIN?;;READY;;0;;5;;;;AT+CPIN=7782;;OK
 AT+CSQ;;OK;;;;;;["AT+CSQ=?{dbm},"]
+AT+CGSN;;OK;;;;;;["?{IMEI::^[0-9]{15}$}"]

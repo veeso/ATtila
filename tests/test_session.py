@@ -38,6 +38,27 @@ class TestParser(unittest.TestCase):
     self.__test_doppelganger()
     self.__test_collectables()
 
+  def __test_exec_and_validate(self):
+    """
+    Test ATSession just adding a command and evaluating its response
+    """
+    simple_command = ATCommand("AT", "OK")
+    self.session.add_command(simple_command)
+    next_command = self.session.get_next_command()
+    #Prepare a response for it; in this case we'll simulate a successful response
+    serial_response = ["OK"]
+    response = self.session.validate_response(serial_response, 100)
+    self.assertFalse(self.session.last_command_failed)
+    self.assertEqual(response.response, serial_response, "Command should have OK as response but has %s" % response.response)
+    #Let's simulate a command that will fail
+    simple_command2 = ATCommand("AT+CGDCONT=1, \"IP\", \"internet.foo.bar\"", "OK")
+    self.session.add_command(simple_command2)
+    next_command = self.session.get_next_command()
+    #Prepare a response for it; in this case we'll simulate a successful response
+    serial_response = ["ERROR"]
+    response = self.session.validate_response(serial_response, 100)
+    self.assertTrue(self.session.last_command_failed)
+
   def __test_doppelganger(self):
     """
     Test doppelganger feature in ATSession using AT+CPIN
@@ -63,8 +84,8 @@ class TestParser(unittest.TestCase):
     response = self.session.validate_response(serial_response, 100)
     #Last command should have failed (we expected READY)
     self.assertTrue(self.session.last_command_failed)
-    print("%s (expected %s) has response: %s" % (next_command.command, next_command.expected_response, response.full_response))
     self.assertEqual(response.full_response, serial_response, "Response associated to command is different from the response got from serial device")
+    print("%s (expected %s) has response: %s" % (next_command.command, next_command.expected_response, response.full_response))
     #Let's get the next command, that should be the doppelganger
     next_command = self.session.get_next_command()
     self.assertEqual(next_command.command, "AT+CPIN=%d" % sim_pin, "The next command should be the doppelganger, but is %s" % next_command.command)
@@ -93,9 +114,48 @@ class TestParser(unittest.TestCase):
     #Verify if collectable has actually been collected
     try:
       rssi = self.session.get_session_value("rssi")
-      self.assertEqual(rssi, "31", "rssi should be 31, but is %s" % rssi)
+      self.assertEqual(rssi, 31, "rssi should be 31, but is %s" % rssi)
     except KeyError as err:
       raise err
+    print("RSSI from AT+CSQ: %d" % rssi)
+    #Let's try a collectable which searches for 15 digits (for getting the IMEI for example) => ^[0-9]{15}$
+    imei_command = ATCommand("AT+CGSN", "OK", 10, 0, ["?{IMEI::^[0-9]{15}$}"])
+    self.session.add_command(imei_command)
+    #Let's get command
+    next_command = self.session.get_next_command()
+    #Invent a response for it
+    serial_response = ["AT+CGSN", "123456789012345", "OK"]
+    response = self.session.validate_response(serial_response, 50)
+    #Last command should have succeded
+    self.assertFalse(self.session.last_command_failed)
+    #Verify if collectable has actually been collected
+    try:
+      imei = self.session.get_session_value("IMEI")
+      self.assertEqual(imei, 123456789012345, "rssi should be '123456789012345', but is %s" % imei)
+    except KeyError as err:
+      raise err
+    print("IMEI from AT+CGSN: %d" % imei)
+    #Combining line content with key regex and session keys
+    #Look for both rssi and ber, but use key regex and session values
+    csq_command = ATCommand("AT+CSQ", "OK", 10, 0, ["AT+CSQ=?{rssi::[0-9]{1,2}},","AT+CSQ=${rssi},?{ber::[0-9]{1,2}}"])
+    self.session.add_command(csq_command)
+    #Let's get command
+    next_command = self.session.get_next_command()
+    #Invent a response for it
+    serial_response = ["AT+CSQ=31,2", "OK"]
+    response = self.session.validate_response(serial_response, 50)
+    #Last command should have succeded
+    self.assertFalse(self.session.last_command_failed)
+    #Verify if collectable has actually been collected
+    try:
+      rssi = self.session.get_session_value("rssi")
+      self.assertEqual(rssi, 31, "rssi should be 31, but is %s" % rssi)
+      ber = self.session.get_session_value("ber")
+      self.assertEqual(ber, 2, "ber should be 2, but is %s" % ber)
+    except KeyError as err:
+      raise err
+    print("RSSI from AT+CSQ: %d; ber from AT+CSQ: %d" % (rssi, ber))
+    #Collectable test OK
 
 if __name__ == "__main__":
   unittest.main()

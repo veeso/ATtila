@@ -136,8 +136,8 @@ class TestParser(unittest.TestCase):
     esks = script[1]
     #There mustn't be any ESK in response
     self.assertEqual(len(esks), 0, "There shouldn't be any esks in script %s" % SCRIPT_3)
-    #We expect 3 commands
-    self.assertEqual(len(commands), 3, "There should be only 3 commands; found %d in script %s" % (len(commands), SCRIPT_3))
+    #We expect 4 commands
+    self.assertEqual(len(commands), 4, "There should be only 4 commands; found %d in script %s" % (len(commands), SCRIPT_3))
     #Verify command 0
     self.assertEqual(commands[0].command, "ATH0", "The first command should be ATH0 but is %s" % commands[0].command)
     self.assertEqual(commands[0].delay, 5000, "The first command should have 5000 ms of delay but has %d" % commands[0].delay)
@@ -151,6 +151,10 @@ class TestParser(unittest.TestCase):
     print("%s => %s; if fails: %s => %s" % (commands[1].command, commands[1].expected_response, commands[1].doppel_ganger.command, commands[1].doppel_ganger.expected_response))
     #Veridy command 3
     self.assertEqual(len(commands[2].collectables), 1, "The third command should have 1 collectables, but has %d" % len(commands[2].collectables))
+    self.assertEqual(commands[2].collectables[0], "AT+CSQ=?{dbm},", "The third command should have as collectable 'AT+CSQ=?{dbm},', but has %s" % commands[2].collectables[0])
+    #Verify collectable for command 4
+    self.assertEqual(len(commands[3].collectables), 1, "The third command should have 1 collectables, but has %d" % len(commands[3].collectables))
+    self.assertEqual(commands[3].collectables[0], "?{IMEI::^[0-9]{15}$}", "The forth command should have as collectable '?{IMEI::^[0-9]{15}$}', but has %s" % commands[3].collectables[0])
     #Iterate over commands
     for command in commands:
       print("Command: %s; Response: %s; Delay %s; Timeout: %s; doppel_ganger %s; Collectables %s" % (command.command, command.expected_response, command.delay, command.timeout, command.doppel_ganger, command.collectables))

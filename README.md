@@ -148,7 +148,7 @@ How can we get this value using collectables? Well, we can, but making a collect
 AT+CGSN;;OK;;;;;;["?{IMEI::^[0-9]{15}$}"]
 ```
 
-This means we're looking for a value between nothing, but which has to respect the regex we provided which is ```^[0-9]{15}$```. If a number of 15 digits if found in the response, this value will be stored into the session storage into a key named "IMEI".
+This means we're looking for a value between nothing, but which has to respect the regex we provided which is ```^[0-9]{15}$```. If a number of 15 digits is found in the response, this value will be stored into the session storage into a key named "IMEI".
 The separator between the **key name** and the **key regex** is ```::```
 This mechanism can also be used to solve ambiguity in the response to get the value that we really want.
 
@@ -222,7 +222,8 @@ ATZ;;OK
 ATE0;;OK
 #I'm going to verify signal etc, we don't need to aof
 AOF False
-AT+CSQ;;OK;;;;;;["AT+CSQ=?{rssi},"]
+AT+CSQ;;OK;;;;;;["AT+CSQ=?{rssi::[0-9]{1,2}},","AT+CSQ=${rssi},?{ber::[0-9]{1,2}}"]
+AT+CGSN;;OK;;;;;;["?{IMEI::^[0-9]{15}$}"]
 AT+CREG?;;OK
 #Now I'm configuring modem for dialup, so AOF it's important
 AOF True
