@@ -181,7 +181,7 @@ class ATSession(object):
       if not response_str:
         self._last_command_failed = True
     #Instance ATResponse
-    atresponse = ATResponse(response_str, response, execution_time)
+    atresponse = ATResponse(response_str, response, current_command, execution_time)
     #If last command failed => set doppelganger as next command
     if self._last_command_failed:
       #@! Response NOK

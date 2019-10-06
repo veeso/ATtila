@@ -26,20 +26,23 @@ class ATResponse(object):
   response format, the entire response and the command execution time (milliseconds)
   """
 
-  def __init__(self, resp, fullresponse, executiontime = 0):
+  def __init__(self, resp, fullresponse, command, executiontime = 0):
     """
     Class constructor. Instantiates a new :class:`.ATResponse.` object with the provided parameters.
 
     :param resp: main response from command (format/content as expected by the user)
     :param fullresponse: entire response received from command execution
+    :param command: command associated to response
     :param executiontime: execution time of the command in milliseconds
     :type resp: string
     :type fullresponse: list of string
+    :type command: ATCommand
     :type executiontime: int
     """
     self._response = resp
     self._full_response = fullresponse
     self._execution_time = executiontime
+    self._command = command
     self._collectables = {}
 
   @property
@@ -57,6 +60,10 @@ class ATResponse(object):
   @full_response.setter
   def full_response(self, full_response):
     self._full_response = full_response
+
+  @property
+  def command(self):
+    return self._command
 
   @property
   def execution_time(self):
