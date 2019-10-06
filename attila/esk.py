@@ -20,7 +20,7 @@
 # SOFTWARE.
 #
 
-from enum import Enum, auto
+from enum import Enum
 
 class ESKValue(object):
   """
@@ -60,15 +60,15 @@ class ESK(Enum):
   """
   This class represents an Environment Setup Keyword
   """
-  DEVICE = auto()
-  BAUDRATE = auto()
-  TIMEOUT = auto()
-  BREAK = auto()
-  AOF = auto()
-  SET = auto()
-  GETENV = auto()
-  PRINT = auto()
-  EXEC = auto()
+  DEVICE = 0
+  BAUDRATE = 1
+  TIMEOUT = 2
+  BREAK = 3
+  AOF = 4
+  SET = 5
+  GETENV = 6
+  PRINT = 7
+  EXEC = 8
 
   @staticmethod
   def get_esk_from_string(esk_string):
