@@ -1,0 +1,5 @@
+#Basic commands
+#We expect to have back 3 commands with no response etc...
+AT
+ATZ
+ATE0

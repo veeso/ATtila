@@ -1,0 +1,7 @@
+#Commands with expected response
+#We expect to have back 3 commands with the expected response
+
+AT;;OK
+AT+CPIN?;;READY
+#Random comment
+AT+CREG?;;OK
