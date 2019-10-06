@@ -27,7 +27,7 @@ from .atscriptparser import ATScriptParser
 from .exceptions import ATScriptNotFound, ATScriptSyntaxError, ATSerialPortError, ATREUninitializedError, ATRuntimeError
 from .atcommunicator import ATCommunicator
 
-from os import environ
+from os import environ, system
 
 class ATRuntimeEnvironment(object):
   """
@@ -295,6 +295,10 @@ class ATRuntimeEnvironment(object):
       #Replace session values
       to_out = self.__session.replace_session_keys(esk.value)
       print(to_out)
+    elif esk.keyword in ESK.EXEC:
+      rc = system(esk.value)
+      if rc != 0:
+        return False
     else:
       return False
     return True

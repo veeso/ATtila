@@ -34,6 +34,8 @@ setup(
     'Intended Audience :: End Users/Desktop',
     'Topic :: Software Development :: Libraries',
     'Topic :: Home Automation',
+    'Topic :: Modems',
+    'Topic :: AT Commands',
     'License :: OSI Approved :: MIT License',
     'Programming Language :: Python :: 3',
     'Operating System :: OS Independent',

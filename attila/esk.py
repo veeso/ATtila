@@ -159,5 +159,10 @@ class ESK(Enum):
         ESKValue(esk, attr)
       else:
         return None
+    elif esk in ESK.EXEC:
+      if attr:
+        ESKValue(esk, attr)
+      else:
+        return None
     else:
       return None
