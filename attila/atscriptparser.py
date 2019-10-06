@@ -135,8 +135,9 @@ class ATScriptParser(object):
     expected_response = None
     delay = 0
     timeout = None
-    doppelganger = None
     collectables = None
+    doppelganger = None
+    doppelganger_response = None
     has_doppelganger = False
     if len(command_tokens) > 1: #Expected response
       if command_tokens[1]:
@@ -155,19 +156,22 @@ class ATScriptParser(object):
         except ValueError:
           error = "Timeout is not a number"
           return (command, error)
-    if len(command_tokens) > 4: #Doppelganger
+    if len(command_tokens) > 4: #Collectables
       if command_tokens[4]:
-        has_doppelganger = True
-    if len(command_tokens) > 5: #Collectables
-      if command_tokens[5]:
         try:
-          collectables = eval(command_tokens[5])
+          collectables = eval(command_tokens[4])
         except NameError as err:
           error = "Collectables has invalid syntax (%s)" % err
           return (command, error)
+    if len(command_tokens) > 5: #Doppelganger
+      if command_tokens[5]:
+        has_doppelganger = True
+    if len(command_tokens) > 6: #Doppelganger response
+      if command_tokens[6]:
+        doppelganger_response = command_tokens[6]
     if has_doppelganger:
       #Instance doppelganger
-      doppelganger = ATCommand(command_tokens[4], expected_response, timeout, delay, collectables, None)
+      doppelganger = ATCommand(command_tokens[5], doppelganger_response, timeout, delay, collectables, None)
     #Instance new AT command
     command = ATCommand(atcommand, expected_response, timeout, delay, collectables, doppelganger)
     return (command, error)

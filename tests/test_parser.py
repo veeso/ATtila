@@ -22,8 +22,6 @@
 
 import unittest
 
-import sys
-sys.path.append('../attila')
 from os.path import dirname
 
 from attila.atscriptparser import ATScriptParser
@@ -148,7 +146,9 @@ class TestParser(unittest.TestCase):
     self.assertEqual(commands[1].expected_response, "READY", "The second command should have as response READY but has %s" % commands[1].expected_response)
     self.assertEqual(commands[1].delay, 0, "The second command should have 0 ms of delay but has %d" % commands[1].delay)
     self.assertEqual(commands[1].timeout, 5, "The second command should have 5 s of timeout but has %d" % commands[1].timeout)
-    self.assertEqual(commands[1].doppel_ganger.command, "AT+CPIN=7782", "The second command should have AT+CPIN=7782 as doppel_ganger, but has %s" % commands[1].doppel_ganger)
+    self.assertEqual(commands[1].doppel_ganger.command, "AT+CPIN=7782", "The second command should have AT+CPIN=7782 as doppel_ganger, but has %s" % commands[1].doppel_ganger.command)
+    self.assertEqual(commands[1].doppel_ganger.expected_response, "OK", "The second command should have OK as doppel ganger response, but has %s" % commands[1].doppel_ganger.expected_response)
+    print("%s => %s; if fails: %s => %s" % (commands[1].command, commands[1].expected_response, commands[1].doppel_ganger.command, commands[1].doppel_ganger.expected_response))
     #Veridy command 3
     self.assertEqual(len(commands[2].collectables), 1, "The third command should have 1 collectables, but has %d" % len(commands[2].collectables))
     #Iterate over commands

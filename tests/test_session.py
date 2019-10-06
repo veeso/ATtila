@@ -19,3 +19,27 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
+
+import unittest
+
+from attila.atsession import ATSession
+from attila.atcommand import ATCommand
+
+class TestParser(unittest.TestCase):
+
+  def __init__(self, methodName):
+    super().__init__(methodName)
+    self.session = ATSession()
+    
+  def test_commands(self):
+    """
+    Test ATSession commands preparation and evaluation
+    """
+    #Let's define an AT Command (AT+CPIN?)
+    #First prepare its doppelganger
+    cpin_enter_pin = ATCommand("AT+CPIN=${SIM_PIN}", "OK")
+    cpin_command = ATCommand("AT+CPIN?", "READY", 10, 0, None, cpin_enter_pin)
+
+if __name__ == "__main__":
+  unittest.main()
+

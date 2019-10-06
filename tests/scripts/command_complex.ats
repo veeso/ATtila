@@ -1,5 +1,5 @@
 #A set of commands with complex stuff
 
 ATH0;;;;5000
-AT+CPIN?;;READY;;0;;5;;AT+CPIN=7782
-AT+CSQ;;OK;;;;;;;;["AT+CSQ=?{dbm},"]
+AT+CPIN?;;READY;;0;;5;;;;AT+CPIN=7782;;OK
+AT+CSQ;;OK;;;;;;["AT+CSQ=?{dbm},"]

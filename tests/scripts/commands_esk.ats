@@ -15,10 +15,10 @@ PRINT Dialing your ISP
 ATH0;;;;5000
 #I'm going to verify signal etc, we don't need to aof
 AOF False
-AT+CSQ;;OK;;;;;;;;["AT+CSQ=?{dbm},"]
+AT+CSQ;;OK;;;;;;["AT+CSQ=?{dbm},"]
 #Now I'm configuring modem for dialup, so AOF it's important
 AOF True
-AT+CPIN?;;READY;;0;;5;;AT+CPIN=${SIM_PIN}
+AT+CPIN?;;READY;;0;;5;;;;AT+CPIN=${SIM_PIN};;OK
 AT+CGDCONT=1,"IP","${APN}";;OK;;1000
 #Dial APN
 AT+CGDATA="PPP",1;;CONNECT

@@ -22,6 +22,7 @@ Current Version: **currently under development**
     - [Environment Setup Keywords](#environment-setup-keywords)
     - [Let's put it all together](#lets-put-it-all-together)
   - [Known Issues](#known-issues)
+  - [Tests Units](#tests-units)
   - [Changelog](#changelog)
   - [License](#license)
 
@@ -62,7 +63,7 @@ As far as we’ve learned up to now, we know that a command has the following pa
 
 - the **command** itself
 - the **response** we expect
-- the **doppelganger**
+- the **doppelganger** and it's expected response
 - **collectables**
 - a **delay** (milliseconds to wait before its execution)
 - a **timeout**
@@ -70,7 +71,7 @@ As far as we’ve learned up to now, we know that a command has the following pa
 So basically, to think it easy, the syntax for commands will be a combination of them:
 
 ```txt
-COMMAND;;RESPONSE_EXPR;;DELAY;;TIMEOUT;;DOPPELGANGER;;["COLLECTABLE1","...","COLLECTABLEn"]
+COMMAND;;RESPONSE_EXPR;;DELAY;;TIMEOUT;;["COLLECTABLE1","...","COLLECTABLEn"];;DOPPELGANGER;;DOPPELGANGER_RESPONSE
 ```
 
 To see practical applications of them, let's see a few examples.
@@ -114,7 +115,7 @@ We’ll use AT+CPIN?, in case the SIM is unlocked it will return “+CPIN:READY�
 The command we’ll use is:
 
 ```txt
-AT+CPIN?;;READY;;0;;5;;AT+CPIN=7782
+AT+CPIN?;;READY;;0;;5;;;;AT+CPIN=7782;;OK
 ```
 
 What does this command mean?
@@ -127,7 +128,7 @@ Collectables are values that you can collect from a command response and transfo
 Imagine for example you want to collect the current signal quality and store it into a variable you want for example to save on Redis, you can do it just by specifying what you’re looking for and the session value name and the job is done: ATila will do the job for you!
 
 ```txt
-AT+CSQ:;;+CSQ;;0;;5;;;;["AT+CSQ=?{dbm},","AT+CSQ=${dbm},?{ber}"]
+AT+CSQ:;;+CSQ;;0;;5;;["AT+CSQ=?{dbm},","AT+CSQ=${dbm},?{ber}"]
 ```
 
 This command has two collectables, which are the Dbm and the Ber. We know that AT+CSQ, in case of a positive response (+CSQ:...), will return the **rssi and the ber** after “AT+CSQ=” separated by a comma. Imagine that we want to get both. The first value we want is located after “AT+CSQ=” and terminates with the ',' comma before the ber. So we tell ATtila to get a value between these two strings and to store it into a session value called “dbm”. The other value will be located after the other part of the string; we can as you can see, reuse the dbm value in the second collectable (since dbm is already set).
@@ -147,7 +148,7 @@ If before the execution of our script, we execute “export SIM_PIN=7782” and 
 
 ```txt
 GETENV SIM_PIN
-AT+CPIN;;READY;;0;;5;;AT+CPIN=${SIM_PIN}
+AT+CPIN;;READY;;0;;5;;;;AT+CPIN=${SIM_PIN};;OK
 ```
 
 SIM_PIN will be replaced by 7782.
@@ -189,7 +190,7 @@ AOF True
 GETENV SIM_PIN
 GETENV APN
 #Let's start with modem setup
-PRINT "Dialing your ISP"
+PRINT Configuring modem parameters
 +++
 ATH0;;;;5000
 ATE0;;OK
@@ -197,20 +198,30 @@ ATZ;;OK
 ATE0;;OK
 #I'm going to verify signal etc, we don't need to aof
 AOF False
-AT+CSQ;;OK;;;;;;;;["AT+CSQ=?{dbm},"]
+AT+CSQ;;OK;;;;;;["AT+CSQ=?{dbm},"]
 AT+CREG?;;OK
 #Now I'm configuring modem for dialup, so AOF it's important
 AOF True
-AT+CPIN?;;READY;;0;;5;;AT+CPIN=${SIM_PIN}
+AT+CPIN?;;READY;;0;;5;;;;AT+CPIN=${SIM_PIN};;OK
 AT+CGDCONT=1,"IP","${APN}";;OK;;1000
 #Dial APN
+PRINT Dialing your ISP...
 AT+CGDATA="PPP",1;;CONNECT
-PRINT Modem is now connected to ${APN}
 ```
 
 ## Known Issues
 
 TBD
+
+## Tests Units
+
+ATtila is provided with tests units, which can be found under tests/ directory.
+These tests units tests the three most important parts of ATtila which are the ATScriptParser, the ATSession and the ATRuntimeEnvironment.
+To launch test unit just type:
+
+```sh
+nosetests --nocapture tests/
+```
 
 ## Changelog
 
