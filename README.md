@@ -128,10 +128,10 @@ Collectables are values that you can collect from a command response and transfo
 Imagine for example you want to collect the current signal quality and store it into a variable you want for example to save on Redis, you can do it just by specifying what you’re looking for and the session value name and the job is done: ATila will do the job for you!
 
 ```txt
-AT+CSQ:;;+CSQ;;0;;5;;["AT+CSQ=?{dbm},","AT+CSQ=${dbm},?{ber}"]
+AT+CSQ:;;+CSQ;;0;;5;;["AT+CSQ=?{rssi},","AT+CSQ=${rssi},?{ber}"]
 ```
 
-This command has two collectables, which are the Dbm and the Ber. We know that AT+CSQ, in case of a positive response (+CSQ:...), will return the **rssi and the ber** after “AT+CSQ=” separated by a comma. Imagine that we want to get both. The first value we want is located after “AT+CSQ=” and terminates with the ',' comma before the ber. So we tell ATtila to get a value between these two strings and to store it into a session value called “dbm”. The other value will be located after the other part of the string; we can as you can see, reuse the dbm value in the second collectable (since dbm is already set).
+This command has two collectables, which are the rssi and the Ber. We know that AT+CSQ, in case of a positive response (+CSQ:...), will return the **rssi and the ber** after “AT+CSQ=” separated by a comma. Imagine that we want to get both. The first value we want is located after “AT+CSQ=” and terminates with the ',' comma before the ber. So we tell ATtila to get a value between these two strings and to store it into a session value called “rssi”. The other value will be located after the other part of the string; we can as you can see, reuse the rssi value in the second collectable (since rssi is already set).
 The syntax which describes the start of a collectable is **?{SESSION_KEY}**.
 
 #### Session Values
@@ -198,7 +198,7 @@ ATZ;;OK
 ATE0;;OK
 #I'm going to verify signal etc, we don't need to aof
 AOF False
-AT+CSQ;;OK;;;;;;["AT+CSQ=?{dbm},"]
+AT+CSQ;;OK;;;;;;["AT+CSQ=?{rssi},"]
 AT+CREG?;;OK
 #Now I'm configuring modem for dialup, so AOF it's important
 AOF True

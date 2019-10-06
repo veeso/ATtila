@@ -210,8 +210,8 @@ class ATSession(object):
     :returns string
     """
     #Get session variable
-    while re.search("\\${.*)", haystack):
-      reg_result = re.search("\\${.*)", haystack)
+    while re.search("\\${(.*)}", haystack):
+      reg_result = re.search("\\${(.*)}", haystack)
       key_group = reg_result.group()
       key_name = key_group[2:-1]
       #@! Okay, there is a session variable to replace
@@ -221,7 +221,7 @@ class ATSession(object):
         #If not found set to empty
         session_value = ""
       #Replace session variable
-      haystack = haystack.replace(key_group, session_value)
+      haystack = haystack.replace(key_group, str(session_value))
     return haystack
 
   def prepare(self, command):
@@ -264,7 +264,7 @@ class ATSession(object):
     :raises KeyError
     """
     if not self._session_storage.get(key):
-      raise KeyError("Could not find %s in current session storage")
+      raise KeyError("Could not find %s in current session storage" % key)
     return self._session_storage.get(key)
 
   def __get_value_from_response(self, to_collect, response):
@@ -280,8 +280,7 @@ class ATSession(object):
     :returns tuple(string, string/int); None if not found
     """
     #Replace session keys in response first
-    response = self.replace_session_keys(response)
-    reg_result = re.search("\\?{.*)", to_collect)
+    reg_result = re.search("\\?{(.*)}", to_collect)
     if reg_result:
       key_group = reg_result.group()
     else:
@@ -289,11 +288,15 @@ class ATSession(object):
     key_name = key_group[2:-1]
     part_to_remove = to_collect.replace(key_group, "")
     key_value = None
+    #TODO: compose regex with to_collect[0] + (.*) + to_collect[1]
     regex = to_collect.replace(key_group, "")
     #Escape regex
-    regex = "%s%s" % (re.escape(regex), "(.*)")
+    collect_expr_parts = to_collect.split(key_group)
+    #TODO: check len
+    regex = "%s%s%s" % (collect_expr_parts[0], re.escape(regex), "(.*)")
     #Iterate over lines
     for line in response:
+      line = self.replace_session_keys(line)
       if re.search(regex, line):
         key_value = regex.replace(part_to_remove, "")
         try:
