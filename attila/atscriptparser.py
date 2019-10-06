@@ -42,9 +42,11 @@ class ATScriptParser(object):
     commands = result[0]
     esks = result[1]
     execution_index = 0
-    line_no = 1
+    line_no = 0
     #Split script into rows
     for row in script.splitlines():
+      #Increment line number
+      line_no += 1
       if not row: #Empty row
         continue
       if row.startswith("#"): #Is comment
@@ -65,8 +67,6 @@ class ATScriptParser(object):
           raise ATScriptSyntaxError("Syntax error at line %d: %s (%s)" % (line_no, error, row))
         else:
           raise ATScriptSyntaxError("Syntax error at line %d: %s -- Don't know how to interpret this line, sorry..." % (line_no, row))
-      #Increment line number
-      line_no += 1
     return result
 
   def parse_file(self, file_path):

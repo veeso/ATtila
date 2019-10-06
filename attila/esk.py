@@ -138,30 +138,30 @@ class ESK(Enum):
     elif esk is ESK.AOF:
       check = attr.lower()
       if check == "true":
-        ESKValue(esk, True)
+        return ESKValue(esk, True)
       elif check == "false":
-        ESKValue(esk, False)
+        return ESKValue(esk, False)
       else:
         return None
     elif esk is ESK.SET:
       key_val = attr.split("=")
       if len(key_val) == 2:
-        ESKValue(esk, (key_val[0], key_val[1])) #Tuple of key and value
+        return ESKValue(esk, (key_val[0], key_val[1])) #Tuple of key and value
       else:
         return None
     elif esk is ESK.GETENV:
       if attr:
-        ESKValue(esk, attr)
+        return ESKValue(esk, attr)
       else:
         return None
     elif esk is ESK.PRINT:
       if attr:
-        ESKValue(esk, attr)
+        return ESKValue(esk, attr)
       else:
         return None
     elif esk in ESK.EXEC:
       if attr:
-        ESKValue(esk, attr)
+        return ESKValue(esk, attr)
       else:
         return None
     else:
