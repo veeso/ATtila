@@ -52,6 +52,10 @@ class ATRuntimeEnvironment(object):
     self.__aof = abort_on_failure
     self.__current_command = 0
 
+  @property
+  def aof(self):
+    return self.__aof
+
   def configure_communicator(self, serial_port, baud_rate, timeout, line_break ="\r\n"):
     """
     Configure ATRE communicator
@@ -146,7 +150,7 @@ class ATRuntimeEnvironment(object):
     :param command
     :type command String
     :returns ATResponse or None
-    :raises ATScriptSyntaxError, ATSerialPortError, ATREUninitializedError
+    :raises ATScriptSyntaxError, ATSerialPortError, ATREUninitializedError, ATRuntimeError
     """
     #Try to parse command
     try:
@@ -170,20 +174,23 @@ class ATRuntimeEnvironment(object):
       response, execution_time = self.__communicator.exec(atcmd.command, atcmd.timeout)
       #Validate response
       response = self.__session.validate_response(response, execution_time)
+      if self.__session.last_command_failed and not atcmd.doppelganger and self.__aof:
+        raise ATRuntimeError("Command '%s' got a bad response: '%s' (and hasn't any doppelganger)!" % (atcmd.command, response.fullresponse))
       return response
     elif len(esks) > 0:
       #Process ESK
       esk = esks[0]
-      self.__process_ESK(esk[0])
+      if not self.__process_ESK(esk[0]):
+        raise ATRuntimeError("ESK %s failed" % esk[0].keyword)
       return None
     else:
       return None
 
   def exec_next(self):
     """
-    Execute next command
+    Execute next command (It doesn't open/close the serial port)
 
-    :returns ATResponse
+    :returns ATResponse (None if there's no command to execute)
     :raises ATSerialPortError, ATRuntimeError
     """
     #Before executing command, check if an ESK has to be executed
@@ -195,6 +202,8 @@ class ATRuntimeEnvironment(object):
     self.__esks = [i for i in self.__esks if i[1] != self.__current_command]
     #Get next command
     next_command = self.__session.get_next_command()
+    if not next_command:
+      return None
     #Send command to communicator
     try:
       response, execution_time = self.__communicator.exec(next_command.command, next_command.timeout)
