@@ -52,7 +52,10 @@ class ATCommunicator(object):
       self._default_timeout = default_timeout
     else:
       self._default_timeout = 10
-    self._line_break = line_break
+    if line_break:
+      self._line_break = line_break
+    else:
+      self._line_break = "\n\n"
 
   @property
   def serial_port(self):
