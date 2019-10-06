@@ -134,6 +134,30 @@ AT+CSQ:;;+CSQ;;0;;5;;["AT+CSQ=?{rssi},","AT+CSQ=${rssi},?{ber}"]
 This command has two collectables, which are the rssi and the Ber. We know that AT+CSQ, in case of a positive response (+CSQ:...), will return the **rssi and the ber** after “AT+CSQ=” separated by a comma. Imagine that we want to get both. The first value we want is located after “AT+CSQ=” and terminates with the ',' comma before the ber. So we tell ATtila to get a value between these two strings and to store it into a session value called “rssi”. The other value will be located after the other part of the string; we can as you can see, reuse the rssi value in the second collectable (since rssi is already set).
 The syntax which describes the start of a collectable is **?{SESSION_KEY}**.
 
+This was a simple case, where we knew the value where between 'AT+CSQ=...,' and after 'AT+CSQ=rssi,...'. But sometimes we have to get a value which hasn't anything around. An example of this case is AT+CGSN, which returns the IMEI. The IMEI is returned on a line, with nothing around:
+
+```txt
+AT+CGSN
+123456789012345
+OK
+```
+
+How can we get this value using collectables? Well, we can, but making a collectable a little more bit complex. We need to use a key regex:
+
+```txt
+AT+CGSN;;OK;;;;;;["?{IMEI::^[0-9]{15}$}"]
+```
+
+This means we're looking for a value between nothing, but which has to respect the regex we provided which is ```^[0-9]{15}$```. If a number of 15 digits if found in the response, this value will be stored into the session storage into a key named "IMEI".
+The separator between the **key name** and the **key regex** is ```::```
+This mechanism can also be used to solve ambiguity in the response to get the value that we really want.
+
+For example we can make a more severe check on the CSQ using:
+
+```txt
+AT+CSQ;;OK;;;;;;["AT+CSQ=?{rssi::[0-9]{1,2}},","AT+CSQ=${rssi},?{ber::[0-9]{1,2}}"]
+```
+
 #### Session Values
 
 We’ve seen that session values are values we can store using collectables and also setting environment variables and through Environment Setup Keywords, but we’ll see that in the next chapter.

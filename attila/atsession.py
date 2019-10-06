@@ -285,24 +285,54 @@ class ATSession(object):
       key_group = reg_result.group()
     else:
       return None
-    key_name = key_group[2:-1]
-    part_to_remove = to_collect.replace(key_group, "")
+    #Remove ?{} from key group and split by regex specifier
+    key_parts = key_group[2:-1].split("::")
+    key_regex = None
+    if len(key_parts) > 1:
+      key_regex = key_parts[1]
+    key_name = key_parts[0]
+    #part_to_remove = to_collect.replace(key_group, "")
     key_value = None
-    #TODO: compose regex with to_collect[0] + (.*) + to_collect[1]
+    #compose regex with to_collect[0] + (.*) + to_collect[1]
     regex = to_collect.replace(key_group, "")
     #Escape regex
     collect_expr_parts = to_collect.split(key_group)
-    #TODO: check len
-    regex = "%s%s%s" % (collect_expr_parts[0], re.escape(regex), "(.*)")
+    #Collect regex part to build regex; exape parts
+    if len(collect_expr_parts) > 0:
+      part_to_remove = [] 
+      for i in range(len(collect_expr_parts)):
+        if not collect_expr_parts[i]: #Skip empty tokens
+          continue
+        collect_expr_parts[i] = self.replace_session_keys(collect_expr_parts[i])
+        #First collect this part in parts to remove
+        part_to_remove.append(collect_expr_parts[i])
+        #Then escape regex
+        collect_expr_parts[i] = re.escape(collect_expr_parts[i])
+      #Eventually compose regex
+      collect_expr_parts.insert(1, "(.*)")
+      regex = ""
+      for expr_part in collect_expr_parts:
+        regex += expr_part
+    else: #If there are no collect parts, just get everything
+      regex = "(.*)"
     #Iterate over lines
     for line in response:
-      line = self.replace_session_keys(line)
       if re.search(regex, line):
-        key_value = regex.replace(part_to_remove, "")
+        #If a key regex is set, check if line complies
+        if key_regex:
+          key_regex_match = re.search(key_regex, line)
+          if key_regex_match:
+            key_value = key_regex_match.group()
+          else:
+            #Line not complies
+            continue
+        key_value = re.search(regex, line).group()
+        for part in part_to_remove:
+          key_value = key_value.replace(part, "")
         try:
           key_value = int(key_value)
         except ValueError:
-          pass
+          break
         break
     #Return values
     if key_value:
