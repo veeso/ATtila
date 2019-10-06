@@ -188,8 +188,7 @@ class ATSession(object):
       doppelganger = current_command.doppel_ganger
       if doppelganger:
         #Add command to command list
-        doppelganger_command = ATCommand(doppelganger, expected_response, current_command.timeout, current_command.delay, current_command.collectables)
-        self._commands.insert(self._current_command_index, doppelganger_command)
+        self._commands.insert(self._current_command_index, doppelganger)
     else:
       #@! Response OK
       #Try to get collectables

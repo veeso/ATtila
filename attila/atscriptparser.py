@@ -75,7 +75,7 @@ class ATScriptParser(object):
 
     :param file_path: path of the ATScript file
     :type file_path: String
-    :returns Tuple of array of (ATCommands, execution index) and array of tuple of (ESKValue, execution index)
+    :returns Tuple of array of ATCommand and array of tuple of (ESKValue, execution index)
     :raises ATScriptNotFound, ATScriptSyntaxError
     """
     try:
@@ -127,7 +127,7 @@ class ATScriptParser(object):
     """
     command = None
     error = None
-    command_tokens = command.split(";;")
+    command_tokens = row.split(";;")
     if len(command_tokens) == 0:
       error = "Empty row"
       return (command, error)
@@ -137,6 +137,7 @@ class ATScriptParser(object):
     timeout = None
     doppelganger = None
     collectables = None
+    has_doppelganger = False
     if len(command_tokens) > 1: #Expected response
       if command_tokens[1]:
         expected_response = command_tokens[1]
@@ -156,7 +157,7 @@ class ATScriptParser(object):
           return (command, error)
     if len(command_tokens) > 4: #Doppelganger
       if command_tokens[4]:
-        doppelganger = command_tokens[4]
+        has_doppelganger = True
     if len(command_tokens) > 5: #Collectables
       if command_tokens[5]:
         try:
@@ -164,6 +165,9 @@ class ATScriptParser(object):
         except NameError as err:
           error = "Collectables has invalid syntax (%s)" % err
           return (command, error)
+    if has_doppelganger:
+      #Instance doppelganger
+      doppelganger = ATCommand(command_tokens[4], expected_response, timeout, delay, collectables, None)
     #Instance new AT command
     command = ATCommand(atcommand, expected_response, timeout, delay, collectables, doppelganger)
     return (command, error)

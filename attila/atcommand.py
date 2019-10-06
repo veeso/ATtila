@@ -132,7 +132,7 @@ class ATCommand(object):
 
   @property
   def doppel_ganger(self):
-    return self._post_delay
+    return self._doppel_ganger
 
   @doppel_ganger.setter
   def doppel_ganger(self, dganger):
