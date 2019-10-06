@@ -35,6 +35,7 @@ class TestParser(unittest.TestCase):
     """
     Test ATSession commands preparation and evaluation
     """
+    self.__test_exec_and_validate()
     self.__test_doppelganger()
     self.__test_collectables()
 
@@ -48,16 +49,29 @@ class TestParser(unittest.TestCase):
     #Prepare a response for it; in this case we'll simulate a successful response
     serial_response = ["OK"]
     response = self.session.validate_response(serial_response, 100)
+    print("%s (expected %s) has response: %s" % (next_command.command, next_command.expected_response, response.full_response))
     self.assertFalse(self.session.last_command_failed)
-    self.assertEqual(response.response, serial_response, "Command should have OK as response but has %s" % response.response)
+    self.assertEqual(response.response, "OK", "Command should have OK as response but has %s" % response.response)
     #Let's simulate a command that will fail
     simple_command2 = ATCommand("AT+CGDCONT=1, \"IP\", \"internet.foo.bar\"", "OK")
     self.session.add_command(simple_command2)
     next_command = self.session.get_next_command()
-    #Prepare a response for it; in this case we'll simulate a successful response
+    #Prepare a response for it; in this case we'll simulate a bad response
     serial_response = ["ERROR"]
     response = self.session.validate_response(serial_response, 100)
+    print("%s (expected %s) has response: %s" % (next_command.command, next_command.expected_response, response.full_response))
     self.assertTrue(self.session.last_command_failed)
+    #Regex in response
+    #Let's get the device serial, imagine that all the device has a serial number of 16 hex digits
+    gsn_command = ATCommand("AT+GSN", "^[0-9,A-F]{16}$")
+    self.session.add_command(gsn_command)
+    next_command = self.session.get_next_command()
+    #Prepare a response for it; in this case we'll simulate a successful response
+    serial_response = ["AC03C7F3D2EB7832", "OK"]
+    response = self.session.validate_response(serial_response, 100)
+    print("%s (expected %s) has response: %s" % (next_command.command, next_command.expected_response, response.full_response))
+    self.assertFalse(self.session.last_command_failed)
+    self.assertEqual(response.response, "AC03C7F3D2EB7832", "Command should have AC03C7F3D2EB7832 as response but has %s" % response.response)
 
   def __test_doppelganger(self):
     """
@@ -109,6 +123,7 @@ class TestParser(unittest.TestCase):
     #Invent a response for it
     serial_response = ["AT+CSQ=31,1", "OK"]
     response = self.session.validate_response(serial_response, 50)
+    print("%s (expected %s) has response: %s" % (next_command.command, next_command.expected_response, response.full_response))
     #Last command should have succeded
     self.assertFalse(self.session.last_command_failed)
     #Verify if collectable has actually been collected
@@ -126,6 +141,7 @@ class TestParser(unittest.TestCase):
     #Invent a response for it
     serial_response = ["AT+CGSN", "123456789012345", "OK"]
     response = self.session.validate_response(serial_response, 50)
+    print("%s (expected %s) has response: %s" % (next_command.command, next_command.expected_response, response.full_response))
     #Last command should have succeded
     self.assertFalse(self.session.last_command_failed)
     #Verify if collectable has actually been collected
@@ -144,6 +160,7 @@ class TestParser(unittest.TestCase):
     #Invent a response for it
     serial_response = ["AT+CSQ=31,2", "OK"]
     response = self.session.validate_response(serial_response, 50)
+    print("%s (expected %s) has response: %s" % (next_command.command, next_command.expected_response, response.full_response))
     #Last command should have succeded
     self.assertFalse(self.session.last_command_failed)
     #Verify if collectable has actually been collected

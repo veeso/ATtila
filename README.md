@@ -97,6 +97,11 @@ AT;;OK
 ```
 
 We told ATtila that we expect to find “OK” in the command response.
+We can also use a regex in the expected response, for example if a command returns 16 hex digits, we can use
+
+```txt
+AT+GSN;;^[0-9,A-F]{16}$
+```
 
 ##### Delay and timeout
 
