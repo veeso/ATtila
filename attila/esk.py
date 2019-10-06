@@ -159,7 +159,7 @@ class ESK(Enum):
         return ESKValue(esk, attr)
       else:
         return None
-    elif esk in ESK.EXEC:
+    elif esk is ESK.EXEC:
       if attr:
         return ESKValue(esk, attr)
       else:
