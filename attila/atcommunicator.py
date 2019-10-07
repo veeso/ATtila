@@ -79,7 +79,13 @@ class ATCommunicator(object):
 
   @default_timeout.setter
   def default_timeout(self, timeout):
-    self._default_timeout = timeout
+    if timeout:
+      if timeout > 0:
+        self._default_timeout = timeout
+      else:
+        self._default_timeout = 10
+    else:
+      self._default_timeout = 10
 
   @property
   def line_break(self):
@@ -87,7 +93,8 @@ class ATCommunicator(object):
 
   @line_break.setter
   def line_break(self, brk):
-    self._line_break = brk
+    if brk:
+      self._line_break = brk
 
   def open(self):
     """
@@ -142,7 +149,7 @@ class ATCommunicator(object):
       timeout = self.default_timeout
     t_start = int(time() * 1000)
     self._device.timeout = timeout
-    self._device.write(b"%s%s" % (command, self._line_break))
+    self._device.write(b"%s%s" % (command.encode("utf-8"), self._line_break.encode("utf-8")))
     lines = self._device.readlines()
     t_end = int(time() * 1000)
     for line in lines:

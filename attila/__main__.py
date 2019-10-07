@@ -59,14 +59,18 @@ LOG_LEVEL_CRITICAL = 0
 
 #Globals
 sigterm_called = False
+interactive_mode = True
 
 def sigterm_handler(_signo, _stack_frame):
   """
   Handle sigterm (or sigint) setting sigterm_called to True
   """
+  global interactive_mode
   global sigterm_called
   logging.warn("SIGTERM called")
   sigterm_called = True
+  if interactive_mode:
+    print("Press ENTER to QUIT")
 
 def opt_error(message):
   """
@@ -103,11 +107,10 @@ def get_log_level_from_option(log_level_int):
 
 if __name__ == "__main__":
   #Options
-  interactive_mode = True
   script_file = None
   device = None
   baud_rate = None
-  default_timeout = None
+  default_timeout = 0
   line_break = None
   logfile = None
   log_level = LOG_LEVEL_INFO
@@ -189,6 +192,8 @@ if __name__ == "__main__":
       logging.getLogger().addHandler(stdout_handler)
     else:
       logging.basicConfig(filename=logfile, level=log_level, format="%(asctime)s [%(levelname)s]: %(message)s", datefmt="%Y-%m-%dT%H:%M:%S")
+  else:
+    logging.getLogger().disabled = True
   #Instance ATRuntime environment
   atrunenv = ATRuntimeEnvironment(abort_on_failure)
   #Configure serial
@@ -197,14 +202,21 @@ if __name__ == "__main__":
     logging.info("Setup communicator (device: %s, baud_rate: %d)" % (device, baud_rate))
     if verbose and not to_stdout:
       print("Setup communicator (device: %s, baud_rate: %d)" % (device, baud_rate))
-  #Open serial
-  try:
-    atrunenv.open_serial()
-  except ATSerialPortError as err:
-    logging.error("Could not open serial port: %s" % err)
-    if not to_stdout:
-      print("Could not open serial port: %s" % err)
-    exit(1)
+    #Open serial
+    try:
+      atrunenv.open_serial()
+      logging.info("Serial port opened (%s)" % device)
+      if verbose and not to_stdout:
+        print("Serial port opened")
+    except ATSerialPortError as err:
+      logging.error("Could not open serial port: %s" % err)
+      if not to_stdout:
+        print("Could not open serial port: %s" % err)
+    except ATREUninitializedError as err:
+      logging.error("Uninitialized runtime environment: %s " % err)
+      if not to_stdout:
+        print("Uninitialized runtime environment: %s" % err)
+      exit(1)
   #Parse file if set
   if script_file:
     logging.debug("Trying to parse file %s..." % script_file)
@@ -240,9 +252,13 @@ if __name__ == "__main__":
           print("Runtime error: %s" % err)
         if atrunenv.aof:
           break
+      except ATREUninitializedError as err:
+        logging.error("Uninitialized runtime environment: %s " % err)
   else: #Interactive mode
     while not sigterm_called:
       command_line = input(">> ")
+      if not command_line:
+        continue
       #Parse and execute command
       try:
         response = atrunenv.exec(command_line)
@@ -280,6 +296,10 @@ if __name__ == "__main__":
     if not to_stdout:
       print("Could not close serial port: %s" % err)
     exit(1)
+  except ATREUninitializedError as err:
+    logging.error("Couldn't close serial port, since device was not initialized")
+    if verbose and not to_stdout:
+      print("Couldn't close serial port, since device was not initialized")
   #Execution terminated
   logging.info("attila terminated with exit code 0")
   if not to_stdout and verbose:

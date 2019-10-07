@@ -56,7 +56,7 @@ class ATRuntimeEnvironment(object):
   def aof(self):
     return self.__aof
 
-  def configure_communicator(self, serial_port, baud_rate, timeout, line_break ="\r\n"):
+  def configure_communicator(self, serial_port, baud_rate, timeout = None, line_break ="\r\n"):
     """
     Configure ATRE communicator
     
@@ -72,7 +72,11 @@ class ATRuntimeEnvironment(object):
     if self.__communicator: #If device is open, close device
       if self.__communicator.is_open():
         self.__communicator.close()
-    self.__communicator = ATCommunicator(serial_port, baud_rate, timeout, line_break)
+    self.__communicator.serial_port = serial_port
+    self.__communicator.baud_rate = baud_rate
+    self.__communicator.default_timeout = timeout
+    self.__communicator.line_break = line_break
+
 
   def init_session(self, commands):
     """
@@ -174,7 +178,7 @@ class ATRuntimeEnvironment(object):
       response, execution_time = self.__communicator.exec(atcmd.command, atcmd.timeout)
       #Validate response
       response = self.__session.validate_response(response, execution_time)
-      if self.__session.last_command_failed and not atcmd.doppelganger and self.__aof:
+      if self.__session.last_command_failed and not atcmd.doppel_ganger and self.__aof:
         raise ATRuntimeError("Command '%s' got a bad response: '%s' (and hasn't any doppelganger)!" % (atcmd.command, response.fullresponse))
       return response
     elif len(esks) > 0:
@@ -275,16 +279,30 @@ class ATRuntimeEnvironment(object):
       return False
     elif esk.keyword is ESK.DEVICE:
       #Check if serial is opened
-      if self.__communicator.is_open():
-        self.__communicator.close()
-      self.__communicator.serial_port = esk.value
+      if self.__communicator:
+        if self.__communicator.is_open():
+          self.__communicator.close()
+      self.configure_communicator(esk.value, self.__communicator.baud_rate)
+      if self.__communicator.serial_port and self.__communicator.baud_rate:
+        try:
+          self.__communicator.open()
+          return True
+        except ATSerialPortError as err:
+          return False
     elif esk.keyword is ESK.BAUDRATE:
       #Check if serial is opened
-      if self.__communicator.is_open():
-        self.__communicator.close()
-      self.__communicator.baud_rate = esk.value
+      if self.__communicator:
+        if self.__communicator.is_open():
+          self.__communicator.close()
+      self.configure_communicator(self.__communicator.serial_port, esk.value)
+      if self.__communicator.serial_port and self.__communicator.baud_rate:
+        try:
+          self.__communicator.open()
+          return True
+        except ATSerialPortError as err:
+          return False
     elif esk.keyword is ESK.TIMEOUT:
-      self.__communicator.timeout = esk.value
+      self.__communicator.default_timeout = esk.value
     elif esk.keyword is ESK.BREAK:
       self.__communicator.line_break = esk.value
     elif esk.keyword is ESK.AOF:
