@@ -210,9 +210,9 @@ class ATSession(object):
     :returns string
     """
     #Get session variable
-    while re.search("\\${(.*)}", haystack):
-      reg_result = re.search("\\${(.*)}", haystack)
-      key_group = reg_result.group()
+    while re.search("\\${(.*?)}", haystack):
+      reg_result = re.search("\\${(.*?)}", haystack)
+      key_group = reg_result.group(0)
       key_name = key_group[2:-1]
       #@! Okay, there is a session variable to replace
       #Search for session variable

@@ -230,17 +230,25 @@ if __name__ == "__main__":
       exit(1)
     except ATScriptSyntaxError as err:
       logging.error("Script Syntax error: %s" % err)
+      if not to_stdout:
+        print("Script syntax error: %s" % err)
       exit(1)
     #Execute script
     response = 1
     while response and not sigterm_called:
       try:
         response = atrunenv.exec_next()
+        if not response:
+          continue
         #Handle response
         if response.response and response.command:
           logging.info("%s (%d ms) >> %s" % (response.command.command, response.execution_time, response.response))
+          if not to_stdout:
+            print("%s (%d ms) >> %s" % (response.command.command, response.execution_time, response.response))
         else: #Command failed (this snippet gets executed only if aof is false)
           logging.error("%s (%d ms) >> %s" % (response.command.command, response.execution_time, "\n".join(response.full_response)))
+          if not to_stdout:
+            print("%s (%d ms) >> %s" % (response.command.command, response.execution_time, "\n".join(response.full_response)))
       except ATSerialPortError as err:
         logging.error("Serial Port error: %s" % err)
         if not to_stdout:

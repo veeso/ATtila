@@ -86,7 +86,7 @@ class ATRuntimeEnvironment(object):
     :param commands
     :type commands: Array of ATCommands
     """
-    self.__session = self.__session.reset()
+    self.__session.reset()
     for command in commands:
       self.__session.add_command(command)
 
@@ -223,7 +223,7 @@ class ATRuntimeEnvironment(object):
     #Validate response
     response = self.__session.validate_response(response, execution_time)
     #Check if last command failed; if it hasn't a doppelganger and abort on failure is True, then raise RuntimeError
-    if self.__session.last_command_failed and not next_command.doppelganger and self.__aof:
+    if self.__session.last_command_failed and not next_command.doppel_ganger and self.__aof:
       raise ATRuntimeError("Command '%s' got a bad response: '%s' (and hasn't any doppelganger)!" % (next_command.command, response.full_response))
     if not self.__session.last_command_failed:
       self.__current_command += 1
@@ -327,6 +327,7 @@ class ATRuntimeEnvironment(object):
         return False
     elif esk.keyword is ESK.PRINT:
       #Replace session values
+      print(esk.value)
       to_out = self.__session.replace_session_keys(esk.value)
       print(to_out)
     elif esk.keyword in ESK.EXEC:
