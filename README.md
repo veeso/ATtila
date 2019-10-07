@@ -40,9 +40,61 @@ These are the main functionalities that ATtila provides:
   - Use the response of a certain command in a command which will be executed later
   - Define alternative behaviour in case of error
 
+ATtila comes with a binary (which should be used instead of chat in my opinion) or for anything you want.
+You can run ATtila binary with
+
+```sh
+python3 -m attila
+```
+
+```txt
+Usage: attila [OPTION] -f FILE
+
+  With no FILE, run in interactive mode
+
+  -f  <atscript file>   Run attila reading script from specified file
+  -i                    Run attila in interactive mode (default)
+  -p  <device path>     Use this device to communicate
+  -b  <baud rate>       Use the specified baudrate to communicate
+  -T  <default timeout> Use the specified timeout as default to communicate
+  -B  <break>           Use the specified line break [CRLF, LF, CR, NONE] (Default: CRLF)
+  -A  <True/False>      Abort on failure (Default: True)
+  -L  <logfile>         Enable log and log to the specified log file (stdout is supported)
+  -l  <loglevel>        Specify the log level (0: CRITICAL, 1: ERROR, 2: WARN, 3: INFO, 4: DEBUG) (Default: INFO)
+  -v                    Be more verbose
+  -q                    Be quiet (print only PRINT ESKs and ERRORS)
+  -h                    Show this page
+```
+
 ## Implementation
 
-TBD
+In order to build your own implementation using ATtila these are the steps you'll need to follow:
+
+1. The first thing you have to do is import the AT Runtime Environment and the exceptions it can raise in your project:  
+  ```from attila.atre import ATRuntimeEnvironment```  
+  ```from attila.exceptions import ATREUninitializedError, ATRuntimeError, ATScriptNotFound, ATScriptSyntaxError, ATSerialPortError```
+2. Instance an ATRuntimeEnvironment object:  
+  ```atrunenv = ATRuntimeEnvironment(abort_on_failure)```
+3. Configure the communicator, the component which will communicate with your device:  
+  ```atrunenv.configure_communicator(device, baud_rate, default_timeout, line_break)```
+4. Open the serial port (Be careful, this function can return a ATSerialPortError):  
+  ```atrunenv.open_serial()```
+5. Choose how to parse commands:
+   1. Parse an ATScript (parse_ATScript can raise ATScriptNotFound or ATScriptSyntaxError):  
+    ```atrunenv.parse_ATScript(script_file)```
+   2. Execute directly a command (or an ESK):
+    ```response = atrunenv.exec(command_str)```
+   3. Add an ATCommand to the session:
+    ```atrunenv.add_command(command_str)```
+6. Execute commands:
+   1. Run everything at once and then get a list of ATResponse (if abort_on_failure is True, the ATRE will raise ATRuntimeError during execution):  
+    ```response_list = atrunenv.run()```
+   2. Run one command a time (if abort_on_failure is True, the ATRE will raise ATRuntimeError):
+    ```response = atrunenv.exec_next()```
+7. Collect the values you need:  
+  ```rssi = atrunenv.get_session_value("rssi")```
+8. Close serial:  
+  ```atrunenv.close_serial()```
 
 ## ATScript
 
@@ -244,7 +296,7 @@ AT+CGDATA="PPP",1;;CONNECT
 
 ## Known Issues
 
-TBD
+None, as far as I know at least.
 
 ## Tests Units
 
@@ -257,6 +309,8 @@ nosetests --nocapture tests/
 ```
 
 ## Changelog
+
+There haven't released any new version yet.
 
 ---
 

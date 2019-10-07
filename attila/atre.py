@@ -119,6 +119,16 @@ class ATRuntimeEnvironment(object):
     self.init_session(commands)
     self.set_ESKs(esks)
 
+  def add_command(self, command):
+    """
+    Add an ATCommand to the ATSession
+
+    :param command: at command to add
+    :type command: ATCommand
+    :returns bool
+    """
+    return self.__session.add_command(command)
+
   def run(self):
     """
     Starts and run current ATSession
