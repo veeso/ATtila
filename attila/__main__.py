@@ -47,7 +47,8 @@ USAGE = "Usage: %s [OPTION]...\n\
   \t-A <True/False>\t\t\tAbort on failure (Default: True)\n\
   \t-L <logfile>\t\tEnable log and log to the specified log file (stdout is supported)\n\
   \t-l <loglevel>\t\tSpecify the log level (0: CRITICAL, 1: ERROR, 2: WARN, 3: INFO, 4: DEBUG) (Default: INFO\n\
-  \t-v\t\t\tBe verbose\n\
+  \t-v\t\t\tBe more verbose\n\
+  \t-q\t\t\tBe quiet (print only PRINT ESKs and ERRORS)\n\
   \t-h\t\t\tShow this page\n\
   " % PROGRAM_NAME
 
@@ -115,11 +116,12 @@ if __name__ == "__main__":
   logfile = None
   log_level = LOG_LEVEL_INFO
   verbose = False
+  quiet = False
   abort_on_failure = True
   to_stdout = False
 
   try:
-    optlist, args = getopt(argv[1:], "f::ip::b::T::B::L::l::Avh")
+    optlist, args = getopt(argv[1:], "f::ip::b::T::B::L::l::Avqh")
     for opt, arg in optlist:
       if opt == "-f":
         interactive_mode = False
@@ -172,6 +174,8 @@ if __name__ == "__main__":
           opt_error("Abort on failure has a bad value")
       elif opt == "-v":
         verbose = True
+      elif opt == "-q":
+        quiet = True
       elif opt == "-h":
         print(USAGE)
         exit(0)
@@ -211,11 +215,11 @@ if __name__ == "__main__":
         print("Serial port opened")
     except ATSerialPortError as err:
       logging.error("Could not open serial port: %s" % err)
-      if not to_stdout:
+      if not to_stdout and not quiet:
         print("Could not open serial port: %s" % err)
     except ATREUninitializedError as err:
       logging.error("Uninitialized runtime environment: %s " % err)
-      if not to_stdout:
+      if not to_stdout and not quiet:
         print("Uninitialized runtime environment: %s" % err)
       exit(1)
   #Parse file if set
@@ -243,11 +247,11 @@ if __name__ == "__main__":
         #Handle response
         if response.response and response.command:
           logging.info("%s (%d ms) >> %s" % (response.command.command, response.execution_time, response.response))
-          if not to_stdout:
+          if not to_stdout and not quiet:
             print("%s (%d ms) >> %s" % (response.command.command, response.execution_time, response.response))
         else: #Command failed (this snippet gets executed only if aof is false)
           logging.error("%s (%d ms) >> %s" % (response.command.command, response.execution_time, "\n".join(response.full_response)))
-          if not to_stdout:
+          if not to_stdout and not quiet:
             print("%s (%d ms) >> %s" % (response.command.command, response.execution_time, "\n".join(response.full_response)))
       except ATSerialPortError as err:
         logging.error("Serial Port error: %s" % err)
@@ -274,15 +278,15 @@ if __name__ == "__main__":
         if response: #Was a command (otherwise was probably ESK)
           if response.response: #Command was successful
             logging.info("%s (%d ms) >> %s" % (response.command.command, response.execution_time, response.response))
-            if not to_stdout:
+            if not to_stdout and not quiet:
               print("<< %s (%d ms) >> %s" % (response.command.command, response.execution_time, response.response))
           else: #Command error
             logging.error("%s (%d ms) >> %s" % (response.command.command, response.execution_time, "\n".join(response.full_response)))
-            if not to_stdout:
+            if not to_stdout and not quiet:
               print("<< %s (%d ms) >> %s" % (response.command.command, response.execution_time, "\n".join(response.full_response)))
         else:
           logging.info("%s >> OK" % command_line)
-          if not to_stdout:
+          if not to_stdout and not quiet:
             print("%s >> OK" % command_line)
       except ATScriptSyntaxError as err:
         logging.error("Syntax error: %s" % err)
@@ -302,7 +306,7 @@ if __name__ == "__main__":
     atrunenv.close_serial()
   except ATSerialPortError as err:
     logging.error("Could not close serial port: %s" % err)
-    if not to_stdout:
+    if not to_stdout and not quiet:
       print("Could not close serial port: %s" % err)
     exit(1)
   except ATREUninitializedError as err:
