@@ -43,7 +43,7 @@ USAGE = "Usage: %s [OPTION]...\n\
   \t-p <device path>\tUse this device to communicate\n\
   \t-b <baud rate>\t\tUse the specified baudrate to communicate\n\
   \t-T <default timeout>\tUse the specified timeout as default to communicate\n\
-  \t-B <break>\t\tUse the specified line break [CRLF, LF, CR] (Default: CRLF)\n\
+  \t-B <break>\t\tUse the specified line break [CRLF, LF, CR, NONE] (Default: CRLF)\n\
   \t-A <True/False>\t\t\tAbort on failure (Default: True)\n\
   \t-L <logfile>\t\tEnable log and log to the specified log file (stdout is supported)\n\
   \t-l <loglevel>\t\tSpecify the log level (0: CRITICAL, 1: ERROR, 2: WARN, 3: INFO, 4: DEBUG) (Default: INFO\n\
@@ -142,15 +142,16 @@ if __name__ == "__main__":
       elif opt == "-B":
         line_break = arg
         #Verify line break
-        if line_break != "CRLF" and line_break != "LF" and line_break != "CR":
-          opt_error("Invalid line break '%s'" % line_break)
+        if line_break == "CRLF":
+          line_break = "\r\n"
+        elif line_break == "LF":
+          line_break = "\n"
+        elif line_break == "CR":
+          line_break = "\r"
+        elif line_break == "NONE":
+          line_break = None
         else:
-          if line_break == "CRLF":
-            line_break = "\r\n"
-          elif line_break == "LF":
-            line_break = "\n"
-          elif line_break == "CR":
-            line_break = "\r"
+          opt_error("Invalid line break '%s'" % line_break)
       elif opt == "-L":
         logfile = arg
       elif opt == "-l":
@@ -266,11 +267,11 @@ if __name__ == "__main__":
           if response.response: #Command was successful
             logging.info("%s (%d ms) >> %s" % (response.command.command, response.execution_time, response.response))
             if not to_stdout:
-              print("%s (%d ms) >> %s" % (response.command.command, response.execution_time, response.response))
+              print("<< %s (%d ms) >> %s" % (response.command.command, response.execution_time, response.response))
           else: #Command error
             logging.error("%s (%d ms) >> %s" % (response.command.command, response.execution_time, "\n".join(response.full_response)))
             if not to_stdout:
-              print("%s (%d ms) >> %s" % (response.command.command, response.execution_time, "\n".join(response.full_response)))
+              print("<< %s (%d ms) >> %s" % (response.command.command, response.execution_time, "\n".join(response.full_response)))
         else:
           logging.info("%s >> OK" % command_line)
           if not to_stdout:

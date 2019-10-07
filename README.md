@@ -220,7 +220,10 @@ GETENV SIM_PIN
 GETENV APN
 #Let's start with modem setup
 PRINT Configuring modem parameters
+#+++ doesn't want a break
+BREAK NONE
 +++
+BREAK CRLF
 ATH0;;;;5000
 ATE0;;OK
 ATZ;;OK

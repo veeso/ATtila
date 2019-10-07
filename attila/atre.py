@@ -28,6 +28,7 @@ from .exceptions import ATScriptNotFound, ATScriptSyntaxError, ATSerialPortError
 from .atcommunicator import ATCommunicator
 
 from os import environ, system
+from time import sleep
 
 class ATRuntimeEnvironment(object):
   """
@@ -174,12 +175,15 @@ class ATRuntimeEnvironment(object):
       #Add command to session
       self.__session.add_command(command)
       atcmd = self.__session.get_next_command()
+      #Delay
+      if atcmd.delay:
+        sleep(atcmd.delay / 1000)
       #Execute command on device
       response, execution_time = self.__communicator.exec(atcmd.command, atcmd.timeout)
       #Validate response
       response = self.__session.validate_response(response, execution_time)
       if self.__session.last_command_failed and not atcmd.doppel_ganger and self.__aof:
-        raise ATRuntimeError("Command '%s' got a bad response: '%s' (and hasn't any doppelganger)!" % (atcmd.command, response.fullresponse))
+        raise ATRuntimeError("Command '%s' got a bad response: '%s' (and hasn't any doppelganger)!" % (atcmd.command, response.full_response))
       return response
     elif len(esks) > 0:
       #Process ESK
@@ -208,6 +212,9 @@ class ATRuntimeEnvironment(object):
     next_command = self.__session.get_next_command()
     if not next_command:
       return None
+    #Delay
+    if next_command.delay:
+      sleep(next_command.delay / 1000)
     #Send command to communicator
     try:
       response, execution_time = self.__communicator.exec(next_command.command, next_command.timeout)
@@ -217,7 +224,7 @@ class ATRuntimeEnvironment(object):
     response = self.__session.validate_response(response, execution_time)
     #Check if last command failed; if it hasn't a doppelganger and abort on failure is True, then raise RuntimeError
     if self.__session.last_command_failed and not next_command.doppelganger and self.__aof:
-      raise ATRuntimeError("Command '%s' got a bad response: '%s' (and hasn't any doppelganger)!" % (next_command.command, response.fullresponse))
+      raise ATRuntimeError("Command '%s' got a bad response: '%s' (and hasn't any doppelganger)!" % (next_command.command, response.full_response))
     if not self.__session.last_command_failed:
       self.__current_command += 1
     return response

@@ -25,6 +25,7 @@ from .exceptions import ATSerialPortError
 from serial import Serial, SerialException
 import re
 from time import time
+from time import sleep
 
 class ATCommunicator(object):
   """
@@ -52,10 +53,7 @@ class ATCommunicator(object):
       self._default_timeout = default_timeout
     else:
       self._default_timeout = 10
-    if line_break:
-      self._line_break = line_break
-    else:
-      self._line_break = "\n\n"
+    self._line_break = line_break
 
   @property
   def serial_port(self):
@@ -93,8 +91,7 @@ class ATCommunicator(object):
 
   @line_break.setter
   def line_break(self, brk):
-    if brk:
-      self._line_break = brk
+    self._line_break = brk
 
   def open(self):
     """
@@ -105,7 +102,7 @@ class ATCommunicator(object):
     if not self._serial_port:
       raise ATSerialPortError("Serial port is not set")
     try:
-      self._device = Serial(self._serial_port, self._baud_rate, timeout = self._default_timeout)
+      self._device = Serial(self._serial_port, self._baud_rate, timeout = 0.5)
     except (OSError, SerialException) as error:
       raise ATSerialPortError(error)
     return
@@ -148,13 +145,39 @@ class ATCommunicator(object):
     if not timeout:
       timeout = self.default_timeout
     t_start = int(time() * 1000)
-    self._device.timeout = timeout
-    self._device.write(b"%s%s" % (command.encode("utf-8"), self._line_break.encode("utf-8")))
-    lines = self._device.readlines()
+    if self._line_break:
+      self._device.write(b"%s%s" % (command.encode("utf-8"), self._line_break.encode("utf-8")))
+    else:
+      self._device.write(b"%s" % command.encode("utf-8"))
+    data = ""
+    #Set timeout to t_start + timeout seconds
+    t_timeout = t_start + (timeout * 1000)
+    t_now = t_start
+    data_still_available = True
+    sleep_time_based_on_baud = 1000 / self.baud_rate
+    #Try to read until there are data available and t_now < t_timeout
+    while t_now < t_timeout and data_still_available:
+      t_now = int(time() * 1000)
+      #Read one byte
+      read_byte = self._device.read()
+      if not read_byte:
+        continue
+      #Sleep for a while in order to give data the time to come
+      sleep(sleep_time_based_on_baud)
+      #Check if there are still data available
+      if self._device.in_waiting > 0:
+        data_still_available = True
+      else:
+        data_still_available = False
+      data += read_byte.decode("utf-8")
+    #lines = self._device.readlines()
+    lines = data.splitlines()
     t_end = int(time() * 1000)
-    for line in lines:
-      line = line.decode('utf-8')
+    for i in range(len(lines)):
+      #lines[i] = lines[i].decode("utf-8")
       #Remove newline
-      if re.search("(\\r|)\\n$", line):
-        line = re.sub("(\\r|)\\n$", "", line)
+      if re.search("(\\r|)\\n$", lines[i]):
+        lines[i] = re.sub("(\\r|)\\n$", "", lines[i])
+    #Flush input buffer
+    self._device.reset_input_buffer()
     return (lines, t_end - t_start)

@@ -135,6 +135,8 @@ class ESK(Enum):
         return ESKValue(esk, "\n")
       elif attr == "CRLF":
         return ESKValue(esk, "\r\n")
+      elif attr == "NONE":
+        return ESKValue(esk, None)
       else:
         return None
     elif esk is ESK.AOF:
