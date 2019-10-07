@@ -1,20 +1,18 @@
 #!/usr/bin/python3
 
-from setuptools import find_packages, setup
+from setuptools import find_packages, setup, Extension
 from pathlib import Path
 from os import path
 
 # The directory containing this file
 ROOT = Path(__file__).parent
 
-# The text of the README file
-with open(path.join(ROOT, 'README.md'), encoding='utf-8') as f:
-  README = f.read()
+README = (ROOT / "MANIFEST.md").read_text()
 
 setup(
-  name='ATtila',
-  version='1.0.0',
-  description='Python module to communicate easily with modems and rf modules using AT commands',
+  name='attila',
+  version='1.0.1',
+  description='Python module to communicate easily with modems and RF modules using AT commands',
   long_description=README,
   long_description_content_type="text/markdown",
   author='Christian Visintin',
@@ -25,6 +23,11 @@ setup(
   install_requires=[
     'pyserial>=3'
   ],
+  entry_points={
+    'console_scripts': [
+      'attila = attila.__main__:main'
+    ]
+  },
   packages=find_packages(exclude=("tests",)),
   keywords=['AT commands', 'IOT', 'wireless', 'radio frequency', 'modem', 'rf modules'],
   classifiers=[
@@ -34,8 +37,7 @@ setup(
     'Intended Audience :: End Users/Desktop',
     'Topic :: Software Development :: Libraries',
     'Topic :: Home Automation',
-    'Topic :: Modems',
-    'Topic :: AT Commands',
+    'Topic :: Communications :: Telephony',
     'License :: OSI Approved :: MIT License',
     'Programming Language :: Python :: 3',
     'Operating System :: OS Independent',

@@ -106,7 +106,9 @@ def get_log_level_from_option(log_level_int):
     return logging.INFO
 
 
-if __name__ == "__main__":
+def main():
+  global sigterm_called
+  global interactive_mode
   #Options
   script_file = None
   device = None
@@ -317,4 +319,6 @@ if __name__ == "__main__":
   logging.info("attila terminated with exit code 0")
   if not to_stdout and verbose:
     print("attila terminated with exit code 0")
-  exit(0)
+
+if __name__ == "__main__":
+  main()

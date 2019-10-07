@@ -1,36 +1,12 @@
 # ATtila
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-red.svg)](https://opensource.org/licenses/MIT) [![HitCount](http://hits.dwyl.io/ChristianVisintin/ATtila.svg)](http://hits.dwyl.io/ChristianVisintin/ATtila) [![Stars](https://img.shields.io/github/stars/ChristianVisintin/ATtila.svg)](https://github.com/ChristianVisintin/ATtila) [![Issues](https://img.shields.io/github/issues/ChristianVisintin/ATtila.svg)](https://github.com/ChristianVisintin/ATtila) [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/ChristianVisintin/ATtila/issues)
-
 Developed by *Christian Visintin*
 
-Current Version: **1.0.1 (07/10/2019)**
+Current Version: **1.0.1 (07/10/2019**
 
-- [ATtila](#attila)
-  - [Introduction](#introduction)
-  - [Implementation](#implementation)
-  - [ATScript](#atscript)
-    - [ATScript Introduction](#atscript-introduction)
-    - [ATScript Commands](#atscript-commands)
-      - [Examples](#examples)
-        - [Basic command](#basic-command)
-        - [Command and expected response](#command-and-expected-response)
-        - [Delay and timeout](#delay-and-timeout)
-      - [Doppelgangers](#doppelgangers)
-      - [Collectables](#collectables)
-      - [Session Values](#session-values)
-    - [Environment Setup Keywords](#environment-setup-keywords)
-    - [Let's put it all together](#lets-put-it-all-together)
-  - [Known Issues](#known-issues)
-  - [Tests Units](#tests-units)
-  - [Changelog](#changelog)
-  - [License](#license)
+Github Repository <https://github.com/ChristianVisintin/ATtila>
 
 ---
-
-```sh
-pip3 install attila
-```
 
 ## Introduction
 
@@ -47,58 +23,23 @@ These are the main functionalities that ATtila provides:
 ATtila comes with a binary (which should be used instead of chat in my opinion) or for anything you want.
 You can run ATtila binary with
 
-```sh
-python3 -m attila
-```
-
-```txt
-Usage: attila [OPTION] -f FILE
-
-  With no FILE, run in interactive mode
-
-  -f  <atscript file>   Run attila reading script from specified file
-  -i                    Run attila in interactive mode (default)
-  -p  <device path>     Use this device to communicate
-  -b  <baud rate>       Use the specified baudrate to communicate
-  -T  <default timeout> Use the specified timeout as default to communicate
-  -B  <break>           Use the specified line break [CRLF, LF, CR, NONE] (Default: CRLF)
-  -A  <True/False>      Abort on failure (Default: True)
-  -L  <logfile>         Enable log and log to the specified log file (stdout is supported)
-  -l  <loglevel>        Specify the log level (0: CRITICAL, 1: ERROR, 2: WARN, 3: INFO, 4: DEBUG) (Default: INFO)
-  -v                    Be more verbose
-  -q                    Be quiet (print only PRINT ESKs and ERRORS)
-  -h                    Show this page
-```
-
 ## Implementation
 
 In order to build your own implementation using ATtila these are the steps you'll need to follow:
 
-1. The first thing you have to do is import the AT Runtime Environment and the exceptions it can raise in your project:  
-  ```from attila.atre import ATRuntimeEnvironment```  
-  ```from attila.exceptions import ATREUninitializedError, ATRuntimeError, ATScriptNotFound, ATScriptSyntaxError, ATSerialPortError```
-2. Instance an ATRuntimeEnvironment object:  
-  ```atrunenv = ATRuntimeEnvironment(abort_on_failure)```
-3. Configure the communicator, the component which will communicate with your device:  
-  ```atrunenv.configure_communicator(device, baud_rate, default_timeout, line_break)```
-4. Open the serial port (Be careful, this function can return a ATSerialPortError):  
-  ```atrunenv.open_serial()```
-5. Choose how to parse commands:
-   1. Parse an ATScript (parse_ATScript can raise ATScriptNotFound or ATScriptSyntaxError):  
-    ```atrunenv.parse_ATScript(script_file)```
-   2. Execute directly a command (or an ESK):
-    ```response = atrunenv.exec(command_str)```
-   3. Add an ATCommand to the session:
-    ```atrunenv.add_command(command_str)```
-6. Execute commands:
-   1. Run everything at once and then get a list of ATResponse (if abort_on_failure is True, the ATRE will raise ATRuntimeError during execution):  
-    ```response_list = atrunenv.run()```
-   2. Run one command a time (if abort_on_failure is True, the ATRE will raise ATRuntimeError):
-    ```response = atrunenv.exec_next()```
-7. Collect the values you need:  
-  ```rssi = atrunenv.get_session_value("rssi")```
-8. Close serial:  
-  ```atrunenv.close_serial()```
+1. The first thing you have to do is import the AT Runtime Environment and the exceptions it can raise in your project
+2. Instance an ATRuntimeEnvironment object
+3. Configure the communicator, the component which will communicate with your device
+4. Open the serial port (Be careful, this function can return a ATSerialPortError)
+5. Choose how to parse commands
+   1. Parse an ATScript (parse_ATScript can raise ATScriptNotFound or ATScriptSyntaxError)
+   2. Execute directly a command (or an ESK)
+   3. Add an ATCommand to the session
+6. Execute commands
+   1. Run everything at once and then get a list of ATResponse (if abort_on_failure is True, the ATRE will raise ATRuntimeError during execution):
+   2. Run one command a time (if abort_on_failure is True, the ATRE will raise ATRuntimeError)
+7. Collect the values you need
+8. Close serial
 
 ## ATScript
 
@@ -247,17 +188,15 @@ Let’s start from talking briefly about how ATtila works. ATtila has two main c
 So, to summarize, **ESKs are commands you can put (but are not mandatory) in your scripts and tell the Runtime Environment how to configure its components or extra instructions to be executed**.
 Let’s see then which ESKs are supported.
 
-| ESK      | Value                         | Description                                                                                              |
-|----------|-------------------------------|----------------------------------------------------------------------------------------------------------|
-| DEVICE   | String                        | Indicates the target device used to communicate (e.g. /dev/ttyUSB0)                                      |
-| BAUDRATE | Int                           | Describes the baud rate used to communicate (e.g. 9600)                                                  |
-| TIMEOUT  | Int                           | Describes the default command timeout (e.g. 5)                                                           |
-| BREAK    | "LF" / "CRLF" / "CR" / "NONE" | Describes the line break used for commands between LF and CRLF                                           |
-| AOF      | True / False                  | Abort on failure: describes whether the runtime environment shut abort on command failure                |
-| SET      | String=String                 | Tells ATRE to set a session value with a certain key and value: (e.g. SET SIM=7789)                      |
-| GETENV   | String                        | Tells ATRE to store in session storage a certain environmental variable. (e.g. GETENV SIM_PIN)           |
-| PRINT    | String                        | Tells ATRE to print to stdout a string (e.g. PRINT SIM PIN: ${SIM_PIN})                                  |
-| EXEC     | String                        | Tells ATRE to execute a shell process (e.g. EXEC “export SIM_PIN=`cat /tmp/config.json | jq .modem.pin`” |
+- DEVICE String Indicates the target device used to communicate (e.g. /dev/ttyUSB0)
+- BAUDRATE Int Describes the baud rate used to communicate (e.g. 9600)
+- TIMEOUT Int Describes the default command timeout (e.g. 5)
+- BREAK "LF" / "CRLF" / "CR" / "NONE" Describes the line break used for commands between LF and CRLF
+- AOF True / False Abort on failure: describes whether the runtime environment shut abort on command failure
+- SET String=String Tells ATRE to set a session value with a certain key and value: (e.g. SET SIM=7789)
+- GETENV String Tells ATRE to store in session storage a certain environmental variable. (e.g. GETENV SIM_PIN)
+- PRINT String Tells ATRE to print to stdout a string (e.g. PRINT SIM PIN: ${SIM_PIN})
+- EXEC String Tells ATRE to execute a shell process (e.g. EXEC “export SIM_PIN=`cat /tmp/config.json | jq .modem.pin`”
 
 ### Let's put it all together
 
@@ -320,26 +259,4 @@ There haven't released any new version yet.
 
 ## License
 
-```txt
 MIT License
-
-Copyright (c) 2019 Christian Visintin
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
