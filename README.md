@@ -1,10 +1,10 @@
 # ATtila
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-red.svg)](https://opensource.org/licenses/MIT) [![HitCount](http://hits.dwyl.io/ChristianVisintin/ATtila.svg)](http://hits.dwyl.io/ChristianVisintin/ATtila) [![Stars](https://img.shields.io/github/stars/ChristianVisintin/ATtila.svg)](https://github.com/ChristianVisintin/ATtila) [![Issues](https://img.shields.io/github/issues/ChristianVisintin/ATtila.svg)](https://github.com/ChristianVisintin/ATtila) [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/ChristianVisintin/ATtila/issues)
+[![License: MIT](https://img.shields.io/badge/License-MIT-red.svg)](https://opensource.org/licenses/MIT) [![HitCount](http://hits.dwyl.io/ChristianVisintin/ATtila.svg)](http://hits.dwyl.io/ChristianVisintin/ATtila) [![Stars](https://img.shields.io/github/stars/ChristianVisintin/ATtila.svg)](https://github.com/ChristianVisintin/ATtila) [![Issues](https://img.shields.io/github/issues/ChristianVisintin/ATtila.svg)](https://github.com/ChristianVisintin/ATtila/) [![Build](https://api.travis-ci.org/ChristianVisintin/ATtila.svg?branch=master)](https://travis-ci.org/ChristianVisintin/ATtila)
 
 Developed by *Christian Visintin*
 
-Current Version: **1.0.1 (07/10/2019)**
+Current Version: **1.0.2 (12/10/2019)**
 
 - [ATtila](#attila)
   - [Introduction](#introduction)
@@ -314,7 +314,16 @@ nosetests --nocapture tests/
 
 ## Changelog
 
-There haven't released any new version yet.
+### ATtila 1.0.2 (12/10/2019)
+
+- Fixed help in main
+- Added Travis
+
+## Branches
+
+- master: stable only
+- dev: main development branch
+- other features
 
 ---
 

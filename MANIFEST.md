@@ -2,7 +2,7 @@
 
 Developed by *Christian Visintin*
 
-Current Version: **1.0.1 (07/10/2019**
+Current Version: **1.0.2 (12/10/2019)**
 
 Github Repository <https://github.com/ChristianVisintin/ATtila>
 

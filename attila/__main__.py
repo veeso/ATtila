@@ -44,7 +44,7 @@ USAGE = "Usage: %s [OPTION]...\n\
   \t-b <baud rate>\t\tUse the specified baudrate to communicate\n\
   \t-T <default timeout>\tUse the specified timeout as default to communicate\n\
   \t-B <break>\t\tUse the specified line break [CRLF, LF, CR, NONE] (Default: CRLF)\n\
-  \t-A <True/False>\t\t\tAbort on failure (Default: True)\n\
+  \t-A <True/False>\t\tAbort on failure (Default: True)\n\
   \t-L <logfile>\t\tEnable log and log to the specified log file (stdout is supported)\n\
   \t-l <loglevel>\t\tSpecify the log level (0: CRITICAL, 1: ERROR, 2: WARN, 3: INFO, 4: DEBUG) (Default: INFO\n\
   \t-v\t\t\tBe more verbose\n\
