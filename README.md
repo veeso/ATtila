@@ -4,7 +4,7 @@
 
 Developed by *Christian Visintin*
 
-Current Version: **1.0.2 (12/10/2019)**
+Current Version: **1.0.3 (12/10/2019)**
 
 - [ATtila](#attila)
   - [Introduction](#introduction)
