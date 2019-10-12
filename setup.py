@@ -7,11 +7,11 @@ from os import path
 # The directory containing this file
 ROOT = Path(__file__).parent
 
-README = (ROOT / "MANIFEST.md").read_text()
+README = (ROOT / "README.md").read_text()
 
 setup(
   name='attila',
-  version='1.0.2',
+  version='1.0.3',
   description='Python module to communicate easily with modems and RF modules using AT commands',
   long_description=README,
   long_description_content_type="text/markdown",
@@ -20,6 +20,7 @@ setup(
   url='https://github.com/ChristianVisintin/ATtila',
   license="MIT",
   python_requires='>=3.4',
+  include_package_data = True,
   install_requires=[
     'pyserial>=3'
   ],

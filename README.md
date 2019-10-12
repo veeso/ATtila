@@ -314,7 +314,7 @@ nosetests --nocapture tests/
 
 ## Changelog
 
-### ATtila 1.0.2 (12/10/2019)
+### ATtila 1.0.3 (12/10/2019)
 
 - Fixed help in main
 - Added Travis
