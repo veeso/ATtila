@@ -304,7 +304,7 @@ class ATRuntimeEnvironment(object):
         try:
           self.__communicator.open()
           return True
-        except ATSerialPortError as err:
+        except ATSerialPortError:
           return False
     elif esk.keyword is ESK.BAUDRATE:
       #Check if serial is opened
@@ -316,7 +316,7 @@ class ATRuntimeEnvironment(object):
         try:
           self.__communicator.open()
           return True
-        except ATSerialPortError as err:
+        except ATSerialPortError:
           return False
     elif esk.keyword is ESK.TIMEOUT:
       self.__communicator.default_timeout = esk.value

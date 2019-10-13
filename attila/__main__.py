@@ -34,12 +34,10 @@ from getopt import getopt, GetoptError
 #Signals
 from signal import signal, SIGTERM, SIGINT
 
-USAGE = "Usage: %s [OPTION]...\n\
+USAGE = "Usage: %s [OPTION]... [FILE]\n\
   \n\
   With no FILE, run in interactive mode\n\
   \n\
-  \t-f <atscript file>\tRun attila reading script from specified file\n\
-  \t-i\t\t\tRun attila in interactive mode (default)\n\
   \t-p <device path>\tUse this device to communicate\n\
   \t-b <baud rate>\t\tUse the specified baudrate to communicate\n\
   \t-T <default timeout>\tUse the specified timeout as default to communicate\n\
@@ -123,15 +121,12 @@ def main():
   to_stdout = False
 
   try:
-    optlist, args = getopt(argv[1:], "f::ip::b::T::B::L::l::Avqh")
+    optlist, args = getopt(argv[1:], "p::b::T::B::L::l::Avqh")
+    if args:
+      interactive_mode = False
+      script_file = args[0]
     for opt, arg in optlist:
-      if opt == "-f":
-        interactive_mode = False
-        script_file = arg
-      elif opt == "-i":
-        interactive_mode = True
-        script_file = None
-      elif opt == "-p":
+      if opt == "-p":
         device = arg
       elif opt == "-b":
         try:

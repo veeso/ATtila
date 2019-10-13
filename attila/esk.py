@@ -135,6 +135,8 @@ class ESK(Enum):
         return ESKValue(esk, "\n")
       elif attr == "CRLF":
         return ESKValue(esk, "\r\n")
+      elif attr == "CR":
+        return ESKValue(esk, "\r")
       elif attr == "NONE":
         return ESKValue(esk, None)
       else:
