@@ -1,10 +1,10 @@
 # ATtila
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-red.svg)](https://opensource.org/licenses/MIT) [![HitCount](http://hits.dwyl.io/ChristianVisintin/ATtila.svg)](http://hits.dwyl.io/ChristianVisintin/ATtila) [![Stars](https://img.shields.io/github/stars/ChristianVisintin/ATtila.svg)](https://github.com/ChristianVisintin/ATtila) [![Issues](https://img.shields.io/github/issues/ChristianVisintin/ATtila.svg)](https://github.com/ChristianVisintin/ATtila/) [![Build](https://api.travis-ci.org/ChristianVisintin/ATtila.svg?branch=master)](https://travis-ci.org/ChristianVisintin/ATtila)
+[![License: MIT](https://img.shields.io/badge/License-MIT-red.svg)](https://opensource.org/licenses/MIT) [![HitCount](http://hits.dwyl.io/ChristianVisintin/ATtila.svg)](http://hits.dwyl.io/ChristianVisintin/ATtila) [![Stars](https://img.shields.io/github/stars/ChristianVisintin/ATtila.svg)](https://github.com/ChristianVisintin/ATtila) [![Issues](https://img.shields.io/github/issues/ChristianVisintin/ATtila.svg)](https://github.com/ChristianVisintin/ATtila/) [![Build](https://api.travis-ci.org/ChristianVisintin/ATtila.svg?branch=master)](https://travis-ci.org/ChristianVisintin/ATtila) [![codecov](https://codecov.io/gh/ChristianVisintin/ATtila/branch/master/graph/badge.svg)](https://codecov.io/gh/ChristianVisintin/ATtila)
 
 Developed by *Christian Visintin*
 
-Current Version: **1.0.3 (12/10/2019)**
+Current Version: **1.0.4 (13/10/2019)**
 
 - [ATtila](#attila)
   - [Introduction](#introduction)
@@ -52,12 +52,10 @@ python3 -m attila
 ```
 
 ```txt
-Usage: attila [OPTION] -f FILE
+Usage: attila [OPTION]... [FILE]
 
   With no FILE, run in interactive mode
 
-  -f  <atscript file>   Run attila reading script from specified file
-  -i                    Run attila in interactive mode (default)
   -p  <device path>     Use this device to communicate
   -b  <baud rate>       Use the specified baudrate to communicate
   -T  <default timeout> Use the specified timeout as default to communicate
@@ -309,10 +307,16 @@ These tests units tests the three most important parts of ATtila which are the A
 To launch test unit just type:
 
 ```sh
-nosetests --nocapture tests/
+nosetests -v --with-coverage --cover-tests --cover-package=attila --nocapture tests/
 ```
 
 ## Changelog
+
+### ATtila 1.0.4 (13/10/2019)
+
+- Added codecov
+- Added missing CR value in BREAK ESK
+- Added ESK and ATRE tests
 
 ### ATtila 1.0.3 (12/10/2019)
 
