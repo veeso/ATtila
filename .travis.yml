@@ -1,11 +1,16 @@
+sudo: false
 language: python
 python:
-- '3.5'
+  - '3.5'
 install:
-- pip install -r requirements.txt
-- pip install coverage unittest2
+  - pip install -r requirements.txt
+  - pip install coverage unittest2
+  - pip install codecov
 script:
-- nosetests -v --with-coverage --cover-tests --cover-package=attila tests/
+  - nosetests -v --with-coverage --cover-tests --cover-package=attila tests/
+# Push the results back to codecov
+after_success:
+  - codecov
 deploy:
   provider: pypi
   user: __token__
