@@ -25,7 +25,7 @@ import unittest
 from attila.atsession import ATSession
 from attila.atcommand import ATCommand
 
-class TestParser(unittest.TestCase):
+class TestSession(unittest.TestCase):
 
   def __init__(self, methodName):
     super().__init__(methodName)
@@ -38,6 +38,16 @@ class TestParser(unittest.TestCase):
     self.__test_exec_and_validate()
     self.__test_doppelganger()
     self.__test_collectables()
+
+  def test_session_values(self):
+    """
+    Test set/get session values
+    """
+    #Try with not existing key
+    with self.assertRaises(KeyError):
+      self.session.get_session_value("foobar")
+    self.session.set_session_value("foo", "bar")
+    self.assertEqual(self.session.get_session_value("foo"), "bar", "get_session_value failed; expected 'bar' got %s" % self.session.get_session_value("foo"))
 
   def __test_exec_and_validate(self):
     """

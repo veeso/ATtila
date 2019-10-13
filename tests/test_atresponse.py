@@ -22,53 +22,27 @@
 
 import unittest
 
-from attila.atre import ATRuntimeEnvironment
+from attila.atresponse import ATResponse
 from attila.atcommand import ATCommand
-from attila.exceptions import ATREUninitializedError, ATRuntimeError, ATScriptNotFound, ATScriptSyntaxError, ATSerialPortError
-from attila.esk import ESK, ESKValue
 
-from os.path import dirname
-
-SCRIPT = "commands_esk.ats"
-
-class TestATRE(unittest.TestCase):
+class TestATResponse(unittest.TestCase):
   """
-    Test ATRuntime Environment commands preparation and evaluation
-    NOTE: this tests doesn't test communicator!
+    Test ATResponse instance, setters and getters
   """
 
   def __init__(self, methodName):
     super().__init__(methodName)
-    self.atre = ATRuntimeEnvironment()
-    self.script_dir = "%s/scripts/" % dirname(__file__)
-    
-  def test_session_reset(self):
-    #Try to reset session
-    cmd = ATCommand("AT", "OK")
-    cmds = [cmd]
-    self.atre.init_session(cmds)
-  
-  def set_esks(self):
-    #Try to set ESK
-    esks = []
-    esk = ESK.to_ESKValue(ESK.get_esk_from_string("AOF"), "True")
-    self.assertIsNotNone(esk, "Could not parse ESK")
-    esks.append((esk, 0))
-    self.atre.set_ESKs(esks)
 
-  def parse_script(self):
-    #Try to parse script
-    try:
-      self.atre.parse_ATScript("%s%s" % (self.script_dir, SCRIPT))
-    except ATScriptNotFound as err:
-      raise err
-    except ATScriptSyntaxError as err:
-      raise err
-
-  def test_session_key(self):
-    #Try to get unexisting key
-    with self.assertRaises(KeyError):
-      self.atre.get_session_value("foobar")
+  def test_at_commands(self):
+    cmd = ATCommand("AT+CSQ", "OK", 5, 1000, ["AT+CSQ=?{rssi},"])
+    resp = ATResponse("OK", ["+CSQ: 32,2", "", "OK"], cmd, 632)
+    #Test response
+    self.assertEqual(resp.response, "OK", "Expected response 'OK', got %s" % resp.response)
+    self.assertEqual(len(resp.full_response), 3, "Expected full response length: 3, got %d" % len(resp.full_response))
+    self.assertEqual(resp.execution_time, 632, "Expected execution time 632, got %d" % resp.execution_time)
+    #Add collectable
+    resp.add_collectable("rssi", 32)
+    self.assertEqual(resp.get_collectable("rssi"), 32, "Expected rssi value 32, got %s" % resp.get_collectable("rssi"))
 
 if __name__ == "__main__":
   unittest.main()

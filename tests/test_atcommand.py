@@ -22,53 +22,24 @@
 
 import unittest
 
-from attila.atre import ATRuntimeEnvironment
 from attila.atcommand import ATCommand
-from attila.exceptions import ATREUninitializedError, ATRuntimeError, ATScriptNotFound, ATScriptSyntaxError, ATSerialPortError
-from attila.esk import ESK, ESKValue
 
-from os.path import dirname
-
-SCRIPT = "commands_esk.ats"
-
-class TestATRE(unittest.TestCase):
+class TestATCommands(unittest.TestCase):
   """
-    Test ATRuntime Environment commands preparation and evaluation
-    NOTE: this tests doesn't test communicator!
+    Test ATcommands instance, setters and getters
   """
 
   def __init__(self, methodName):
     super().__init__(methodName)
-    self.atre = ATRuntimeEnvironment()
-    self.script_dir = "%s/scripts/" % dirname(__file__)
-    
-  def test_session_reset(self):
-    #Try to reset session
-    cmd = ATCommand("AT", "OK")
-    cmds = [cmd]
-    self.atre.init_session(cmds)
-  
-  def set_esks(self):
-    #Try to set ESK
-    esks = []
-    esk = ESK.to_ESKValue(ESK.get_esk_from_string("AOF"), "True")
-    self.assertIsNotNone(esk, "Could not parse ESK")
-    esks.append((esk, 0))
-    self.atre.set_ESKs(esks)
 
-  def parse_script(self):
-    #Try to parse script
-    try:
-      self.atre.parse_ATScript("%s%s" % (self.script_dir, SCRIPT))
-    except ATScriptNotFound as err:
-      raise err
-    except ATScriptSyntaxError as err:
-      raise err
-
-  def test_session_key(self):
-    #Try to get unexisting key
-    with self.assertRaises(KeyError):
-      self.atre.get_session_value("foobar")
+  def test_at_commands(self):
+    cmd = ATCommand("AT+CSQ", "OK", 5, 1000, ["AT+CSQ=?{dbm},"], None)
+    self.assertEqual(cmd.command, "AT+CSQ", "Expected command AT+CSQ, got %s" % cmd.command)
+    self.assertEqual(cmd.expected_response, "OK", "Expected response OK, got %s" % cmd.expected_response)
+    self.assertEqual(cmd.timeout, 5, "Expected timeout 5, got %d" % cmd.timeout)
+    self.assertEqual(cmd.delay, 1000, "Expected delay 1000, got %d" % cmd.delay)
+    self.assertEqual(len(cmd.collectables), 1, "Expected collectables length 1, got %d" % len(cmd.collectables))
+    self.assertEqual(cmd.collectables[0], "AT+CSQ=?{dbm},", "Expected collectable 'AT+CSQ=?{dbm},', got %s" % cmd.collectables[0])
 
 if __name__ == "__main__":
   unittest.main()

@@ -26,7 +26,7 @@ from os.path import dirname
 
 from attila.esk import ESK, ESKValue
 
-class TestParser(unittest.TestCase):
+class TestEsk(unittest.TestCase):
   """
     Test ATRuntime Environment commands preparation and evaluation
     NOTE: this tests doesn't test communicator!
