@@ -47,11 +47,8 @@ class TestParser(unittest.TestCase):
     #Instance new Script parser
     script_parser = ATScriptParser()
     #Let's check if a file not found raises an exceptionù
-    try:
+    with self.assertRaises(ATScriptNotFound):
       script_parser.parse_file("%s%s" % (self.script_dir, "null"))
-      self.assertTrue("ATScriptParser should have thrown an exception!")
-    except ATScriptNotFound as err:
-      print("ATScriptParser threw successfully an exception: %s" % err)
     self.__test_parse_script1(script_parser)
     self.__test_parse_script2(script_parser)
     self.__test_parse_script3(script_parser)
