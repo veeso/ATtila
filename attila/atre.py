@@ -26,6 +26,7 @@ from .esk import ESKValue, ESK
 from .atscriptparser import ATScriptParser
 from .exceptions import ATScriptNotFound, ATScriptSyntaxError, ATSerialPortError, ATREUninitializedError, ATRuntimeError
 from .atcommunicator import ATCommunicator
+from .virtual.atvirtualcommunicator import ATVirtualCommunicator
 
 from os import environ, system
 from time import sleep
@@ -49,6 +50,7 @@ class ATRuntimeEnvironment(object):
     self.__communicator = ATCommunicator(None, None)
     self.__script_parser = ATScriptParser()
     self.__esks = []
+    self.__virtual_communicator = False
     #ES Params
     self.__aof = abort_on_failure
     self.__current_command = 0
@@ -73,11 +75,38 @@ class ATRuntimeEnvironment(object):
     if self.__communicator: #If device is open, close device
       if self.__communicator.is_open():
         self.__communicator.close()
+    if self.__virtual_communicator:
+      self.__communicator = ATCommunicator(serial_port, baud_rate)
+    self.__virtual_communicator = False
     self.__communicator.serial_port = serial_port
     self.__communicator.baud_rate = baud_rate
     self.__communicator.default_timeout = timeout
     self.__communicator.line_break = line_break
 
+  def configure_virtual_communicator(self, serial_port, baud_rate, timeout = None, line_break = "\r\n", read_callback = None, write_callback = None, in_waiting_callback = None):
+    """
+    Configure ATRE Virtual communicator
+
+    :param serial_port: Serial port for the communicator
+    :param baud_rate: Baud rate used
+    :param timeout: default timeout for commands
+    :param line_break: line break used by the device
+    :param read_callback (optional): Specify a read function to call to read using the virtual communicator
+    :param write_callback (optional): Specifiy a write funtion to call to write using the virtual communicator
+    :param in_waiting_callback (optional): Specify a in waiting function to call
+    :type serial_port: String
+    :type baud_rate: int
+    :type timeout: int
+    :type line_break: String
+    :type read_callback: function which returns string and takes nbytes as argument, if nbytes is -1 returns all lines
+    :type write_callback: function which takes string and raises VirtualSerialException
+    :type in_waiting_callback: function which returns True if there are data available to read
+    """
+    if self.__communicator: #If device is open, close device
+      if self.__communicator.is_open():
+        self.__communicator.close()
+    self.__virtual_communicator = True
+    self.__communicator = ATVirtualCommunicator(serial_port, baud_rate, timeout, line_break, read_callback, write_callback, in_waiting_callback)
 
   def init_session(self, commands):
     """
