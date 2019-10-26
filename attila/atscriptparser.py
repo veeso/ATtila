@@ -163,6 +163,9 @@ class ATScriptParser(object):
         except NameError as err:
           error = "Collectables has invalid syntax (%s)" % err
           return (command, error)
+        except SyntaxError as err:
+          error = "Collectables has invalid syntax (%s)" % err
+          return (command, error)
     if len(command_tokens) > 5: #Doppelganger
       if command_tokens[5]:
         has_doppelganger = True
