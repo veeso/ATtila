@@ -101,9 +101,9 @@ class ATSession(object):
     :type dganger: ATCommand
     :returns boolean
     """
-    new_command = ATCommand(command, exp_response, tout, delay, collectables, dganger)
-    if not new_command:
+    if not command:
       return False
+    new_command = ATCommand(command, exp_response, tout, delay, collectables, dganger)
     self._commands.append(new_command)
     return True
 
@@ -324,7 +324,7 @@ class ATSession(object):
           if key_regex_match:
             key_value = key_regex_match.group()
           else:
-            #Line not complies
+            #Line doesn't comply
             continue
         key_value = re.search(regex, line).group()
         for part in part_to_remove:
