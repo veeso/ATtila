@@ -35,7 +35,7 @@ class VirtualSerial(object):
     :type serial_port: string
     :type baud_rate: int
     :type timeout: int > 0
-    :type read_callback: function which returns string and takes nbytes as argument, if nbytes is -1 returns all lines
+    :type read_callback: function which returns string and takes nbytes as argument, if nbytes is -1 returns all lines, if 0 returns line
     :type write_callback: function which takes string and raises VirtualSerialException
     """
     self.serial_port = serial_port
@@ -135,27 +135,17 @@ class VirtualSerial(object):
       response.append(token.encode("utf-8"))
     return response
 
-  def read_line(self, line):
+  def read_line(self):
     """
     Read line
 
-    :param line
-    :type line: integer
     :returns bytes
     """
-    response = []
-    str_tokens = self.__readCB(-1).splitlines()
-    for token in str_tokens:
-      response.append(token.encode("utf-8"))
-    try:
-      return response[line]
-    except IndexError:
-      return None
+    return self.__readCB(0).encode("utf-8")
 
   def reset_input_buffer(self):
     """
     Reset Input buffer
     Virtually, reset response and pointer
     """
-    self.__response = None
-    self.__response_ptr = 0
+    pass
