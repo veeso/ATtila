@@ -49,14 +49,8 @@ class ATCommand(object):
     self._expected_response = exp_response
     self._timeout = tout
     self._delay = delay
-    if type(collectables) == list:
-      self._collectables = collectables
-    else:
-      self._collectables = None
-    if isinstance(dganger, ATCommand):
-      self._doppel_ganger = dganger
-    else:
-      self._doppel_ganger = None
+    self.collectables = collectables
+    self.doppel_ganger = dganger
     self._response = None
 
   @property
@@ -77,7 +71,7 @@ class ATCommand(object):
 
   @property
   def response(self):
-    return self._expected_response
+    return self._response
 
   @response.setter
   def response(self, response):
@@ -104,20 +98,9 @@ class ATCommand(object):
   @delay.setter
   def delay(self, delay):
     if delay > 0:
-      self.delay = delay
+      self._delay = delay
     else:
-      self.delay = 0
-
-  @property
-  def post_delay(self):
-    return self._post_delay
-
-  @post_delay.setter
-  def post_delay(self, pdelay):
-    if pdelay > 0:
-      self._post_delay = pdelay
-    else:
-      self._post_delay = 0
+      self._delay = 0
 
   @property
   def collectables(self):
