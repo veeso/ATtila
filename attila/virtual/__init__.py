@@ -19,6 +19,3 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-
-# Version of the ATtila package
-__version__ = "1.1.1"
