@@ -133,7 +133,7 @@ class ATVirtualCommunicator(ATCommunicator):
 
     :returns bool
     """
-    return self._device != None
+    return super().is_open()
 
   def exec(self, command, timeout = None):
     """
@@ -146,44 +146,7 @@ class ATVirtualCommunicator(ATCommunicator):
     :returns tuple of (list of string, execution time ms); list: command response without line break; empty lines are ignored
     :raises ATSerialPortError
     """
-    if not self._device:
-      raise ATSerialPortError("Serial port device is closed")
-    if not timeout:
-      timeout = self.default_timeout
-    t_start = int(time() * 1000)
-    if self._line_break:
-      self._device.write(b"%s%s" % (command.encode("utf-8"), self._line_break.encode("utf-8")))
-    else:
-      self._device.write(b"%s" % command.encode("utf-8"))
-    data = ""
-    #Set timeout to t_start + timeout seconds
-    t_timeout = t_start + (timeout * 1000)
-    t_now = t_start
-    data_still_available = True
-    sleep_time_based_on_baud = 1000 / self.baud_rate
-    #Try to read until there are data available and t_now < t_timeout
-    while t_now < t_timeout and data_still_available:
-      t_now = int(time() * 1000)
-      #Read one byte
-      read_byte = self._device.read()
-      if not read_byte:
-        continue
-      #Sleep for a while in order to give data the time to come
-      sleep(sleep_time_based_on_baud)
-      #Check if there are still data available
-      if self._device.in_waiting > 0:
-        data_still_available = True
-      else:
-        data_still_available = False
-      data += read_byte.decode("utf-8")
-    #lines = self._device.readlines()
-    lines = data.splitlines()
-    t_end = int(time() * 1000)
-    for i in range(len(lines)):
-      #lines[i] = lines[i].decode("utf-8")
-      #Remove newline
-      if re.search("(\\r|)\\n$", lines[i]):
-        lines[i] = re.sub("(\\r|)\\n$", "", lines[i])
-    #Flush input buffer
-    self._device.reset_input_buffer()
-    return (lines, t_end - t_start)
+    try:
+      return super().exec(command, timeout)
+    except ATSerialPortError as err:
+      raise err

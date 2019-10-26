@@ -146,6 +146,11 @@ class TestATCommunicator(unittest.TestCase):
     exc = VirtualSerialException(msg)
     self.assertIsNotNone(str(exc))
     self.assertEqual(repr(exc), msg)
+    #Open / Close exceptions
+    com = ATVirtualCommunicator("/dev/virtual", None, 1, read_callback, write_callback, in_waiting)
+    com.open()
+    with self.assertRaises(ATSerialPortError):
+      com.close()
     
 
 if __name__ == "__main__":
