@@ -4,7 +4,7 @@
 
 Developed by *Christian Visintin*
 
-Current Version: **1.0.4 (13/10/2019)**
+Current Version: **1.1.0 (26/10/2019)**
 
 - [ATtila](#attila)
   - [Introduction](#introduction)
@@ -97,6 +97,17 @@ In order to build your own implementation using ATtila these are the steps you'l
   ```rssi = atrunenv.get_session_value("rssi")```
 8. Close serial:  
   ```atrunenv.close_serial()```
+
+### Virtual Device
+
+Since version 1.1.0, it is possible to use a virtual serial device, instead of a real one. This has been introduced for tests purpose, but can actually used in cases where you need to emulate a serial device and you want to keep using ATtila.
+In this case, in the ATRE, instead of using configure_communicator use:
+
+```py
+def configure_virtual_communicator(self, serial_port, baud_rate, timeout = None, line_break = "\r\n", read_callback = None, write_callback = None, in_waiting_callback = None)
+```
+
+The virtual communicator, in addition to the standard one, requires a read, a write and an in waiting callback. These callbacks must replace the I/O operations of the serial device, with something else (e.g. a socket with an HTTP request)
 
 ## ATScript
 
@@ -311,6 +322,15 @@ nosetests -v --with-coverage --cover-tests --cover-package=attila --nocapture te
 ```
 
 ## Changelog
+
+### ATtila 1.1.0 (26/10/2019)
+
+- Fixed device not None after serial close
+- Fixed ATCommand response getter
+- Added SyntaxError exception handler in ATScriptParser
+- Fixed value getter in ESK
+- Added Virtual Serial device
+- Test improvements
 
 ### ATtila 1.0.4 (13/10/2019)
 
