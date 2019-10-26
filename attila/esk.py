@@ -34,7 +34,7 @@ class ESKValue(object):
     :param keyword: keyword type
     :param value associated
     :type keyword: ESK
-    :type Any: string
+    :type value: Any
     """
     self._keyword = keyword
     self._value = value
@@ -52,7 +52,7 @@ class ESKValue(object):
     return self._value
 
   @value.setter
-  def expected_response(self, val):
+  def value(self, val):
     self._value = val
 
 
