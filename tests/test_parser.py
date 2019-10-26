@@ -32,6 +32,7 @@ SCRIPT_1 = "basic_command.ats"
 SCRIPT_2 = "commands_response.ats"
 SCRIPT_3 = "command_complex.ats"
 SCRIPT_4 = "commands_esk.ats"
+SCRIPT_ERR = "errors.ats"
 
 class TestParser(unittest.TestCase):
 
@@ -237,6 +238,21 @@ class TestParser(unittest.TestCase):
       eskpair = esk[0]
       cmd_index = esk[1]
       print("execution index: %d; Esk %s => %s" % (cmd_index, eskpair.keyword, eskpair.value))
+
+  def test_syntax_errors(self):
+    parser = ATScriptParser()
+    with self.assertRaises(ATScriptSyntaxError): 
+      parser.parse("BAUDRATE foobar") #Invalid ESK
+    with self.assertRaises(ATScriptSyntaxError):
+      parser.parse_file("%s/%s" % (self.script_dir, SCRIPT_ERR))
+    with self.assertRaises(ATScriptSyntaxError): #Invalid delay
+      parser.parse("AT;;OK;;foobar")
+    with self.assertRaises(ATScriptSyntaxError): #Invalid timeout
+      parser.parse("AT;;OK;;5000;;foobar")
+    with self.assertRaises(ATScriptSyntaxError): #Invalid collectable syntax
+      parser.parse("AT+CGSN;;OK;;5000;;5;;[\"?{IMEI::^[0-9]{15}$}\"")
+    with self.assertRaises(ATScriptSyntaxError): #Invalid collectable syntax
+      parser.parse("AT+CGSN;;OK;;5000;;5;;foobar")
 
 if __name__ == "__main__":
   unittest.main()

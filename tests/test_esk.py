@@ -67,6 +67,20 @@ class TestEsk(unittest.TestCase):
     self.assertIsNotNone(ESK.to_ESKValue(ESK.GETENV, "CSQ"))
     self.assertIsNotNone(ESK.to_ESKValue(ESK.PRINT, "SAMPLE TEXT"))
     self.assertIsNotNone(ESK.to_ESKValue(ESK.EXEC, "echo foobar"))
+    #Bad cases
+    self.assertFalse(ESK.to_ESKValue(None, "FOOBAR"))
+    self.assertIsNone(ESK.to_ESKValue(ESK.DEVICE, None))
+    self.assertIsNone(ESK.to_ESKValue(ESK.EXEC, None))
+    self.assertIsNone(ESK.to_ESKValue(6000, "foobar"))
+
+  def tests_setters_getters(self):
+    esk = ESKValue("DEVICE", "/dev/ttyS0")
+    self.assertEqual(esk.keyword, "DEVICE", "Keyword should be DEVICE, but is %s" % esk.keyword)
+    self.assertEqual(esk.value, "/dev/ttyS0", "Value should be /dev/ttyS0, but is %s" % esk.value)
+    esk.keyword = "BAUDRATE"
+    esk.value = 9600
+    self.assertEqual(esk.keyword, "BAUDRATE", "Keyword should be BAUDRATEss, but is %s" % esk.keyword)
+    self.assertEqual(esk.value, 9600, "Value should be 9600, but is %d" % esk.value)
 
 if __name__ == "__main__":
   unittest.main()
