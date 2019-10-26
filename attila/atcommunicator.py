@@ -49,10 +49,7 @@ class ATCommunicator(object):
     self._device = None
     self._serial_port = serial_port
     self._baud_rate = baud_rate
-    if default_timeout > 0:
-      self._default_timeout = default_timeout
-    else:
-      self._default_timeout = 10
+    self.default_timeout = default_timeout
     self._line_break = line_break
 
   @property
@@ -105,7 +102,6 @@ class ATCommunicator(object):
       self._device = Serial(self._serial_port, self._baud_rate, timeout = 0.5)
     except (OSError, SerialException) as error:
       raise ATSerialPortError(error)
-    return
 
   def close(self):
     """
@@ -119,7 +115,7 @@ class ATCommunicator(object):
       self._device.close()
     except (OSError, SerialException) as error:
       raise ATSerialPortError(error)
-    return
+    self._device = None
 
   def is_open(self):
     """
