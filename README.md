@@ -4,7 +4,7 @@
 
 Developed by *Christian Visintin*
 
-Current Version: **1.1.1 (26/10/2019)**
+Current Version: **1.1.2 (29/10/2019)**
 
 - [ATtila](#attila)
   - [Introduction](#introduction)
@@ -322,6 +322,10 @@ nosetests -v --with-coverage --cover-tests --cover-package=attila --nocapture te
 ```
 
 ## Changelog
+
+### ATtila 1.1.2 (29/10/2019)
+
+* Fixed broken windows installation
 
 ### ATtila 1.1.1 (26/10/2019)
 
