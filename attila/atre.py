@@ -368,7 +368,7 @@ class ATRuntimeEnvironment(object):
       #Replace session values
       to_out = self.__session.replace_session_keys(esk.value)
       print(to_out)
-    elif esk.keyword in ESK.EXEC:
+    elif esk.keyword is ESK.EXEC:
       rc = system(esk.value)
       if rc != 0:
         return False
