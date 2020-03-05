@@ -29,8 +29,13 @@ class TestSession(unittest.TestCase):
 
   def __init__(self, methodName):
     super().__init__(methodName)
+    self.__test_collectables()
+    self.__test_commands_operations()
+    self.__test_doppelganger()
+    self.__test_exec_and_validate()
+    self.__test_session_values()
 
-  def test_session_values(self):
+  def __test_session_values(self):
     """
     Test set/get session values
     """
@@ -41,7 +46,7 @@ class TestSession(unittest.TestCase):
     session.set_session_value("foo", "bar")
     self.assertEqual(session.get_session_value("foo"), "bar", "get_session_value failed; expected 'bar' got %s" % session.get_session_value("foo"))
 
-  def test_exec_and_validate(self):
+  def __test_exec_and_validate(self):
     """
     Test ATSession just adding a command and evaluating its response
     """
@@ -85,7 +90,7 @@ class TestSession(unittest.TestCase):
     print("%s (expected %s) has response: %s" % (next_command.command, next_command.expected_response, response.full_response))
     self.assertTrue(session.last_command_failed)
 
-  def test_commands_operations(self):
+  def __test_commands_operations(self):
     session = ATSession([])
     #Add commands
     self.assertTrue(session.add_new_command("AT", "OK"), "add_new_command failed")
@@ -105,12 +110,7 @@ class TestSession(unittest.TestCase):
     self.assertIsNotNone(session.get_command(0), "Command at 0 shouldn't be None")
     self.assertIsNone(session.get_command(5), "Command at 5 should be None")
 
-class TestSession2(unittest.TestCase):
-
-  def __init__(self, methodName):
-    super().__init__(methodName)
-
-  def test_collectables(self):
+  def __test_collectables(self):
     """
     Test collectables feature in ATSession using AT+CSQ
     """
@@ -187,12 +187,7 @@ class TestSession2(unittest.TestCase):
       session.get_session_value("RSSI")
     #Collectable test OK
 
-class TestSession3(unittest.TestCase):
-
-  def __init__(self, methodName):
-    super().__init__(methodName)
-
-  def test_doppelganger(self):
+  def __test_doppelganger(self):
     """
     Test doppelganger feature in ATSession using AT+CPIN
     """
