@@ -1,6 +1,6 @@
 # ATtila
 # Developed by Christian Visintin
-# 
+#
 # MIT License
 # Copyright (c) 2019 Christian Visintin
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -29,7 +29,7 @@ from time import sleep
 
 class ATCommunicator(object):
   """
-  ATCommunicator class provides an interface to communicate with an 
+  ATCommunicator class provides an interface to communicate with an
   RF module using AT commands through a serial port
   """
 
@@ -39,8 +39,7 @@ class ATCommunicator(object):
 
     :param serial_port: serial port to use in order to communicate with the RF module
     :param baud_rate: baud rate to set
-    :param default_timeout (optional): the default timeout for command response read in seconds; it will be used if a timeout is not provided when executing a command
-    :param line_break (optional): specify line break to use when sending command; most of RF modules use CRLF
+    :param default_timeout (optional): the default timeout for command response read in seconds; it will be used if a timeout is not provided when executing a command         :param line_break (optional): specify line break to use when sending command; most of RF modules use CRLF
     :type serial_port: string
     :type baud_rate: int
     :type default_timeout: int > 0
@@ -98,8 +97,10 @@ class ATCommunicator(object):
     """
     if not self._serial_port:
       raise ATSerialPortError("Serial port is not set")
+    if self._device:
+      self.close()
     try:
-      self._device = Serial(self._serial_port, self._baud_rate, timeout = 0.5)
+      self._device = Serial(self._serial_port, self._baud_rate, timeout = 0.1, rtscts=True, dsrdtr=True)
     except (OSError, SerialException) as error:
       raise ATSerialPortError(error)
 
@@ -128,7 +129,7 @@ class ATCommunicator(object):
   def exec(self, command, timeout = None):
     """
     Execute AT command
-    
+
     :param command: command to execute
     :param timeout: timeout for command, if not set default will be used
     :type command: str
@@ -159,7 +160,8 @@ class ATCommunicator(object):
       if not read_byte:
         continue
       #Sleep for a while in order to give data the time to come
-      sleep(sleep_time_based_on_baud)
+      if read_byte == "\n" or read_byte == "\r":
+        sleep(sleep_time_based_on_baud)
       #Check if there are still data available
       if self._device.in_waiting > 0:
         data_still_available = True
