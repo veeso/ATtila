@@ -44,7 +44,7 @@ class TestSession(unittest.TestCase):
     """
     Test ATSession just adding a command and evaluating its response
     """
-    session = ATSession()
+    session = ATSession([])
     simple_command = ATCommand("AT", "OK")
     session.add_command(simple_command)
     next_command = session.get_next_command()
