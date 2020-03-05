@@ -1,10 +1,10 @@
 # ATtila
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-red.svg)](https://opensource.org/licenses/MIT) [![HitCount](http://hits.dwyl.io/ChristianVisintin/ATtila.svg)](http://hits.dwyl.io/ChristianVisintin/ATtila) [![Stars](https://img.shields.io/github/stars/ChristianVisintin/ATtila.svg)](https://github.com/ChristianVisintin/ATtila) [![Issues](https://img.shields.io/github/issues/ChristianVisintin/ATtila.svg)](https://github.com/ChristianVisintin/ATtila/) [![Build](https://api.travis-ci.org/ChristianVisintin/ATtila.svg?branch=master)](https://travis-ci.org/ChristianVisintin/ATtila) [![codecov](https://codecov.io/gh/ChristianVisintin/ATtila/branch/master/graph/badge.svg)](https://codecov.io/gh/ChristianVisintin/ATtila)
+[![License: MIT](https://img.shields.io/badge/License-MIT-teal.svg)](https://opensource.org/licenses/MIT) [![Stars](https://img.shields.io/github/stars/ChristianVisintin/ATtila.svg)](https://github.com/ChristianVisintin/ATtila) [![Issues](https://img.shields.io/github/issues/ChristianVisintin/ATtila.svg)](https://github.com/ChristianVisintin/ATtila/) [![Build](https://api.travis-ci.org/ChristianVisintin/ATtila.svg?branch=master)](https://travis-ci.org/ChristianVisintin/ATtila) [![codecov](https://codecov.io/gh/ChristianVisintin/ATtila/branch/master/graph/badge.svg)](https://codecov.io/gh/ChristianVisintin/ATtila)
 
 Developed by *Christian Visintin*
 
-Current Version: **1.1.3 (07/12/2019)**
+Current Version: **1.1.4 (05/03/2020)**
 
 - [ATtila](#attila)
   - [Introduction](#introduction)
@@ -322,6 +322,11 @@ nosetests -v --with-coverage --cover-tests --cover-package=attila --nocapture te
 ```
 
 ## Changelog
+
+### ATtila 1.1.4 (05/03/2020)
+
+- Fixed slow serial read when working with low baud rates
+- Added ```rtscts=True, dsrdtr=True``` options to serial open
 
 ### ATtila 1.1.3 (07/12/2019)
 
