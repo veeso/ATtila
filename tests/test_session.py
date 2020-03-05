@@ -29,24 +29,18 @@ class TestSession(unittest.TestCase):
 
   def __init__(self, methodName):
     super().__init__(methodName)
-    #self.__test_collectables()
-    #self.__test_commands_operations()
-    #self.__test_doppelganger()
-    #self.__test_exec_and_validate()
-    #self.__test_session_values()
 
   def test_session_values(self):
     """
     Test set/get session values
     """
-    session = ATSession()
+    session = ATSession([])
     #Try with not existing key
     with self.assertRaises(KeyError):
       session.get_session_value("foobar")
     session.set_session_value("foo", "bar")
     self.assertEqual(session.get_session_value("foo"), "bar", "get_session_value failed; expected 'bar' got %s" % session.get_session_value("foo"))
 
-  def test_exec_and_validate(self):
     """
     Test ATSession just adding a command and evaluating its response
     """
@@ -114,7 +108,7 @@ class TestSession(unittest.TestCase):
     """
     Test collectables feature in ATSession using AT+CSQ
     """
-    session = ATSession()
+    session = ATSession([])
     csq_command = ATCommand("AT+CSQ", "OK", 10, 0, ["AT+CSQ=?{rssi},"])
     session.add_command(csq_command)
     #Let's get command
@@ -191,7 +185,7 @@ class TestSession(unittest.TestCase):
     """
     Test doppelganger feature in ATSession using AT+CPIN
     """
-    session = ATSession()
+    session = ATSession([])
     #First prepare its doppelganger
     cpin_enter_pin = ATCommand("AT+CPIN=${SIM_PIN}", "OK")
     #Let's define an AT Command (AT+CPIN?)
