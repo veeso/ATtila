@@ -238,7 +238,7 @@ class ATSession(object):
     command_str = self.replace_session_keys(command_str)
     #@!All sessions variables have been replaced
     #Other stuff???
-    #Reassing command to ATCommand
+    #Reassign command to ATCommand
     command.command = command_str
     return
 

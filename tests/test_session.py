@@ -41,7 +41,7 @@ class TestSession(unittest.TestCase):
     session.set_session_value("foo", "bar")
     self.assertEqual(session.get_session_value("foo"), "bar", "get_session_value failed; expected 'bar' got %s" % session.get_session_value("foo"))
 
-  def __test_exec_and_validate(self):
+  def test_exec_and_validate(self):
     """
     Test ATSession just adding a command and evaluating its response
     """
@@ -85,47 +85,32 @@ class TestSession(unittest.TestCase):
     print("%s (expected %s) has response: %s" % (next_command.command, next_command.expected_response, response.full_response))
     self.assertTrue(session.last_command_failed)
 
-  def __test_doppelganger(self):
-    """
-    Test doppelganger feature in ATSession using AT+CPIN
-    """
-    session = ATSession()
-    #First prepare its doppelganger
-    cpin_enter_pin = ATCommand("AT+CPIN=${SIM_PIN}", "OK")
-    #Let's define an AT Command (AT+CPIN?)
-    cpin_command = ATCommand("AT+CPIN?", "READY", 10, 0, None, cpin_enter_pin)
-    #Add command to session
-    session.add_command(cpin_command)
-    #Add SIM PIN to session storage
-    sim_pin = 7782
-    session.set_session_value("SIM_PIN", 7782)
-    #Verify session storage
-    read_pin = session.get_session_value("SIM_PIN")
-    self.assertEqual(sim_pin, read_pin, "SIM PIN should be %d, but is %d" % (sim_pin, read_pin))
+  def test_commands_operations(self):
+    session = ATSession([])
+    #Add commands
+    self.assertTrue(session.add_new_command("AT", "OK"), "add_new_command failed")
+    #Bad case
+    self.assertFalse(session.add_new_command(None, None), "add_new_command failed")
+    #Rem commands
+    self.assertTrue(session.rem_command(0), "Could not remove command 0")
+    self.assertFalse(session.rem_command(500), "Should have failed, but didn't in trying to remove command 500")
+    #Get next command
+    self.assertTrue(session.add_new_command("AT", "OK"), "add_new_command failed")
+    self.assertIsNotNone(session.get_next_command(), "Command shouldn't be None")
+    self.assertTrue(session.rem_command(0), "Could not remove command 0")
+    #Bad case next command
+    self.assertIsNone(session.get_next_command(), "Get next command should be None")
     #Get command
-    next_command = session.get_next_command()
-    #Verify command
-    self.assertEqual(next_command.command, "AT+CPIN?", "Next command should be AT+CPIN?, but is %s" % next_command.command)
-    #Let's create a fake response
-    serial_response = ["CPIN:SIM PIN", "OK"]
-    response = session.validate_response(serial_response, 100)
-    #Last command should have failed (we expected READY)
-    self.assertTrue(session.last_command_failed)
-    self.assertEqual(response.full_response, serial_response, "Response associated to command is different from the response got from serial device")
-    print("%s (expected %s) has response: %s" % (next_command.command, next_command.expected_response, response.full_response))
-    #Let's get the next command, that should be the doppelganger
-    next_command = session.get_next_command()
-    self.assertEqual(next_command.command, "AT+CPIN=%d" % sim_pin, "The next command should be the doppelganger, but is %s" % next_command.command)
-    print("Next command is doppelganger with replaced session value: %s" % next_command.command)
-    #Let's invent a response for it, let's say it's OK
-    serial_response = ["OK"]
-    response = session.validate_response(serial_response, 100)
-    #Last command should have succeded
-    self.assertFalse(session.last_command_failed)
-    print("%s (expected %s) has response: %s" % (next_command.command, next_command.expected_response, response.response))
-    self.assertEqual(response.response, next_command.expected_response, "The response should be OK, but is %s" % response.response)
+    self.assertTrue(session.add_new_command("AT", "OK"), "add_new_command failed")
+    self.assertIsNotNone(session.get_command(0), "Command at 0 shouldn't be None")
+    self.assertIsNone(session.get_command(5), "Command at 5 should be None")
 
-  def __test_collectables(self):
+class TestSession2(unittest.TestCase):
+
+  def __init__(self, methodName):
+    super().__init__(methodName)
+
+  def test_collectables(self):
     """
     Test collectables feature in ATSession using AT+CSQ
     """
@@ -202,26 +187,50 @@ class TestSession(unittest.TestCase):
       session.get_session_value("RSSI")
     #Collectable test OK
 
-  def test_commands_operations(self):
-    session = ATSession([])
-    #Add commands
-    self.assertTrue(session.add_new_command("AT", "OK"), "add_new_command failed")
-    #Bad case
-    self.assertFalse(session.add_new_command(None, None), "add_new_command failed")
-    #Rem commands
-    self.assertTrue(session.rem_command(0), "Could not remove command 0")
-    self.assertFalse(session.rem_command(500), "Should have failed, but didn't in trying to remove command 500")
-    #Get next command
-    self.assertTrue(session.add_new_command("AT", "OK"), "add_new_command failed")
-    self.assertIsNotNone(session.get_next_command(), "Command shouldn't be None")
-    self.assertTrue(session.rem_command(0), "Could not remove command 0")
-    #Bad case next command
-    self.assertIsNone(session.get_next_command(), "Get next command should be None")
+class TestSession3(unittest.TestCase):
+
+  def __init__(self, methodName):
+    super().__init__(methodName)
+
+  def test_doppelganger(self):
+    """
+    Test doppelganger feature in ATSession using AT+CPIN
+    """
+    session = ATSession()
+    #First prepare its doppelganger
+    cpin_enter_pin = ATCommand("AT+CPIN=${SIM_PIN}", "OK")
+    #Let's define an AT Command (AT+CPIN?)
+    cpin_command = ATCommand("AT+CPIN?", "READY", 10, 0, None, cpin_enter_pin)
+    #Add command to session
+    session.add_command(cpin_command)
+    #Add SIM PIN to session storage
+    sim_pin = 7782
+    session.set_session_value("SIM_PIN", 7782)
+    #Verify session storage
+    read_pin = session.get_session_value("SIM_PIN")
+    self.assertEqual(sim_pin, read_pin, "SIM PIN should be %d, but is %d" % (sim_pin, read_pin))
     #Get command
-    self.assertTrue(session.add_new_command("AT", "OK"), "add_new_command failed")
-    self.assertIsNotNone(session.get_command(0), "Command at 0 shouldn't be None")
-    self.assertIsNone(session.get_command(5), "Command at 5 should be None")
+    next_command = session.get_next_command()
+    #Verify command
+    self.assertEqual(next_command.command, "AT+CPIN?", "Next command should be AT+CPIN?, but is %s" % next_command.command)
+    #Let's create a fake response
+    serial_response = ["CPIN:SIM PIN", "OK"]
+    response = session.validate_response(serial_response, 100)
+    #Last command should have failed (we expected READY)
+    self.assertTrue(session.last_command_failed)
+    self.assertEqual(response.full_response, serial_response, "Response associated to command is different from the response got from serial device")
+    print("%s (expected %s) has response: %s" % (next_command.command, next_command.expected_response, response.full_response))
+    #Let's get the next command, that should be the doppelganger
+    next_command = session.get_next_command()
+    self.assertEqual(next_command.command, "AT+CPIN=%d" % sim_pin, "The next command should be the doppelganger, but is %s" % next_command.command)
+    print("Next command is doppelganger with replaced session value: %s" % next_command.command)
+    #Let's invent a response for it, let's say it's OK
+    serial_response = ["OK"]
+    response = session.validate_response(serial_response, 100)
+    #Last command should have succeded
+    self.assertFalse(session.last_command_failed)
+    print("%s (expected %s) has response: %s" % (next_command.command, next_command.expected_response, response.response))
+    self.assertEqual(response.response, next_command.expected_response, "The response should be OK, but is %s" % response.response)
 
 if __name__ == "__main__":
   unittest.main()
-

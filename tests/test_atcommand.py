@@ -45,6 +45,9 @@ class TestATCommands(unittest.TestCase):
     self.assertIsNone(cmd2.collectables, "Collectables should be None, since a string has been provided")
     cmd3 = ATCommand("AT+CSQ", "OK", 5, 1000, "AT+CSQ=?{dbm},", ATCommand("AT+CSQ?"))
     self.assertIsNone(cmd3.collectables, "Collectables should be None, since a string has been provided")
+    self.assertIsNotNone(cmd3.doppel_ganger)
+    cmd4 = ATCommand("AT+CSQ", "OK", 5, 1000, "AT+CSQ=?{dbm},", "foobar")
+    self.assertIsNone(cmd4.doppel_ganger, "Doppelganger should be None, since a string has been provided")
     #Test setters getters
     cmd = ATCommand("AT")
     #Command

@@ -49,8 +49,14 @@ class ATCommand(object):
     self._expected_response = exp_response
     self._timeout = tout
     self._delay = delay
-    self.collectables = collectables
-    self.doppel_ganger = dganger
+    if type(collectables) != list:
+      self._collectables = None
+    else:
+      self._collectables = collectables
+    if isinstance(dganger, ATCommand):
+      self._doppel_ganger = dganger
+    else:
+      self._doppel_ganger = None
     self._response = None
 
   @property
