@@ -22,7 +22,7 @@
 
 from .exceptions import ATSerialPortError
 
-from serial import Serial, SerialException
+from serial import Serial, SerialException, SerialTimeoutException
 import re
 from time import time
 from time import sleep
@@ -100,7 +100,7 @@ class ATCommunicator(object):
     if self._device:
       self.close()
     try:
-      self._device = Serial(self._serial_port, self._baud_rate, timeout = 0.1, rtscts=True, dsrdtr=True)
+      self._device = Serial(self._serial_port, self._baud_rate, timeout = 0.1, write_timeout = self._default_timeout, rtscts=True, dsrdtr=True)
     except (OSError, SerialException) as error:
       raise ATSerialPortError(error)
 
@@ -141,11 +141,18 @@ class ATCommunicator(object):
       raise ATSerialPortError("Serial port device is closed")
     if not timeout:
       timeout = self.default_timeout
+      self._device.write_timeout = self.default_timeout
+    else: #Set write timeout to timeout
+      self._device.write_timeout = timeout
+    #Get start time
     t_start = int(time() * 1000)
-    if self._line_break:
-      self._device.write(b"%s%s" % (command.encode("utf-8"), self._line_break.encode("utf-8")))
-    else:
-      self._device.write(b"%s" % command.encode("utf-8"))
+    try:
+      if self._line_break:
+        self._device.write(b"%s%s" % (command.encode("utf-8"), self._line_break.encode("utf-8")))
+      else:
+        self._device.write(b"%s" % command.encode("utf-8"))
+    except SerialTimeoutException as err:
+      raise ATSerialPortError(str(err))
     data = ""
     #Set timeout to t_start + timeout seconds
     t_timeout = t_start + (timeout * 1000)

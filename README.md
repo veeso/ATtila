@@ -327,6 +327,7 @@ nosetests -v --with-coverage --cover-tests --cover-package=attila --nocapture te
 
 - Fixed slow serial read when working with low baud rates
 - Added ```rtscts=True, dsrdtr=True``` options to serial open
+- Serial Write is no more blocking
 
 ### ATtila 1.1.3 (07/12/2019)
 
