@@ -66,7 +66,7 @@ def sigterm_handler(_signo, _stack_frame):
   """
   global interactive_mode
   global sigterm_called
-  logging.warn("SIGTERM called")
+  logging.warning("SIGTERM called")
   sigterm_called = True
   if interactive_mode:
     print("Press ENTER to QUIT")
