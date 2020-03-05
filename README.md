@@ -1,6 +1,6 @@
 # ATtila
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-teal.svg)](https://opensource.org/licenses/MIT) [![Stars](https://img.shields.io/github/stars/ChristianVisintin/ATtila.svg)](https://github.com/ChristianVisintin/ATtila) [![Issues](https://img.shields.io/github/issues/ChristianVisintin/ATtila.svg)](https://github.com/ChristianVisintin/ATtila/) [![Build](https://api.travis-ci.org/ChristianVisintin/ATtila.svg?branch=master)](https://travis-ci.org/ChristianVisintin/ATtila) [![codecov](https://codecov.io/gh/ChristianVisintin/ATtila/branch/master/graph/badge.svg)](https://codecov.io/gh/ChristianVisintin/ATtila)
+[![License: MIT](https://img.shields.io/badge/License-MIT-teal.svg)](https://opensource.org/licenses/MIT) [![Stars](https://img.shields.io/github/stars/ChristianVisintin/ATtila.svg)](https://github.com/ChristianVisintin/ATtila) [![Issues](https://img.shields.io/github/issues/ChristianVisintin/ATtila.svg)](https://github.com/ChristianVisintin/ATtila/) [![PyPI version](https://badge.fury.io/py/attila.svg)](https://pypi.org/project/attila/) [![Build](https://api.travis-ci.org/ChristianVisintin/ATtila.svg?branch=master)](https://travis-ci.org/ChristianVisintin/ATtila) [![codecov](https://codecov.io/gh/ChristianVisintin/ATtila/branch/master/graph/badge.svg)](https://codecov.io/gh/ChristianVisintin/ATtila)
 
 Developed by *Christian Visintin*
 
@@ -8,7 +8,9 @@ Current Version: **1.1.4 (05/03/2020)**
 
 - [ATtila](#attila)
   - [Introduction](#introduction)
+  - [Requirements](#requirements)
   - [Implementation](#implementation)
+    - [Virtual Device](#virtual-device)
   - [ATScript](#atscript)
     - [ATScript Introduction](#atscript-introduction)
     - [ATScript Commands](#atscript-commands)
@@ -24,6 +26,14 @@ Current Version: **1.1.4 (05/03/2020)**
   - [Known Issues](#known-issues)
   - [Tests Units](#tests-units)
   - [Changelog](#changelog)
+    - [ATtila 1.1.4 (05/03/2020)](#attila-114-05032020)
+    - [ATtila 1.1.3 (07/12/2019)](#attila-113-07122019)
+    - [ATtila 1.1.2 (29/10/2019)](#attila-112-29102019)
+    - [ATtila 1.1.1 (26/10/2019)](#attila-111-26102019)
+    - [ATtila 1.1.0 (26/10/2019)](#attila-110-26102019)
+    - [ATtila 1.0.4 (13/10/2019)](#attila-104-13102019)
+    - [ATtila 1.0.3 (12/10/2019)](#attila-103-12102019)
+  - [Branches](#branches)
   - [License](#license)
 
 ---
@@ -68,6 +78,12 @@ Usage: attila [OPTION]... [FILE]
   -h                    Show this page
 ```
 
+## Requirements
+
+- Python3.5 (>= 1.2.0)
+  - Python3.4 (up to 1.1.4)
+- pyserial3
+
 ## Implementation
 
 In order to build your own implementation using ATtila these are the steps you'll need to follow:
@@ -95,8 +111,7 @@ In order to build your own implementation using ATtila these are the steps you'l
     ```response = atrunenv.exec_next()```
 7. Collect the values you need:  
   ```rssi = atrunenv.get_session_value("rssi")```
-8. Close serial:  
-  ```atrunenv.close_serial()```
+8. Close serial: ```atrunenv.close_serial()```
 
 ### Virtual Device
 
@@ -328,6 +343,7 @@ nosetests -v --with-coverage --cover-tests --cover-package=attila --nocapture te
 - Fixed slow serial read when working with low baud rates
 - Added ```rtscts=True, dsrdtr=True``` options to serial open
 - Serial Write is no more blocking
+- Fixed doppelganger and collectables
 
 ### ATtila 1.1.3 (07/12/2019)
 

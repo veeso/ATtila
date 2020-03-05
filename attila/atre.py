@@ -46,7 +46,7 @@ class ATRuntimeEnvironment(object):
     :param abort_on_failure
     :type abort_on_failure bool
     """
-    self.__session = ATSession()
+    self.__session = ATSession([])
     self.__communicator = ATCommunicator(None, None)
     self.__script_parser = ATScriptParser()
     self.__esks = []
