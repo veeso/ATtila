@@ -102,7 +102,11 @@ class ATCommunicator(object):
     try:
       self._device = Serial(self._serial_port, self._baud_rate, timeout = 0.1, write_timeout = self._default_timeout, rtscts=True, dsrdtr=True)
     except (OSError, SerialException) as error:
-      raise ATSerialPortError(error)
+      raise ATSerialPortError(str(error))
+    except Exception as error: #Catch other exceptions too
+      raise ATSerialPortError(str(error))
+    #Flush port
+    self.__flush()
 
   def close(self):
     """
@@ -139,6 +143,8 @@ class ATCommunicator(object):
     """
     if not self._device:
       raise ATSerialPortError("Serial port device is closed")
+    #Flush before write
+    self.__flush()
     if not timeout:
       timeout = self.default_timeout
       self._device.write_timeout = self.default_timeout
@@ -153,36 +159,63 @@ class ATCommunicator(object):
         self._device.write(b"%s" % command.encode("utf-8"))
     except SerialTimeoutException as err:
       raise ATSerialPortError(str(err))
-    data = ""
+    data = bytearray()
     #Set timeout to t_start + timeout seconds
     t_timeout = t_start + (timeout * 1000)
     t_now = t_start
     data_still_available = True
-    sleep_time_based_on_baud = 1000 / self.baud_rate
+    sleep_time_based_on_baud = 100 / self.baud_rate #Milliseconds
+    available_data = 0
+    prev_available_data = -1
+    sleep_time = 1000 / self.baud_rate
+    #Wait for all data to be ready
+    #while t_now < t_timeout and available_data > prev_available_data:
+    #  sleep(sleep_time)
+    #  t_now = int(time() * 1000)
+    #  if available_data > 0:
+    #    prev_available_data = available_data
+    #  available_data = self._device.inWaiting()
+    #if available_data > 0:
+    #  data = self._device.read(available_data).decode("utf-8")
+
     #Try to read until there are data available and t_now < t_timeout
     while t_now < t_timeout and data_still_available:
       t_now = int(time() * 1000)
-      #Read one byte
-      read_byte = self._device.read()
-      if not read_byte:
+      #Read available bytes
+      read_bytes = self._device.read(self._device.in_waiting)
+      if not read_bytes:
         continue
       #Sleep for a while in order to give data the time to come
-      if read_byte == "\n" or read_byte == "\r":
-        sleep(sleep_time_based_on_baud)
+      last_byte = read_bytes[len(read_bytes) - 1]
+      #Mini sleep to wait for incoming data
+      t_waiting_elapsed = 0
+      mini_sleep_time = 0.001
+      #Wait until in waiting is 0 and waiting elapsed millis is < of sleep time based on baud
+      while self._device.in_waiting == 0 and sleep_time_based_on_baud > t_waiting_elapsed:
+        sleep(mini_sleep_time) #1ms
+        t_waiting_elapsed += mini_sleep_time
       #Check if there are still data available
       if self._device.in_waiting > 0:
         data_still_available = True
       else:
         data_still_available = False
-      data += read_byte.decode("utf-8")
-    #lines = self._device.readlines()
+      data += read_bytes
+      #End of read
+    
+    data = data.decode("utf-8")
     lines = data.splitlines()
     t_end = int(time() * 1000)
     for i in range(len(lines)):
-      #lines[i] = lines[i].decode("utf-8")
       #Remove newline
       if re.search("(\\r|)\\n$", lines[i]):
         lines[i] = re.sub("(\\r|)\\n$", "", lines[i])
     #Flush input buffer
     self._device.reset_input_buffer()
     return (lines, t_end - t_start)
+
+  def __flush(self):
+    """
+    Flush serial port
+    """
+    if self._device:
+      self._device.reset_input_buffer()

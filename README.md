@@ -4,7 +4,7 @@
 
 Developed by *Christian Visintin*
 
-Current Version: **1.1.4 (05/03/2020)**
+Current Version: **1.1.5 (09/03/2020)**
 
 - [ATtila](#attila)
   - [Introduction](#introduction)
@@ -26,6 +26,7 @@ Current Version: **1.1.4 (05/03/2020)**
   - [Known Issues](#known-issues)
   - [Tests Units](#tests-units)
   - [Changelog](#changelog)
+    - [ATtila 1.1.5 (09/03/2020)](#attila-115-09032020)
     - [ATtila 1.1.4 (05/03/2020)](#attila-114-05032020)
     - [ATtila 1.1.3 (07/12/2019)](#attila-113-07122019)
     - [ATtila 1.1.2 (29/10/2019)](#attila-112-29102019)
@@ -337,6 +338,11 @@ nosetests -v --with-coverage --cover-tests --cover-package=attila --nocapture te
 ```
 
 ## Changelog
+
+### ATtila 1.1.5 (09/03/2020)
+
+- Fixed serial communication which didn't wait for all input
+  - Serial is now slower, especially for lower baudrate
 
 ### ATtila 1.1.4 (05/03/2020)
 
