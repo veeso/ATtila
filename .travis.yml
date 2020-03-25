@@ -1,5 +1,6 @@
 os: linux
 language: python
+dist: "bionic"
 python:
   - '3.5'
 install:
