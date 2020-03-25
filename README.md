@@ -344,7 +344,6 @@ nosetests -v --with-coverage --cover-tests --cover-package=attila --nocapture te
 
 - Fixed response collection
 
-
 ### ATtila 1.1.5 (09/03/2020)
 
 - Fixed serial communication which didn't wait for all input
