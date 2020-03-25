@@ -4,7 +4,7 @@
 
 Developed by *Christian Visintin*
 
-Current Version: **1.1.5 (09/03/2020)**
+Current Version: **1.1.6 (25/03/2020)**
 
 - [ATtila](#attila)
   - [Introduction](#introduction)
@@ -26,6 +26,7 @@ Current Version: **1.1.5 (09/03/2020)**
   - [Known Issues](#known-issues)
   - [Tests Units](#tests-units)
   - [Changelog](#changelog)
+    - [ATtila 1.1.6 (25/03/2020)](#attila-116-25032020)
     - [ATtila 1.1.5 (09/03/2020)](#attila-115-09032020)
     - [ATtila 1.1.4 (05/03/2020)](#attila-114-05032020)
     - [ATtila 1.1.3 (07/12/2019)](#attila-113-07122019)
@@ -338,6 +339,11 @@ nosetests -v --with-coverage --cover-tests --cover-package=attila --nocapture te
 ```
 
 ## Changelog
+
+### ATtila 1.1.6 (25/03/2020)
+
+- Fixed response collection
+
 
 ### ATtila 1.1.5 (09/03/2020)
 
