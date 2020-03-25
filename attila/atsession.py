@@ -173,8 +173,9 @@ class ATSession(object):
       #Search for response
       for line in response:
         #Search for expected response in line
-        if re.search(expected_response, line):
-          response_str = line
+        regresult = re.search(expected_response, line)
+        if regresult:
+          response_str = regresult.group()
           self._last_command_failed = False
           break
       #If response hasn't been found => last command failed 

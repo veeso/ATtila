@@ -74,6 +74,17 @@ class TestSession(unittest.TestCase):
     print("%s (expected %s) has response: %s" % (next_command.command, next_command.expected_response, response.full_response))
     self.assertFalse(session.last_command_failed)
     self.assertEqual(response.response, "AC03C7F3D2EB7832", "Command should have AC03C7F3D2EB7832 as response but has %s" % response.response)
+    #Try with CSQ too
+    #Let's get the device serial, imagine that all the device has a serial number of 16 hex digits
+    csq_command = ATCommand("AT+CSQ", "[0-9]{1,2}")
+    session.add_command(csq_command)
+    next_command = session.get_next_command()
+    #Prepare a response for it; in this case we'll simulate a successful response
+    csq_response = ["+CSQ: 22,99", "", "OK"]
+    response = session.validate_response(csq_response, 100)
+    print("%s (expected %s) has response: %s" % (next_command.command, next_command.expected_response, response.full_response))
+    self.assertFalse(session.last_command_failed)
+    self.assertEqual(response.response, "22", "Command should have 22 as response but has %s" % response.response)
     #Bad cases
     #Not existing session key
     command_not_replaceable = ATCommand("AT+CGDATA=${CONTEXT}", "OK")
