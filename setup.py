@@ -11,7 +11,7 @@ README = (ROOT / "README.md").read_text(encoding="utf-8")
 
 setup(
   name='attila',
-  version='1.1.5',
+  version='1.1.6',
   description='Python module to communicate easily with modems and RF modules using AT commands',
   long_description=README,
   long_description_content_type="text/markdown",
