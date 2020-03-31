@@ -22,7 +22,8 @@ setup(
   python_requires='>=3.4',
   include_package_data = True,
   install_requires=[
-    'pyserial>=3'
+    'pyserial>=3',
+    'pathlib2>=2'
   ],
   entry_points={
     'console_scripts': [
