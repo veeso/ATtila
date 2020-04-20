@@ -298,6 +298,10 @@ def main():
         logging.error("Runtime error: %s" % err)
         if not to_stdout:
           print("Runtime error: %s" % err)
+      except ATREUninitializedError as err:
+        logging.error("Uninitialized error: %s" % err)
+        if not to_stdout:
+          print("Uninitialized error: %s" % err)
   #Close serial
   try:
     atrunenv.close_serial()
