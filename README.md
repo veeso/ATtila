@@ -83,7 +83,7 @@ Usage: attila [OPTION]... [FILE]
 ## Requirements
 
 - Python3.5 (>= 1.2.0)
-  - Python3.4 (up to 1.1.4)
+  - Python3.4 (up to 1.1.x)
 - pyserial3
 
 ## Implementation
