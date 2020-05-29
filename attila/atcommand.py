@@ -1,6 +1,6 @@
 # ATtila
 # Developed by Christian Visintin
-# 
+#
 # MIT License
 # Copyright (c) 2019 Christian Visintin
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -22,110 +22,111 @@
 
 from .atresponse import ATResponse
 
+
 class ATCommand(object):
-  """
-  This class represents an AT command
-  """
-  
-  def __init__(self, cmd, exp_response = None, tout = None, delay = 0, collectables = None, dganger = None):
     """
-    Class constructor. Instantiates a new :class:`.ATCommand.` object with the provided parameters.
-    
-    :param cmd: command to execute
-    :param exp_response: expected response from command execution. a literal or a generic response can be provided
-    :param tout (optional): command timeout execution in seconds.
-    :param delay (optional): delay in milliseconds before command execution
-    :param collectables (optional): values to store from response. Follow collectables syntax as specified in ATtila documentation
-    :param dganger (optional): doppelganger command associated to this command (command to execute in case of this command fails)
-    :type cmd: string
-    :type ATResponse: string
-    :type exp_respose: string
-    :type tout: int
-    :type delay: int
-    :type collectables: list of string
-    :type dganger: ATCommand
+    This class represents an AT command
     """
-    self._command = cmd
-    self._expected_response = exp_response
-    self._timeout = tout
-    self._delay = delay
-    if type(collectables) != list:
-      self._collectables = None
-    else:
-      self._collectables = collectables
-    if isinstance(dganger, ATCommand):
-      self._doppel_ganger = dganger
-    else:
-      self._doppel_ganger = None
-    self._response = None
 
-  @property
-  def command(self):
-    return self._command
+    def __init__(self, cmd, exp_response=None, tout=None, delay=0, collectables=None, dganger=None):
+        """
+        Class constructor. Instantiates a new :class:`.ATCommand.` object with the provided parameters.
 
-  @command.setter
-  def command(self, cmd):
-    self._command = cmd
+        :param cmd: command to execute
+        :param exp_response: expected response from command execution. a literal or a generic response can be provided
+        :param tout (optional): command timeout execution in seconds.
+        :param delay (optional): delay in milliseconds before command execution
+        :param collectables (optional): values to store from response. Follow collectables syntax as specified in ATtila documentation
+        :param dganger (optional): doppelganger command associated to this command (command to execute in case of this command fails)
+        :type cmd: string
+        :type ATResponse: string
+        :type exp_respose: string
+        :type tout: int
+        :type delay: int
+        :type collectables: list of string
+        :type dganger: ATCommand
+        """
+        self._command = cmd
+        self._expected_response = exp_response
+        self._timeout = tout
+        self._delay = delay
+        if type(collectables) != list:
+            self._collectables = None
+        else:
+            self._collectables = collectables
+        if isinstance(dganger, ATCommand):
+            self._doppel_ganger = dganger
+        else:
+            self._doppel_ganger = None
+        self._response = None
 
-  @property
-  def expected_response(self):
-    return self._expected_response
+    @property
+    def command(self):
+        return self._command
 
-  @expected_response.setter
-  def expected_response(self, exp_response):
-    self._expected_response = exp_response
+    @command.setter
+    def command(self, cmd):
+        self._command = cmd
 
-  @property
-  def response(self):
-    return self._response
+    @property
+    def expected_response(self):
+        return self._expected_response
 
-  @response.setter
-  def response(self, response):
-    if isinstance(response, ATResponse):
-      self._response = response
-    else:
-      self._response = None
+    @expected_response.setter
+    def expected_response(self, exp_response):
+        self._expected_response = exp_response
 
-  @property
-  def timeout(self):
-    return self._timeout
+    @property
+    def response(self):
+        return self._response
 
-  @timeout.setter
-  def timeout(self, tout):
-    if tout > 1:
-      self._timeout = tout
-    else:
-      self._timeout = 1
+    @response.setter
+    def response(self, response):
+        if isinstance(response, ATResponse):
+            self._response = response
+        else:
+            self._response = None
 
-  @property
-  def delay(self):
-    return self._delay
+    @property
+    def timeout(self):
+        return self._timeout
 
-  @delay.setter
-  def delay(self, delay):
-    if delay > 0:
-      self._delay = delay
-    else:
-      self._delay = 0
+    @timeout.setter
+    def timeout(self, tout):
+        if tout > 1:
+            self._timeout = tout
+        else:
+            self._timeout = 1
 
-  @property
-  def collectables(self):
-    return self._collectables
+    @property
+    def delay(self):
+        return self._delay
 
-  @collectables.setter
-  def collectables(self, collectables):
-    if type(collectables) == list:
-      self._collectables = collectables
-    else:
-      self._collectables = None
+    @delay.setter
+    def delay(self, delay):
+        if delay > 0:
+            self._delay = delay
+        else:
+            self._delay = 0
 
-  @property
-  def doppel_ganger(self):
-    return self._doppel_ganger
+    @property
+    def collectables(self):
+        return self._collectables
 
-  @doppel_ganger.setter
-  def doppel_ganger(self, dganger):
-    if isinstance(dganger, ATCommand):
-      self._doppel_ganger = dganger
-    else:
-      self._doppel_ganger = None
+    @collectables.setter
+    def collectables(self, collectables):
+        if type(collectables) == list:
+            self._collectables = collectables
+        else:
+            self._collectables = None
+
+    @property
+    def doppel_ganger(self):
+        return self._doppel_ganger
+
+    @doppel_ganger.setter
+    def doppel_ganger(self, dganger):
+        if isinstance(dganger, ATCommand):
+            self._doppel_ganger = dganger
+        else:
+            self._doppel_ganger = None

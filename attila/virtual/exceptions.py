@@ -1,6 +1,6 @@
 # ATtila
 # Developed by Christian Visintin
-# 
+#
 # MIT License
 # Copyright (c) 2019 Christian Visintin
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,15 +21,15 @@
 #
 
 class VirtualSerialException(Exception):
-  """
-  VirtualSerialError class provides an exception in case of an error on the virtual serial port
-  """
+    """
+    VirtualSerialError class provides an exception in case of an error on the virtual serial port
+    """
 
-  def __init__(self, message):
-    self.message = message
+    def __init__(self, message):
+        self.message = message
 
-  def __str__(self):
-    return repr(self.message)
+    def __str__(self):
+        return repr(self.message)
 
-  def __repr__(self):
-    return str(self.message)
+    def __repr__(self):
+        return str(self.message)

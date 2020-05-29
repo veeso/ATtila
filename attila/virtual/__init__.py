@@ -1,6 +1,6 @@
 # ATtila
 # Developed by Christian Visintin
-# 
+#
 # MIT License
 # Copyright (c) 2019 Christian Visintin
 # Permission is hereby granted, free of charge, to any person obtaining a copy

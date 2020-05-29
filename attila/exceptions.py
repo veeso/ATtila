@@ -1,6 +1,6 @@
 # ATtila
 # Developed by Christian Visintin
-# 
+#
 # MIT License
 # Copyright (c) 2019 Christian Visintin
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,71 +21,75 @@
 #
 
 class ATSerialPortError(Exception):
-  """
-  ATSerialPortError class provides an exception in case of an error on the serial port
-  """
+    """
+    ATSerialPortError class provides an exception in case of an error on the serial port
+    """
 
-  def __init__(self, message):
-    self.message = message
+    def __init__(self, message):
+        self.message = message
 
-  def __str__(self):
-    return repr(self.message)
+    def __str__(self):
+        return repr(self.message)
 
-  def __repr__(self):
-    return str(self.message)
+    def __repr__(self):
+        return str(self.message)
+
 
 class ATScriptNotFound(Exception):
-  """
-  ATScriptNotFound class provides an exception in case of an at script not found
-  """
+    """
+    ATScriptNotFound class provides an exception in case of an at script not found
+    """
 
-  def __init__(self, message):
-    self.message = message
+    def __init__(self, message):
+        self.message = message
 
-  def __str__(self):
-    return repr(self.message)
+    def __str__(self):
+        return repr(self.message)
 
-  def __repr__(self):
-    return str(self.message)
+    def __repr__(self):
+        return str(self.message)
+
 
 class ATScriptSyntaxError(Exception):
-  """
-  ATScriptSyntaxError class provides an exception in case of a syntax error in an ATScript
-  """
+    """
+    ATScriptSyntaxError class provides an exception in case of a syntax error in an ATScript
+    """
 
-  def __init__(self, message):
-    self.message = message
+    def __init__(self, message):
+        self.message = message
 
-  def __str__(self):
-    return repr(self.message)
+    def __str__(self):
+        return repr(self.message)
 
-  def __repr__(self):
-    return str(self.message)
+    def __repr__(self):
+        return str(self.message)
+
 
 class ATREUninitializedError(Exception):
-  """
-  ATREUninitializedError class provides an exception in case of uninitialized ATRE
-  """
+    """
+    ATREUninitializedError class provides an exception in case of uninitialized ATRE
+    """
 
-  def __init__(self, message):
-    self.message = message
+    def __init__(self, message):
+        self.message = message
 
-  def __str__(self):
-    return repr(self.message)
+    def __str__(self):
+        return repr(self.message)
 
-  def __repr__(self):
-    return str(self.message)
+    def __repr__(self):
+        return str(self.message)
+
 
 class ATRuntimeError(Exception):
-  """
-  ATRuntimeError class provides an exception in case of a Runtime Error
-  """
+    """
+    ATRuntimeError class provides an exception in case of a Runtime Error
+    """
 
-  def __init__(self, message):
-    self.message = message
+    def __init__(self, message):
+        self.message = message
 
-  def __str__(self):
-    return repr(self.message)
+    def __str__(self):
+        return repr(self.message)
 
-  def __repr__(self):
-    return str(self.message)
+    def __repr__(self):
+        return str(self.message)
