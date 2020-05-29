@@ -22,6 +22,7 @@
 
 from attila.virtual.exceptions import VirtualSerialException
 
+from typing import Callable, Optional
 
 class VirtualSerial(object):
     def __init__(self, serial_port: str, baudrate: int, timeout: int = 0, read_callback: Optional[Callable[[], str]] = None, write_callback: Optional[Callable[[str], None]] = None, in_waiting_callback: Optional[Callable[[], int]] = None):

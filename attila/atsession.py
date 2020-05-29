@@ -25,7 +25,7 @@ from .atcommand import ATCommand
 from .atresponse import ATResponse
 
 import re
-
+from typing import List, Optional, Union, Tuple
 
 class ATSession(object):
     """

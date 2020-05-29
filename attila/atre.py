@@ -21,7 +21,7 @@
 #
 
 from .atsession import ATSession
-from .atcommand import ATCommand
+from .atcommand import ATCommand, ATResponse
 from .esk import ESKValue, ESK
 from .atscriptparser import ATScriptParser
 from .exceptions import ATScriptNotFound, ATScriptSyntaxError, ATSerialPortError, ATREUninitializedError, ATRuntimeError
@@ -31,6 +31,7 @@ from .virtual.atvirtualcommunicator import ATVirtualCommunicator
 from os import environ, system
 from time import sleep
 
+from typing import Callable, List, Optional, Tuple, Union
 
 class ATRuntimeEnvironment(object):
     """

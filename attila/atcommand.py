@@ -20,15 +20,16 @@
 # SOFTWARE.
 #
 
-from .atresponse import ATResponse
+from typing import List
 
+from .atresponse import ATResponse
 
 class ATCommand(object):
     """
     This class represents an AT command
     """
 
-    def __init__(self, cmd: str, exp_response: str = None, tout: int = None, delay: int = 0, collectables: list = None, dganger = None):
+    def __init__(self, cmd: str, exp_response: str = None, tout: int = None, delay: int = 0, collectables: List[str] = None, dganger = None):
         """
         Class constructor. Instantiates a new :class:`.ATCommand.` object with the provided parameters.
 
@@ -124,7 +125,7 @@ class ATCommand(object):
         return self._doppel_ganger
 
     @doppel_ganger.setter
-    def doppel_ganger(self, dganger: ATCommand):
+    def doppel_ganger(self, dganger):
         if isinstance(dganger, ATCommand):
             self._doppel_ganger = dganger
         else:

@@ -20,7 +20,7 @@
 # SOFTWARE.
 #
 
-from .atcommand import ATCommand
+from typing import List, Union
 
 class ATResponse(object):
     """
@@ -28,7 +28,7 @@ class ATResponse(object):
     response format, the entire response and the command execution time (milliseconds)
     """
 
-    def __init__(self, resp: str, fullresponse: List[str], command: ATCommand, executiontime: int = 0):
+    def __init__(self, resp: str, fullresponse: List[str], command, executiontime: int = 0):
         """
         Class constructor. Instantiates a new :class:`.ATResponse.` object with the provided parameters.
 

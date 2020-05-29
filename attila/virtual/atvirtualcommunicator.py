@@ -26,6 +26,7 @@ from attila.atcommunicator import ATCommunicator
 import re
 from time import time
 from time import sleep
+from typing import Callable, Optional, List, Tuple
 
 
 class ATVirtualCommunicator(ATCommunicator):

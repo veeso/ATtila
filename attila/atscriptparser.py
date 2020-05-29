@@ -24,6 +24,7 @@ from .exceptions import ATScriptNotFound, ATScriptSyntaxError
 from .atcommand import ATCommand
 from .esk import ESK, ESKValue
 
+from typing import List, Tuple
 
 class ATScriptParser(object):
     """

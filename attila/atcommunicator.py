@@ -26,7 +26,7 @@ from serial import Serial, SerialException, SerialTimeoutException
 import re
 from time import time
 from time import sleep
-
+from typing import List, Tuple
 
 class ATCommunicator(object):
     """
