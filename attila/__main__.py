@@ -60,6 +60,38 @@ LOG_LEVEL_CRITICAL = 0
 sigterm_called = False
 interactive_mode = True
 
+class _Getch(object):
+    """Gets a single character from standard input. Does not echo to the screen."""
+    def __init__(self):
+        try:
+            self.impl = _GetchWindows()
+        except ImportError:
+            self.impl = _GetchUnix()
+
+    def __call__(self): return self.impl()
+
+class _GetchUnix(object):
+    def __init__(self):
+        import tty, sys
+
+    def __call__(self):
+        import sys, tty, termios
+        fd = sys.stdin.fileno()
+        old_settings = termios.tcgetattr(fd)
+        try:
+            tty.setraw(sys.stdin.fileno())
+            ch = sys.stdin.read(1)
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+        return ch
+
+class _GetchWindows(object):
+    def __init__(self):
+        import msvcrt
+
+    def __call__(self):
+        import msvcrt
+        return msvcrt.getch()
 
 def sigterm_handler(_signo, _stack_frame):
     """
@@ -71,7 +103,6 @@ def sigterm_handler(_signo, _stack_frame):
     sigterm_called = True
     if interactive_mode:
         print("Press ENTER to QUIT")
-
 
 def opt_error(message: str):
     """
@@ -185,10 +216,6 @@ def main():
     except GetoptError as err:
         opt_error(err)
 
-    # Set signal handlers listener
-    signal(SIGTERM, sigterm_handler)
-    signal(SIGINT, sigterm_handler)
-
     # Prepare logger if requested
     if logfile:
         if logfile == "stdout":
@@ -230,6 +257,9 @@ def main():
             exit(1)
     # Parse file if set
     if script_file:
+        # Set signal handlers listener
+        signal(SIGTERM, sigterm_handler)
+        signal(SIGINT, sigterm_handler)
         logging.debug("Trying to parse file %s..." % script_file)
         try:
             atrunenv.parse_ATScript(script_file)
@@ -279,10 +309,57 @@ def main():
             except ATREUninitializedError as err:
                 logging.error("Uninitialized runtime environment: %s " % err)
     else:  # Interactive mode
+        getch = _Getch()
+        command_line = ""
+        history = []
+        history_index = 0
+        sigterm_called = False
+        print(">> ", end = '', flush = True)
         while not sigterm_called:
-            command_line = input(">> ")
-            if not command_line:
+            stdin = getch()
+            #Handle input
+            asciich = ord(stdin)
+            if asciich == 3 or asciich == 4: #CTRL + C, CTRL + D
+                sigterm_called = True
                 continue
+            elif asciich == 27: #Arrow
+                arrow_key = getch() + getch()
+                if arrow_key == "[A": #Up
+                    #history len 1 =>
+                    if history_index - 1 >= 0:
+                        history_index -= 1
+                        command_line = history[history_index]
+                        print("\r\033[K>> %s" % command_line, end = '', flush = True)
+                    continue
+                elif arrow_key == "[B": #Down
+                    if history_index + 1 < len(history):
+                        history_index += 1
+                        command_line = history[history_index]
+                        print("\r\033[K>> %s" % command_line, end = '', flush = True)
+                    elif history_index + 1 >= len(history):
+                        command_line = ""
+                        history_index = len(history)
+                        print("\r\033[K>> %s" % command_line, end = '', flush = True)
+                    continue
+                else:
+                    continue #Ignore
+            elif asciich == 8 or asciich == 127: #Backspace
+                command_line = command_line[:-1]
+                continue
+            elif asciich != 13 and asciich != 10: #Not a newline
+                #Append char to buffer
+                command_line += stdin
+                print(stdin, end = '', flush = True)
+                continue
+            #Newline
+            if not command_line:
+                print()
+                print(">> ", end = '', flush = True)
+                command_line = ""
+                continue
+            print()
+            #Push command to history
+            history.append(command_line)
             # Parse and execute command
             try:
                 response = atrunenv.exec(command_line)
@@ -307,7 +384,6 @@ def main():
                 logging.error("Syntax error: %s" % err)
                 if not to_stdout:
                     print("Syntax error: %s" % err)
-                continue
             except ATSerialPortError as err:
                 logging.error("Serial Port error: %s" % err)
                 if not to_stdout:
@@ -320,6 +396,10 @@ def main():
                 logging.error("Uninitialized error: %s" % err)
                 if not to_stdout:
                     print("Uninitialized error: %s" % err)
+            #Reset command line and history index
+            command_line = ""
+            history_index = len(history)
+            print(">> ", end = '', flush = True)
     # Close serial
     try:
         atrunenv.close_serial()
@@ -337,7 +417,6 @@ def main():
     logging.info("attila terminated with exit code 0")
     if not to_stdout and verbose:
         print("attila terminated with exit code 0")
-
 
 if __name__ == "__main__":
     main()
