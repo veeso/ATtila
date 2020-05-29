@@ -34,7 +34,7 @@ class ATCommunicator(object):
     RF module using AT commands through a serial port
     """
 
-    def __init__(self, serial_port, baud_rate, default_timeout=10, line_break="\r\n"):
+    def __init__(self, serial_port: str, baud_rate: int, default_timeout: int = 10, line_break: str = "\r\n"):
         """
         Class constructor. Instantiates a new :class:`.ATCommunicator.` object with the provided parameters.
 
@@ -57,7 +57,7 @@ class ATCommunicator(object):
         return self._serial_port
 
     @serial_port.setter
-    def serial_port(self, serial_port):
+    def serial_port(self, serial_port: str):
         self._serial_port = serial_port
 
     @property
@@ -65,7 +65,7 @@ class ATCommunicator(object):
         return self._baud_rate
 
     @baud_rate.setter
-    def baud_rate(self, baud_rate):
+    def baud_rate(self, baud_rate: int):
         self._baud_rate = baud_rate
 
     @property
@@ -73,7 +73,7 @@ class ATCommunicator(object):
         return self._default_timeout
 
     @default_timeout.setter
-    def default_timeout(self, timeout):
+    def default_timeout(self, timeout: int):
         if timeout:
             if timeout > 0:
                 self._default_timeout = timeout
@@ -87,10 +87,10 @@ class ATCommunicator(object):
         return self._line_break
 
     @line_break.setter
-    def line_break(self, brk):
+    def line_break(self, brk: str):
         self._line_break = brk
 
-    def open(self):
+    def open(self) -> None:
         """
         Open serial port
 
@@ -110,7 +110,7 @@ class ATCommunicator(object):
         # Flush port
         self.__flush()
 
-    def close(self):
+    def close(self) -> None:
         """
         Close serial port
 
@@ -124,7 +124,7 @@ class ATCommunicator(object):
             raise ATSerialPortError(error)
         self._device = None
 
-    def is_open(self):
+    def is_open(self) -> bool:
         """
         Returns whether the serial port is open
 
@@ -132,7 +132,7 @@ class ATCommunicator(object):
         """
         return self._device != None
 
-    def exec(self, command, timeout=None):
+    def exec(self, command: str, timeout: int = None) -> Tuple[List[str], int]:
         """
         Execute AT command
 
@@ -216,7 +216,7 @@ class ATCommunicator(object):
         self._device.reset_input_buffer()
         return (lines, t_end - t_start)
 
-    def __flush(self):
+    def __flush(self) -> None:
         """
         Flush serial port
         """

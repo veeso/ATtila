@@ -24,7 +24,7 @@ from attila.virtual.exceptions import VirtualSerialException
 
 
 class VirtualSerial(object):
-    def __init__(self, serial_port, baudrate, timeout=0, read_callback=None, write_callback=None, in_waiting_callback=None):
+    def __init__(self, serial_port: str, baudrate: int, timeout: int = 0, read_callback: Optional[Callable[[], str]] = None, write_callback: Optional[Callable[[str], None]] = None, in_waiting_callback: Optional[Callable[[], int]] = None):
         """
         Class constructor. Instantiates a new :class:`.virtual.VirtualSerial` object with the provided parameters.
 
@@ -51,7 +51,7 @@ class VirtualSerial(object):
         return self._serial_port
 
     @serial_port.setter
-    def serial_port(self, serial_port):
+    def serial_port(self, serial_port: str):
         self._serial_port = serial_port
 
     @property
@@ -59,7 +59,7 @@ class VirtualSerial(object):
         return self._baudrate
 
     @baudrate.setter
-    def baudrate(self, baud_rate):
+    def baudrate(self, baud_rate: int):
         self._baudrate = baud_rate
 
     @property
@@ -67,7 +67,7 @@ class VirtualSerial(object):
         return self._timeout
 
     @timeout.setter
-    def timeout(self, timeout):
+    def timeout(self, timeout: int):
         if timeout:
             if timeout > 0:
                 self._timeout = timeout
@@ -101,20 +101,20 @@ class VirtualSerial(object):
                 "Could not close %s" % self.serial_port)
         return True
 
-    def write(self, data):
+    def write(self, data: bytes) -> bool:
         """
         Virtual write function
 
         :param data
         :type data bytes
-        :returns True
+        :returns bool
         """
         # Prepare virtual response
         if self.__writeCB:
             self.__writeCB(data)
         return True
 
-    def read(self, nbytes=1):
+    def read(self, nbytes: int = 1) -> bytes:
         """
         Read a virtual byte
 
@@ -126,7 +126,7 @@ class VirtualSerial(object):
             response = self.__readCB(nbytes)
             return response.encode("utf-8")
 
-    def read_lines(self):
+    def read_lines(self) -> bytearray:
         """
         Read lines
 
@@ -138,7 +138,7 @@ class VirtualSerial(object):
             response.append(token.encode("utf-8"))
         return response
 
-    def read_line(self):
+    def read_line(self) -> bytes:
         """
         Read line
 

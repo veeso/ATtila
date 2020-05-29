@@ -73,19 +73,19 @@ def sigterm_handler(_signo, _stack_frame):
         print("Press ENTER to QUIT")
 
 
-def opt_error(message):
+def opt_error(message: str):
     """
     Function to call in case of an error while parsing options and terminates with exit code 1
 
     :param message
-    :type message: String
+    :type message: str
     """
     print(message)
     print(USAGE)
     exit(1)
 
 
-def get_log_level_from_option(log_level_int):
+def get_log_level_from_option(log_level_int: int):
     """
     Get log level from attila option
 

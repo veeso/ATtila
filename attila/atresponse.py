@@ -20,13 +20,15 @@
 # SOFTWARE.
 #
 
+from .atcommand import ATCommand
+
 class ATResponse(object):
     """
     This class represents an AT command response and provide access to the expected
     response format, the entire response and the command execution time (milliseconds)
     """
 
-    def __init__(self, resp, fullresponse, command, executiontime=0):
+    def __init__(self, resp: str, fullresponse: List[str], command: ATCommand, executiontime: int = 0):
         """
         Class constructor. Instantiates a new :class:`.ATResponse.` object with the provided parameters.
 
@@ -50,7 +52,7 @@ class ATResponse(object):
         return self._response
 
     @response.setter
-    def response(self, response):
+    def response(self, response: str):
         self._response = response
 
     @property
@@ -58,7 +60,7 @@ class ATResponse(object):
         return self._full_response
 
     @full_response.setter
-    def full_response(self, full_response):
+    def full_response(self, full_response: List[str]):
         self._full_response = full_response
 
     @property
@@ -70,13 +72,13 @@ class ATResponse(object):
         return self._execution_time
 
     @execution_time.setter
-    def execution_time(self, executiontime):
+    def execution_time(self, executiontime: int):
         if executiontime > 0:
             self._execution_time = executiontime
         else:
             self._execution_time = 0
 
-    def add_collectable(self, key, value):
+    def add_collectable(self, key: str, value: Union[str, int]) -> None:
         """
         Add a collectable to the response collectables
 
@@ -84,18 +86,18 @@ class ATResponse(object):
         :param value: value of the collectable
         :type key: string
         :type value: any
-        :returns void
+        :returns None
         """
 
         self._collectables[key] = value
         return
 
-    def get_collectable(self, key):
+    def get_collectable(self, key: str) -> Union[str, int]:
         """
         Returns the value associated to the collectable
 
         :param key: key of the collectable
         :type key: string
-        :returns any
+        :returns Union[str, int]
         """
         return self._collectables.get(key)

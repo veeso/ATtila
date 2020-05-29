@@ -40,7 +40,7 @@ class ATRuntimeEnvironment(object):
     of the command execution flow
     """
 
-    def __init__(self, abort_on_failure=True):
+    def __init__(self, abort_on_failure: bool = True):
         """
         Class constructor. Instantiates a new :class:`.ATRuntimeEnvironment.` object with the provided parameters.
 
@@ -60,7 +60,7 @@ class ATRuntimeEnvironment(object):
     def aof(self):
         return self.__aof
 
-    def configure_communicator(self, serial_port, baud_rate, timeout=None, line_break="\r\n"):
+    def configure_communicator(self, serial_port: str, baud_rate: int, timeout: int = None, line_break: str = "\r\n") -> None:
         """
         Configure ATRE communicator
 
@@ -84,7 +84,7 @@ class ATRuntimeEnvironment(object):
         self.__communicator.default_timeout = timeout
         self.__communicator.line_break = line_break
 
-    def configure_virtual_communicator(self, serial_port, baud_rate, timeout=None, line_break="\r\n", read_callback=None, write_callback=None, in_waiting_callback=None):
+    def configure_virtual_communicator(self, serial_port: str, baud_rate: int, timeout: int = None, line_break: str = "\r\n", read_callback: Optional[Callable[[], str]] = None, write_callback: Optional[Callable[[str], None]] = None, in_waiting_callback: Optional[Callable[[], int]] = None) -> None:
         """
         Configure ATRE Virtual communicator
 
@@ -110,7 +110,7 @@ class ATRuntimeEnvironment(object):
         self.__communicator = ATVirtualCommunicator(
             serial_port, baud_rate, timeout, line_break, read_callback, write_callback, in_waiting_callback)
 
-    def init_session(self, commands):
+    def init_session(self, commands: List[ATCommand]) -> None:
         """
         Initialize a new ATSession
 
@@ -121,7 +121,7 @@ class ATRuntimeEnvironment(object):
         for command in commands:
             self.__session.add_command(command)
 
-    def set_ESKs(self, esks):
+    def set_ESKs(self, esks: Tuple[ESKValue, int]) -> None:
         """
         Set ATRE Environment Setup Keywords
         The previous ESKs will be overwritten, the newer will be associated to the current session
@@ -131,7 +131,7 @@ class ATRuntimeEnvironment(object):
         """
         self.__esks = esks
 
-    def parse_ATScript(self, script_file):
+    def parse_ATScript(self, script_file: str) -> None:
         """
         Parse an AT Script file
 
@@ -150,7 +150,7 @@ class ATRuntimeEnvironment(object):
         self.init_session(commands)
         self.set_ESKs(esks)
 
-    def add_command(self, command):
+    def add_command(self, command: ATCommand) -> bool:
         """
         Add an ATCommand to the ATSession
 
@@ -160,7 +160,7 @@ class ATRuntimeEnvironment(object):
         """
         return self.__session.add_command(command)
 
-    def run(self):
+    def run(self) -> List[ATResponse]:
         """
         Starts and run current ATSession
 
@@ -187,7 +187,7 @@ class ATRuntimeEnvironment(object):
             raise err
         return response_list
 
-    def exec(self, command):
+    def exec(self, command: str) -> Optional[ATResponse]:
         """
         Execute in the current session a command or a ESK.
         The command has to be parsed by th eATScriptParser before being executed.
@@ -239,7 +239,7 @@ class ATRuntimeEnvironment(object):
         else:
             return None
 
-    def exec_next(self):
+    def exec_next(self) -> Optional[ATResponse]:
         """
         Execute next command (It doesn't open/close the serial port)
 
@@ -278,7 +278,7 @@ class ATRuntimeEnvironment(object):
             self.__current_command += 1
         return response
 
-    def open_serial(self):
+    def open_serial(self) -> None:
         """
         Open Serial port
 
@@ -293,7 +293,7 @@ class ATRuntimeEnvironment(object):
         except ATSerialPortError as err:
             raise err
 
-    def close_serial(self):
+    def close_serial(self) -> None:
         """
         Close Serial Port
 
@@ -308,13 +308,13 @@ class ATRuntimeEnvironment(object):
         except ATSerialPortError as err:
             raise err
 
-    def get_session_value(self, key):
+    def get_session_value(self, key: str) -> Union[str, int]:
         """
         Try to get a value from the current session storage
         If key doesn't exist, KeyError is raised
 
         :param key
-        :type key: String
+        :type key: str
         :returns any
         :raises KeyError
         """
@@ -323,7 +323,7 @@ class ATRuntimeEnvironment(object):
         except KeyError as err:
             raise err
 
-    def __process_ESK(self, esk):
+    def __process_ESK(self, esk: ESKValue) -> bool:
         """
         Process an environment setup keyword
 

@@ -30,7 +30,7 @@ class ATScriptParser(object):
     This class represents an AT script parser, which is the component which purpose is to parse an ATScript.
     """
 
-    def parse(self, script):
+    def parse(self, script: str) -> Tuple[List[ATCommand], List[Tuple[ESKValue, int]]]:
         """
         Parse an ATScript
 
@@ -73,7 +73,7 @@ class ATScriptParser(object):
                         "Syntax error at line %d: %s -- Don't know how to interpret this line, sorry..." % (line_no, row))
         return result
 
-    def parse_file(self, file_path):
+    def parse_file(self, file_path: str) -> Tuple[List[ATCommand], List[Tuple[ESKValue, int]]]:
         """
         Parse an ATScript file
 
@@ -92,7 +92,7 @@ class ATScriptParser(object):
         except ATScriptSyntaxError as err:
             raise err
 
-    def __parse_esk(self, row):
+    def __parse_esk(self, row: str) -> Tuple[ESKValue, str]:
         """
         Parse a row, which is possibly an ESK
 
@@ -121,7 +121,7 @@ class ATScriptParser(object):
             error = "Invalid attributes"
         return (esk_value, error)
 
-    def __parse_command(self, row):
+    def __parse_command(self, row: str) -> Tuple[ATCommand, str]:
         """
         Parse a row, which is possibly an AT command
 

@@ -25,7 +25,7 @@ class VirtualSerialException(Exception):
     VirtualSerialError class provides an exception in case of an error on the virtual serial port
     """
 
-    def __init__(self, message):
+    def __init__(self, message: str):
         self.message = message
 
     def __str__(self):

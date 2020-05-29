@@ -11,7 +11,7 @@ README = (ROOT / "README.md").read_text(encoding="utf-8")
 
 setup(
   name='attila',
-  version='1.1.6',
+  version='1.2.0',
   description='Python module to communicate easily with modems and RF modules using AT commands',
   long_description=README,
   long_description_content_type="text/markdown",
@@ -19,7 +19,7 @@ setup(
   author_email='christian.visintin1997@gmail.com',
   url='https://github.com/ChristianVisintin/ATtila',
   license="MIT",
-  python_requires='>=3.4',
+  python_requires='>=3.5',
   include_package_data = True,
   install_requires=[
     'pyserial>=3',
@@ -44,6 +44,6 @@ setup(
     'Programming Language :: Python :: 3',
     'Operating System :: OS Independent',
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.4",
+    "Programming Language :: Python :: 3.5",
   ]
 )

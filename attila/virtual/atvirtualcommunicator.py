@@ -35,7 +35,7 @@ class ATVirtualCommunicator(ATCommunicator):
     This module should be used in test environment only
     """
 
-    def __init__(self, serial_port, baud_rate, default_timeout=10, line_break="\r\n", read_callback=None, write_callback=None, in_waiting_callback=None):
+    def __init__(self, serial_port: str, baud_rate: int, default_timeout: int = 10, line_break: str = "\r\n", read_callback: Optional[Callable[[], str]] = None, write_callback: Optional[Callable[[str], None]] = None, in_waiting_callback: Optional[Callable[[], int]] = None):
         """
         Class constructor. Instantiates a new :class:`.ATCommunicator.` object with the provided parameters.
 
@@ -84,7 +84,7 @@ class ATVirtualCommunicator(ATCommunicator):
         return self._default_timeout
 
     @default_timeout.setter
-    def default_timeout(self, timeout):
+    def default_timeout(self, timeout: int):
         if timeout:
             if timeout > 0:
                 self._default_timeout = timeout
@@ -98,10 +98,10 @@ class ATVirtualCommunicator(ATCommunicator):
         return self._line_break
 
     @line_break.setter
-    def line_break(self, brk):
+    def line_break(self, brk: str):
         self._line_break = brk
 
-    def open(self):
+    def open(self) -> None:
         """
         Open serial port
 
@@ -115,7 +115,7 @@ class ATVirtualCommunicator(ATCommunicator):
         except (OSError, VirtualSerialException) as error:
             raise ATSerialPortError(error)
 
-    def close(self):
+    def close(self) -> None:
         """
         Close serial port
 
@@ -129,7 +129,7 @@ class ATVirtualCommunicator(ATCommunicator):
             raise ATSerialPortError(error)
         self._device = None
 
-    def is_open(self):
+    def is_open(self) -> bool:
         """
         Returns whether the serial port is open
 
@@ -137,7 +137,7 @@ class ATVirtualCommunicator(ATCommunicator):
         """
         return super().is_open()
 
-    def exec(self, command, timeout=None):
+    def exec(self, command: str, timeout: Optional[int] = None) -> Tuple[List[str], int]:
         """
         Execute AT command
 

@@ -28,7 +28,7 @@ class ESKValue(object):
     This class represents an Environment Setup Keyword value
     """
 
-    def __init__(self, keyword, value):
+    def __init__(self, keyword: ESK, value: Union[str, int]):
         """
         Class constructor. Instantiates a new :class:`.ESKValue.` object with the provided paramters
 
@@ -72,7 +72,7 @@ class ESK(Enum):
     EXEC = 8
 
     @staticmethod
-    def get_esk_from_string(esk_string):
+    def get_esk_from_string(esk_string: str) -> Optional[ESK]:
         """
         Get ESK enum value from its string representation
 
@@ -102,7 +102,7 @@ class ESK(Enum):
             return None
 
     @staticmethod
-    def to_ESKValue(esk, attr):
+    def to_ESKValue(esk: ESK, attr: str) -> Optional[ESKValue]:
         """
         Check if attributes for this esk have a valid syntax
 

@@ -28,7 +28,7 @@ class ATCommand(object):
     This class represents an AT command
     """
 
-    def __init__(self, cmd, exp_response=None, tout=None, delay=0, collectables=None, dganger=None):
+    def __init__(self, cmd: str, exp_response: str = None, tout: int = None, delay: int = 0, collectables: list = None, dganger = None):
         """
         Class constructor. Instantiates a new :class:`.ATCommand.` object with the provided parameters.
 
@@ -39,7 +39,6 @@ class ATCommand(object):
         :param collectables (optional): values to store from response. Follow collectables syntax as specified in ATtila documentation
         :param dganger (optional): doppelganger command associated to this command (command to execute in case of this command fails)
         :type cmd: string
-        :type ATResponse: string
         :type exp_respose: string
         :type tout: int
         :type delay: int
@@ -73,7 +72,7 @@ class ATCommand(object):
         return self._expected_response
 
     @expected_response.setter
-    def expected_response(self, exp_response):
+    def expected_response(self, exp_response: str):
         self._expected_response = exp_response
 
     @property
@@ -81,7 +80,7 @@ class ATCommand(object):
         return self._response
 
     @response.setter
-    def response(self, response):
+    def response(self, response: ATResponse):
         if isinstance(response, ATResponse):
             self._response = response
         else:
@@ -92,7 +91,7 @@ class ATCommand(object):
         return self._timeout
 
     @timeout.setter
-    def timeout(self, tout):
+    def timeout(self, tout: int):
         if tout > 1:
             self._timeout = tout
         else:
@@ -103,7 +102,7 @@ class ATCommand(object):
         return self._delay
 
     @delay.setter
-    def delay(self, delay):
+    def delay(self, delay: int):
         if delay > 0:
             self._delay = delay
         else:
@@ -114,7 +113,7 @@ class ATCommand(object):
         return self._collectables
 
     @collectables.setter
-    def collectables(self, collectables):
+    def collectables(self, collectables: list):
         if type(collectables) == list:
             self._collectables = collectables
         else:
@@ -125,7 +124,7 @@ class ATCommand(object):
         return self._doppel_ganger
 
     @doppel_ganger.setter
-    def doppel_ganger(self, dganger):
+    def doppel_ganger(self, dganger: ATCommand):
         if isinstance(dganger, ATCommand):
             self._doppel_ganger = dganger
         else:

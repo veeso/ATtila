@@ -34,7 +34,7 @@ class ATSession(object):
     and of validating the response of the last command. 
     """
 
-    def __init__(self, commands=[]):
+    def __init__(self, commands: List[str] = []):
         """
         Class constructor. Instantiates a new :class:`.ATSession.` object with the provided parameters.
 
@@ -72,7 +72,7 @@ class ATSession(object):
         self._current_command_index = 0
         self._last_command_failed = False
 
-    def add_command(self, command):
+    def add_command(self, command: ATCommand) -> bool:
         """
         Add a command at the end of the command list
 
@@ -83,7 +83,7 @@ class ATSession(object):
         self._commands.append(command)
         return True
 
-    def add_new_command(self, command, exp_response, tout=None, delay=0, collectables=None, dganger=None):
+    def add_new_command(self, command: str, exp_response: str, tout:int = None, delay: int = 0, collectables: Optional[List[str]] = None, dganger: Optional[ATCommand] = None) -> bool:
         """
         Add a new command at the end of the command list
 
@@ -109,7 +109,7 @@ class ATSession(object):
         self._commands.append(new_command)
         return True
 
-    def rem_command(self, index):
+    def rem_command(self, index: int) -> bool:
         """
         Remove a command from the session command list
 
@@ -122,11 +122,11 @@ class ATSession(object):
         self._commands.remove(self._commands[index])
         return True
 
-    def get_next_command(self):
+    def get_next_command(self) -> Optional[ATCommand]:
         """
         Get the next command in the AT session to execute
 
-        :returns ATCommand
+        :returns ATCommand (or None)
         """
         # Prepare command
         try:
@@ -137,19 +137,19 @@ class ATSession(object):
         # Return command
         return next_command
 
-    def get_command(self, index):
+    def get_command(self, index: int) -> Optional[ATCommand]:
         """
         Get the command with the provided index
 
         :param index: index of the command to get
         :type index: int
-        :returns ATCommand
+        :returns ATCommand (or None)
         """
         if index >= len(self._commands):
             return None
         return self._commands[index]
 
-    def validate_response(self, response, execution_time):
+    def validate_response(self, response: List[str], execution_time: int) -> ATResponse:
         """
         Validate a response of a command. The response is associated to the current command.
         Based on the response and the command associated to it,
@@ -208,7 +208,7 @@ class ATSession(object):
         current_command.response = atresponse
         return atresponse
 
-    def replace_session_keys(self, haystack):
+    def replace_session_keys(self, haystack: str) -> str:
         """
         Replace all the session keys with session values
         :param haystack: string where keys have to be replaced with their values
@@ -230,7 +230,7 @@ class ATSession(object):
             haystack = haystack.replace(key_group, str(session_value))
         return haystack
 
-    def prepare(self, command):
+    def prepare(self, command: ATCommand) -> None:
         """
         Prepare command to execute, replacing session variable with values in session;
         if value is not in session, it will be replaced with an empty string
@@ -248,7 +248,7 @@ class ATSession(object):
         command.command = command_str
         return
 
-    def set_session_value(self, key, value):
+    def set_session_value(self, key: str, value: Union[str, int]) -> None:
         """
         Set a new key to session storage
 
@@ -259,7 +259,7 @@ class ATSession(object):
         """
         self._session_storage[key] = value
 
-    def get_session_value(self, key):
+    def get_session_value(self, key: str) -> Union[str, int]:
         """
         Try to get a value from the current session storage
         If key doesn't exist, KeyError is raised
@@ -274,7 +274,7 @@ class ATSession(object):
                 "Could not find %s in current session storage" % key)
         return self._session_storage.get(key)
 
-    def __get_value_from_response(self, to_collect, response):
+    def __get_value_from_response(self, to_collect: str, response: List[str]) -> Optional[Tuple[str, Union[str, int]]]:
         """
         Get a value from response.
         The collectable syntax is '...?{KEY_NAME}...'
