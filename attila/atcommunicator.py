@@ -26,7 +26,7 @@ from serial import Serial, SerialException, SerialTimeoutException
 import re
 from time import time
 from time import sleep
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 class ATCommunicator(object):
     """
@@ -34,23 +34,30 @@ class ATCommunicator(object):
     RF module using AT commands through a serial port
     """
 
-    def __init__(self, serial_port: str, baud_rate: int, default_timeout: int = 10, line_break: str = "\r\n"):
+    def __init__(self, serial_port: str, baud_rate: int, default_timeout: int = 10, line_break: str = "\r\n", rtscts: Optional[bool] = True, dsrdtr: Optional[bool] = True):
         """
         Class constructor. Instantiates a new :class:`.ATCommunicator.` object with the provided parameters.
 
         :param serial_port: serial port to use in order to communicate with the RF module
         :param baud_rate: baud rate to set
         :param default_timeout (optional): the default timeout for command response read in seconds; it will be used if a timeout is not provided when executing a command         :param line_break (optional): specify line break to use when sending command; most of RF modules use CRLF
+        :param line_break: line break to send with commands
+        :param rtscts: use rtscts
+        :param dsrdtr: use dsrdtr
         :type serial_port: string
         :type baud_rate: int
         :type default_timeout: int > 0
         :type line_break: string
+        :type rtscts: bool
+        :type dsrdtr: bool
         """
         self._device = None
         self._serial_port = serial_port
         self._baud_rate = baud_rate
         self.default_timeout = default_timeout
         self._line_break = line_break
+        self._rtscts = rtscts
+        self._dsrdtr = dsrdtr
 
     @property
     def serial_port(self):
@@ -90,6 +97,22 @@ class ATCommunicator(object):
     def line_break(self, brk: str):
         self._line_break = brk
 
+    @property
+    def rtscts(self):
+        return self._rtscts
+
+    @rtscts.setter
+    def rtscts(self, opt: bool):
+        self._rtscts = opt
+
+    @property
+    def dsrdtr(self):
+        return self._dsrdtr
+
+    @dsrdtr.setter
+    def dsrdtr(self, opt: bool):
+        self._dsrdtr = opt
+
     def open(self) -> None:
         """
         Open serial port
@@ -102,7 +125,7 @@ class ATCommunicator(object):
             self.close()
         try:
             self._device = Serial(self._serial_port, self._baud_rate, timeout=0.1,
-                                  write_timeout=self._default_timeout, rtscts=True, dsrdtr=True)
+                                  write_timeout = self._default_timeout, rtscts = self._rtscts, dsrdtr = self._dsrdtr)
         except (OSError, SerialException) as error:
             raise ATSerialPortError(str(error))
         except Exception as error:  # Catch other exceptions too
