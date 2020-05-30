@@ -406,7 +406,7 @@ class ATRuntimeEnvironment(object):
         else:
             return True
 
-    def __write_file(self, filep: str, content: str) -> bool:
+    def __write_file(self, file_path: str, content: str) -> bool:
         """
         Write file from ESK.
         Content ${} variables are evaluated
@@ -419,7 +419,7 @@ class ATRuntimeEnvironment(object):
         """
         content = self.__session.replace_session_keys(content)
         try:
-            hnd = open(filep)
+            hnd = open(file_path, 'w')
             hnd.write(content)
             hnd.close()
         except IOError:

@@ -28,6 +28,8 @@ from attila.exceptions import ATREUninitializedError, ATRuntimeError, ATScriptNo
 from attila.esk import ESK, ESKValue
 
 from os.path import dirname
+#Tempfile
+from tempfile import NamedTemporaryFile
 
 SCRIPT = "commands_esk.ats"
 SCRIPT_RUN = "atre.ats"
@@ -37,6 +39,15 @@ SCRIPT_ATRE_ERR = "atre_error.ats"
 response = None
 response_ptr = 0
 
+response_assoc = {
+    "ATD*99***1#": "CONNECT\r\n",
+    "AT+CGDATA=\"PPP\",1": "CONNECT\r\n",
+    "AT+CSQ": "32,99\r\n\r\nOK\r\n",
+    "AT+CPIN?": "+CPIN: READY\r\n",
+    "AT+CGSN": "123456789\r\nOK\r\n",
+    "AT+CGDCONT=1,\"IP\",\"apn.foo.bar\"": "OK\r\n",
+    "AT": "OK\r\n"
+}
 
 def create_virtual_response(command):
     """
@@ -47,26 +58,20 @@ def create_virtual_response(command):
     """
     global response
     global response_ptr
-    response_assoc = {
-        "ATD*99***1#": "CONNECT\r\n",
-        "AT+CGDATA=\"PPP\",1": "CONNECT\r\n",
-        "AT+CSQ": "32,99\r\n\r\nOK\r\n",
-        "AT+CPIN?": "+CPIN: READY\r\n",
-        "AT+CGSN": "123456789\r\nOK\r\n"
-    }
+    #Remove newlines from command
+    if command.endswith("\r\n"):
+        command = command[:-2]
     response_str = response_assoc.get(command)
     response_ptr = 0
     if response_str:
         response = response_str
     else:
-        response = "OK\r\n"
-
+        response = "ERROR\r\n"
 
 def in_waiting():
     global response
     global response_ptr
     return response_ptr < len(response)
-
 
 def read_callback(nbytes):
     global response
@@ -75,11 +80,9 @@ def read_callback(nbytes):
     response_ptr += nbytes
     return ret
 
-
 def write_callback(command):
     cmd = command.decode("utf-8")
     create_virtual_response(cmd)
-
 
 class TestATRE(unittest.TestCase):
     """
@@ -91,6 +94,8 @@ class TestATRE(unittest.TestCase):
         super().__init__(methodName)
         self.atre = ATRuntimeEnvironment()
         self.script_dir = "%s/scripts/" % dirname(__file__)
+        #Verify constructor
+        self.assertEqual(self.atre.aof, True)
 
     def test_session_reset(self):
         # Try to reset session
@@ -98,15 +103,43 @@ class TestATRE(unittest.TestCase):
         cmds = [cmd]
         self.atre.init_session(cmds)
 
-    def set_esks(self):
+    def test_set_esks(self):
         # Try to set ESK
         esks = []
         esk = ESK.to_ESKValue(ESK.get_esk_from_string("AOF"), "True")
-        self.assertIsNotNone(esk, "Could not parse ESK")
+        self.assertIsNotNone(esk, "Could not parse ESK AOF")
         esks.append((esk, 0))
         self.atre.set_ESKs(esks)
+        #Test ESKs
+        self.assertTrue(self.atre._ATRuntimeEnvironment__process_ESK(ESK.to_ESKValue(ESK.AOF, "True")))
+        self.assertTrue(self.atre._ATRuntimeEnvironment__process_ESK(ESK.to_ESKValue(ESK.BAUDRATE, "9600")))
+        self.assertTrue(self.atre._ATRuntimeEnvironment__process_ESK(ESK.to_ESKValue(ESK.BREAK, "CRLF")))
+        #Use a different ATRE for device
+        new_atre = ATRuntimeEnvironment()
+        self.assertTrue(new_atre._ATRuntimeEnvironment__process_ESK(ESK.to_ESKValue(ESK.DEVICE, "/dev/ttyS1")))
+        self.assertTrue(self.atre._ATRuntimeEnvironment__process_ESK(ESK.to_ESKValue(ESK.DSRDTR, "True")))
+        self.assertTrue(self.atre._ATRuntimeEnvironment__process_ESK(ESK.to_ESKValue(ESK.EXEC, "echo foo")))
+        self.assertTrue(self.atre._ATRuntimeEnvironment__process_ESK(ESK.to_ESKValue(ESK.GETENV, "PATH")))
+        self.assertTrue(self.atre._ATRuntimeEnvironment__process_ESK(ESK.to_ESKValue(ESK.PRINT, "foobar")))
+        self.assertTrue(self.atre._ATRuntimeEnvironment__process_ESK(ESK.to_ESKValue(ESK.RTSCTS, "True")))
+        self.assertTrue(self.atre._ATRuntimeEnvironment__process_ESK(ESK.to_ESKValue(ESK.SET, "PIN=1522")))
+        self.assertTrue(self.atre._ATRuntimeEnvironment__process_ESK(ESK.to_ESKValue(ESK.TIMEOUT, "5")))
+        tempfile = NamedTemporaryFile()
+        self.assertTrue(self.atre._ATRuntimeEnvironment__process_ESK(ESK.to_ESKValue(ESK.WRITE, "%s HELLO WORLD!" % tempfile.name)))
+        #Bad cases
+        self.assertFalse(self.atre._ATRuntimeEnvironment__process_ESK(ESK.to_ESKValue(ESK.DEVICE, "/dev/ttyS1")))
 
-    def parse_script(self):
+    def test_write(self):
+        #Test write
+        tempfile = NamedTemporaryFile()
+        self.assertTrue(self.atre._ATRuntimeEnvironment__write_file(tempfile.name, "HELLO WORLD!"))
+        #Try bad write
+        self.assertFalse(self.atre._ATRuntimeEnvironment__write_file("/", "HELLO WORLD!"))
+
+    def test_reconfigure_communicator(self):
+        self.assertTrue(self.atre._ATRuntimeEnvironment__reconfigure_communicator())
+
+    def test_parse_script(self):
         # Try to parse script
         try:
             self.atre.parse_ATScript("%s%s" % (self.script_dir, SCRIPT))
@@ -114,6 +147,15 @@ class TestATRE(unittest.TestCase):
             raise err
         except ATScriptSyntaxError as err:
             raise err
+
+    def test_configure_communicator(self):
+        self.atre.configure_communicator("/dev/ttyS0", 115200, 5, "\r\n", False, False)
+        self.assertEqual(self.atre._ATRuntimeEnvironment__communicator.serial_port, "/dev/ttyS0")
+        self.assertEqual(self.atre._ATRuntimeEnvironment__communicator.baud_rate, 115200)
+        self.assertEqual(self.atre._ATRuntimeEnvironment__communicator.default_timeout, 5)
+        self.assertEqual(self.atre._ATRuntimeEnvironment__communicator.line_break, "\r\n")
+        self.assertEqual(self.atre._ATRuntimeEnvironment__communicator.rtscts, False)
+        self.assertEqual(self.atre._ATRuntimeEnvironment__communicator.dsrdtr, False)
 
     def test_session_key(self):
         # Try to get unexisting key
@@ -145,7 +187,7 @@ class TestATRE(unittest.TestCase):
         with self.assertRaises(ATREUninitializedError):
             self.atre.exec("AT;;OK")
         self.atre.configure_virtual_communicator(
-            "virtualAdapter", 115200, 10, "\r", read_callback, write_callback, in_waiting)
+            "virtualAdapter", 115200, 10, "\r\n", read_callback, write_callback, in_waiting)
         self.atre.open_serial()
         self.atre.exec("AT;;OK;;100")  # Tests delay too
         # Test bad response
