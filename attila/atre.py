@@ -61,7 +61,7 @@ class ATRuntimeEnvironment(object):
     def aof(self):
         return self.__aof
 
-    def configure_communicator(self, serial_port: str, baud_rate: int, timeout: int = None, line_break: str = "\r\n") -> None:
+    def configure_communicator(self, serial_port: str, baud_rate: int, timeout: int = None, line_break: str = "\r\n", rtscts: Optional[bool] = True, dsrdtr: Optional[bool] = True) -> None:
         """
         Configure ATRE communicator
 
@@ -69,10 +69,14 @@ class ATRuntimeEnvironment(object):
         :param baud_rate: Baud rate used
         :param timeout: default timeout for commands
         :param line_break: line break used by the device
+        :param rtscts: use rtscts
+        :param dsrdtr: use dsrdtr
         :type serial_port: String
         :type baud_rate: int
         :type timeout: int
         :type line_break: String
+        :type rtscts: bool
+        :type dsrdtr: bool
         """
         if self.__communicator:  # If device is open, close device
             if self.__communicator.is_open():
@@ -84,6 +88,8 @@ class ATRuntimeEnvironment(object):
         self.__communicator.baud_rate = baud_rate
         self.__communicator.default_timeout = timeout
         self.__communicator.line_break = line_break
+        self.__communicator.dsrdtr = dsrdtr
+        self.__communicator.rtscts = rtscts
 
     def configure_virtual_communicator(self, serial_port: str, baud_rate: int, timeout: int = None, line_break: str = "\r\n", read_callback: Optional[Callable[[], str]] = None, write_callback: Optional[Callable[[str], None]] = None, in_waiting_callback: Optional[Callable[[], int]] = None) -> None:
         """
@@ -336,30 +342,17 @@ class ATRuntimeEnvironment(object):
             return False
         elif esk.keyword is ESK.DEVICE:
             # Check if serial is opened
-            if self.__communicator:
-                if self.__communicator.is_open():
-                    self.__communicator.close()
-            self.configure_communicator(
-                esk.value, self.__communicator.baud_rate)
-            if self.__communicator.serial_port and self.__communicator.baud_rate:
-                try:
-                    self.__communicator.open()
-                    return True
-                except ATSerialPortError:
-                    return False
+            self.__communicator.serial_port = esk.value
+            return self.__reconfigure_communicator()
         elif esk.keyword is ESK.BAUDRATE:
-            # Check if serial is opened
-            if self.__communicator:
-                if self.__communicator.is_open():
-                    self.__communicator.close()
-            self.configure_communicator(
-                self.__communicator.serial_port, esk.value)
-            if self.__communicator.serial_port and self.__communicator.baud_rate:
-                try:
-                    self.__communicator.open()
-                    return True
-                except ATSerialPortError:
-                    return False
+            self.__communicator.baud_rate = esk.value
+            return self.__reconfigure_communicator()
+        elif esk.keyword is ESK.DSRDTR:
+            self.__communicator.dsrdtr = esk.value
+            return self.__reconfigure_communicator()
+        elif esk.keyword is ESK.RTSCTS:
+            self.__communicator.rtscts = esk.value
+            return self.__reconfigure_communicator()
         elif esk.keyword is ESK.TIMEOUT:
             self.__communicator.default_timeout = esk.value
         elif esk.keyword is ESK.BREAK:
@@ -385,6 +378,50 @@ class ATRuntimeEnvironment(object):
             rc = system(esk.value)
             if rc != 0:
                 return False
+        elif esk.keyword is ESK.WRITE:
+            file_path = esk.value[0]
+            write_cnt = esk.value[1]
+            return self.__write_file(file_path, write_cnt)
         else:
+            return False
+        return True
+
+    def __reconfigure_communicator(self) -> bool:
+        """
+        Reconfigure communicator on related ESK
+        """
+        # Check if serial is opened
+        if self.__communicator:
+            if self.__communicator.is_open():
+                self.__communicator.close()
+        self.configure_communicator(
+            self.__communicator.serial_port, self.__communicator.baud_rate, self.__communicator.default_timeout, 
+            self.__communicator.line_break, self.__communicator.rtscts, self.__communicator.dsrdtr)
+        if self.__communicator.serial_port and self.__communicator.baud_rate:
+            try:
+                self.__communicator.open()
+                return True
+            except ATSerialPortError:
+                return False
+        else:
+            return True
+
+    def __write_file(self, filep: str, content: str) -> bool:
+        """
+        Write file from ESK.
+        Content ${} variables are evaluated
+
+        :param file
+        :param content
+        :type file: str
+        :type content: str
+        :returns bool
+        """
+        content = self.__session.replace_session_keys(content)
+        try:
+            hnd = open(filep)
+            hnd.write(content)
+            hnd.close()
+        except IOError:
             return False
         return True

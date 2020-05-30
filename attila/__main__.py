@@ -45,6 +45,8 @@ USAGE = "Usage: %s [OPTION]... [FILE]\n\
   \t-A <True/False>\t\tAbort on failure (Default: True)\n\
   \t-L <logfile>\t\tEnable log and log to the specified log file (stdout is supported)\n\
   \t-l <loglevel>\t\tSpecify the log level (0: CRITICAL, 1: ERROR, 2: WARN, 3: INFO, 4: DEBUG) (Default: INFO\n\
+  \t-R <True/False>\t\tSpecify value for rtscts (Default: True)\n\
+  \t-D <True/False>\t\tSpecify value for dsrdtr (Default: True)\n\
   \t-v\t\t\tBe more verbose\n\
   \t-q\t\t\tBe quiet (print only PRINT ESKs and ERRORS)\n\
   \t-h\t\t\tShow this page\n\
@@ -147,6 +149,8 @@ def main():
     baud_rate = None
     default_timeout = 0
     line_break = None
+    rtscts = True
+    dsrdtr = True
     logfile = None
     log_level = LOG_LEVEL_INFO
     verbose = False
@@ -155,7 +159,7 @@ def main():
     to_stdout = False
 
     try:
-        optlist, args = getopt(argv[1:], "p::b::T::B::L::l::Avqh")
+        optlist, args = getopt(argv[1:], "p::b::T::B::L::l::A::R::D::vqh")
         if args:
             interactive_mode = False
             script_file = args[0]
@@ -204,6 +208,22 @@ def main():
                             "Abort on failure has a bad value: '%s', but should be True or False" % abort_on_failure)
                 except NameError:
                     opt_error("Abort on failure has a bad value")
+            elif opt == "-R":
+                try:
+                    rtscts = eval(arg)
+                    if rtscts != True and rtscts != False:
+                        opt_error(
+                            "rtscts has a bad value: '%s', but should be True or False" % rtscts)
+                except NameError:
+                    opt_error("rtscts has a bad value")
+            elif opt == "-D":
+                try:
+                    dsrdtr = eval(arg)
+                    if dsrdtr != True and dsrdtr != False:
+                        opt_error(
+                            "dsrdtr has a bad value: '%s', but should be True or False" % dsrdtr)
+                except NameError:
+                    opt_error("dsrdtr has a bad value")
             elif opt == "-v":
                 verbose = True
             elif opt == "-q":
@@ -234,7 +254,7 @@ def main():
     # Configure serial
     if device and baud_rate:
         atrunenv.configure_communicator(
-            device, baud_rate, default_timeout, line_break)
+            device, baud_rate, default_timeout, line_break, rtscts, dsrdtr)
         logging.info("Setup communicator (device: %s, baud_rate: %d)" %
                      (device, baud_rate))
         if verbose and not to_stdout:
@@ -345,6 +365,7 @@ def main():
                     continue #Ignore
             elif asciich == 8 or asciich == 127: #Backspace
                 command_line = command_line[:-1]
+                print("\r\033[K>> %s" % command_line, end = '', flush = True)
                 continue
             elif asciich != 13 and asciich != 10: #Not a newline
                 #Append char to buffer

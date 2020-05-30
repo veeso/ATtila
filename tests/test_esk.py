@@ -45,6 +45,9 @@ class TestEsk(unittest.TestCase):
     self.assertIsNotNone(ESK.get_esk_from_string("GETENV"))
     self.assertIsNotNone(ESK.get_esk_from_string("PRINT"))
     self.assertIsNotNone(ESK.get_esk_from_string("EXEC"))
+    self.assertIsNotNone(ESK.get_esk_from_string("RTSCTS"))
+    self.assertIsNotNone(ESK.get_esk_from_string("DSRDTR"))
+    self.assertIsNotNone(ESK.get_esk_from_string("WRITE"))
     #Try to fail
     self.assertIsNone(ESK.get_esk_from_string("FOOBAR"))
 
@@ -67,11 +70,27 @@ class TestEsk(unittest.TestCase):
     self.assertIsNotNone(ESK.to_ESKValue(ESK.GETENV, "CSQ"))
     self.assertIsNotNone(ESK.to_ESKValue(ESK.PRINT, "SAMPLE TEXT"))
     self.assertIsNotNone(ESK.to_ESKValue(ESK.EXEC, "echo foobar"))
+    self.assertEqual(ESK.to_ESKValue(ESK.RTSCTS, "True").value, True)
+    self.assertEqual(ESK.to_ESKValue(ESK.RTSCTS, "false").value, False)
+    self.assertEqual(ESK.to_ESKValue(ESK.DSRDTR, "True").value, True)
+    self.assertEqual(ESK.to_ESKValue(ESK.DSRDTR, "false").value, False)
+    self.assertEqual(ESK.to_ESKValue(ESK.WRITE, "/tmp/foo.txt {\"csq\":${CSQ} }").value, ("/tmp/foo.txt", "{\"csq\":${CSQ} }"))
     #Bad cases
     self.assertFalse(ESK.to_ESKValue(None, "FOOBAR"))
     self.assertIsNone(ESK.to_ESKValue(ESK.DEVICE, None))
     self.assertIsNone(ESK.to_ESKValue(ESK.EXEC, None))
     self.assertIsNone(ESK.to_ESKValue(6000, "foobar"))
+    self.assertIsNone(ESK.to_ESKValue(ESK.AOF, None))
+    self.assertIsNone(ESK.to_ESKValue(ESK.AOF, ""))
+    self.assertIsNone(ESK.to_ESKValue(ESK.GETENV, ""))
+    self.assertIsNone(ESK.to_ESKValue(ESK.PRINT, ""))
+    self.assertIsNone(ESK.to_ESKValue(ESK.RTSCTS, None))
+    self.assertIsNone(ESK.to_ESKValue(ESK.RTSCTS, ""))
+    self.assertIsNone(ESK.to_ESKValue(ESK.DSRDTR, None))
+    self.assertIsNone(ESK.to_ESKValue(ESK.DSRDTR, ""))
+    self.assertIsNone(ESK.to_ESKValue(ESK.WRITE, None))
+    self.assertIsNone(ESK.to_ESKValue(ESK.WRITE, ""))
+    self.assertIsNone(ESK.to_ESKValue(ESK.WRITE, "/tmp/foo.txt")) #No string
 
   def tests_setters_getters(self):
     esk = ESKValue("DEVICE", "/dev/ttyS0")

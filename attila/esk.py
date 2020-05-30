@@ -21,14 +21,14 @@
 #
 
 from enum import Enum
-from typing import Optional, Union
+from typing import Optional, Union, Any
 
 class ESKValue(object):
     """
     This class represents an Environment Setup Keyword value
     """
 
-    def __init__(self, keyword, value: Union[str, int]):
+    def __init__(self, keyword, value: Any):
         """
         Class constructor. Instantiates a new :class:`.ESKValue.` object with the provided paramters
 
@@ -70,6 +70,9 @@ class ESK(Enum):
     GETENV = 6
     PRINT = 7
     EXEC = 8
+    DSRDTR = 9
+    RTSCTS = 10
+    WRITE = 11
 
     @staticmethod
     def get_esk_from_string(esk_string: str) -> Optional[object]:
@@ -98,6 +101,12 @@ class ESK(Enum):
             return ESK.PRINT
         elif esk_string == "EXEC":
             return ESK.EXEC
+        elif esk_string == "DSRDTR":
+            return ESK.DSRDTR
+        elif esk_string == "RTSCTS":
+            return ESK.RTSCTS
+        elif esk_string == "WRITE":
+            return ESK.WRITE
         else:
             return None
 
@@ -113,7 +122,7 @@ class ESK(Enum):
         :returns ESKValue (None in case of errors)
         """
         if not esk:
-            return False
+            return None
         elif esk is ESK.DEVICE:
             if attr:
                 return ESKValue(esk, attr)
@@ -143,6 +152,8 @@ class ESK(Enum):
             else:
                 return None
         elif esk is ESK.AOF:
+            if not attr:
+                return None
             check = attr.lower()
             if check == "true":
                 return ESKValue(esk, True)
@@ -172,5 +183,31 @@ class ESK(Enum):
                 return ESKValue(esk, attr)
             else:
                 return None
+        elif esk is ESK.DSRDTR:
+            if not attr:
+                return None
+            check = attr.lower()
+            if check == "true":
+                return ESKValue(esk, True)
+            elif check == "false":
+                return ESKValue(esk, False)
+        elif esk is ESK.RTSCTS:
+            if not attr:
+                return None
+            check = attr.lower()
+            if check == "true":
+                return ESKValue(esk, True)
+            elif check == "false":
+                return ESKValue(esk, False)
+        elif esk is ESK.WRITE:
+            if not attr:
+                return None
+            write_attr = attr.split(" ")
+            if len(write_attr) < 2:
+                return None
+            # Tuple of file and file content
+            file_path = write_attr[0]
+            file_content = ' '.join(write_attr[1:])
+            return ESKValue(esk, (file_path, file_content))
         else:
             return None
