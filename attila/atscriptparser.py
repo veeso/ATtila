@@ -24,7 +24,7 @@ from .exceptions import ATScriptNotFound, ATScriptSyntaxError
 from .atcommand import ATCommand
 from .esk import ESK, ESKValue
 
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 class ATScriptParser(object):
     """
@@ -93,7 +93,7 @@ class ATScriptParser(object):
         except ATScriptSyntaxError as err:
             raise err
 
-    def __parse_esk(self, row: str) -> Tuple[ESKValue, str]:
+    def __parse_esk(self, row: str) -> Tuple[Optional[ESKValue], str]:
         """
         Parse a row, which is possibly an ESK
 
@@ -122,7 +122,7 @@ class ATScriptParser(object):
             error = "Invalid attributes"
         return (esk_value, error)
 
-    def __parse_command(self, row: str) -> Tuple[ATCommand, str]:
+    def __parse_command(self, row: str) -> Tuple[Optional[ATCommand], str]:
         """
         Parse a row, which is possibly an AT command
 
@@ -132,7 +132,10 @@ class ATScriptParser(object):
         """
         command = None
         error = None
-        command_tokens = row.split(";;")
+        if not row:
+            command_tokens = []
+        else:
+            command_tokens = row.split(";;")
         if len(command_tokens) == 0:
             error = "Empty row"
             return (command, error)

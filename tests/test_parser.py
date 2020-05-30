@@ -325,6 +325,8 @@ class TestParser(unittest.TestCase):
             parser.parse("AT+CGSN;;OK;;5000;;5;;[\"?{IMEI::^[0-9]{15}$}\"")
         with self.assertRaises(ATScriptSyntaxError):  # Invalid collectable syntax
             parser.parse("AT+CGSN;;OK;;5000;;5;;foobar")
+        self.assertEqual(parser._ATScriptParser__parse_esk(""), (None, "Empty row"))
+        self.assertEqual(parser._ATScriptParser__parse_command(""), (None, "Empty row"))
 
 
 if __name__ == "__main__":
