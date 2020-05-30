@@ -1,6 +1,6 @@
 # ATtila
 # Developed by Christian Visintin
-# 
+#
 # MIT License
 # Copyright (c) 2019 Christian Visintin
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -37,212 +37,222 @@ SCRIPT_ATRE_ERR = "atre_error.ats"
 response = None
 response_ptr = 0
 
+
 def create_virtual_response(command):
     """
     Create a virtual response to return from command
-    
+
     :param command
     :type command: String
     """
     global response
     global response_ptr
     response_assoc = {
-      "ATD*99***1#": "CONNECT\r\n",
-      "AT+CGDATA=\"PPP\",1": "CONNECT\r\n",
-      "AT+CSQ": "32,99\r\n\r\nOK\r\n",
-      "AT+CPIN?": "+CPIN: READY\r\n",
-      "AT+CGSN": "123456789\r\nOK\r\n"
+        "ATD*99***1#": "CONNECT\r\n",
+        "AT+CGDATA=\"PPP\",1": "CONNECT\r\n",
+        "AT+CSQ": "32,99\r\n\r\nOK\r\n",
+        "AT+CPIN?": "+CPIN: READY\r\n",
+        "AT+CGSN": "123456789\r\nOK\r\n"
     }
     response_str = response_assoc.get(command)
     response_ptr = 0
     if response_str:
-      response = response_str
+        response = response_str
     else:
-      response = "OK\r\n"
+        response = "OK\r\n"
+
 
 def in_waiting():
-  global response
-  global response_ptr
-  return response_ptr < len(response)
+    global response
+    global response_ptr
+    return response_ptr < len(response)
+
 
 def read_callback(nbytes):
-  global response
-  global response_ptr
-  ret = response[response_ptr:response_ptr + nbytes]
-  response_ptr += nbytes
-  return ret
+    global response
+    global response_ptr
+    ret = response[response_ptr:response_ptr + nbytes]
+    response_ptr += nbytes
+    return ret
+
 
 def write_callback(command):
-  cmd = command.decode("utf-8")
-  create_virtual_response(cmd)
+    cmd = command.decode("utf-8")
+    create_virtual_response(cmd)
+
 
 class TestATRE(unittest.TestCase):
-  """
-    Test ATRuntime Environment commands preparation and evaluation
-    NOTE: this tests doesn't test communicator!
-  """
+    """
+      Test ATRuntime Environment commands preparation and evaluation
+      NOTE: this tests doesn't test communicator!
+    """
 
-  def __init__(self, methodName):
-    super().__init__(methodName)
-    self.atre = ATRuntimeEnvironment()
-    self.script_dir = "%s/scripts/" % dirname(__file__)
-    
-  def test_session_reset(self):
-    #Try to reset session
-    cmd = ATCommand("AT", "OK")
-    cmds = [cmd]
-    self.atre.init_session(cmds)
-  
-  def set_esks(self):
-    #Try to set ESK
-    esks = []
-    esk = ESK.to_ESKValue(ESK.get_esk_from_string("AOF"), "True")
-    self.assertIsNotNone(esk, "Could not parse ESK")
-    esks.append((esk, 0))
-    self.atre.set_ESKs(esks)
+    def __init__(self, methodName):
+        super().__init__(methodName)
+        self.atre = ATRuntimeEnvironment()
+        self.script_dir = "%s/scripts/" % dirname(__file__)
 
-  def parse_script(self):
-    #Try to parse script
-    try:
-      self.atre.parse_ATScript("%s%s" % (self.script_dir, SCRIPT))
-    except ATScriptNotFound as err:
-      raise err
-    except ATScriptSyntaxError as err:
-      raise err
+    def test_session_reset(self):
+        # Try to reset session
+        cmd = ATCommand("AT", "OK")
+        cmds = [cmd]
+        self.atre.init_session(cmds)
 
-  def test_session_key(self):
-    #Try to get unexisting key
-    with self.assertRaises(KeyError):
-      self.atre.get_session_value("foobar")
+    def set_esks(self):
+        # Try to set ESK
+        esks = []
+        esk = ESK.to_ESKValue(ESK.get_esk_from_string("AOF"), "True")
+        self.assertIsNotNone(esk, "Could not parse ESK")
+        esks.append((esk, 0))
+        self.atre.set_ESKs(esks)
 
-  def test_run(self):
-    self.atre = ATRuntimeEnvironment(True)
-    #Configure virtual communicator
-    #Parse script
-    try:
-      self.atre.parse_ATScript("%s%s" % (self.script_dir, SCRIPT_RUN))
-    except (ATScriptNotFound, ATScriptSyntaxError) as err:
-      self.assertTrue(False, "Could not parse AT script: %s" % err)
-    #Assert uninitialized atre
-    with self.assertRaises(ATREUninitializedError):
-      self.atre.run()
-    #Initialize communicator and then run
-    self.atre.configure_virtual_communicator("virtualAdapter", 115200, 10, "\r", read_callback, write_callback, in_waiting)
-    try:
-      self.atre.run()
-    except (ATRuntimeError, ATSerialPortError, ATREUninitializedError) as err:
-      self.assertTrue(False, "Runtime error: %s" % err)
-    
+    def parse_script(self):
+        # Try to parse script
+        try:
+            self.atre.parse_ATScript("%s%s" % (self.script_dir, SCRIPT))
+        except ATScriptNotFound as err:
+            raise err
+        except ATScriptSyntaxError as err:
+            raise err
 
-  def test_exec(self):
-    self.atre = ATRuntimeEnvironment(True)
-    #Exec single command string
-    with self.assertRaises(ATREUninitializedError):
-      self.atre.exec("AT;;OK")
-    self.atre.configure_virtual_communicator("virtualAdapter", 115200, 10, "\r", read_callback, write_callback, in_waiting)
-    self.atre.open_serial()
-    self.atre.exec("AT;;OK;;100") #Tests delay too
-    #Test bad response
-    with self.assertRaises(ATRuntimeError):
-      self.atre.exec("AT;;NOK")
-    #Test ESK
-    self.atre.exec("PRINT Foobar")
-    with self.assertRaises(ATRuntimeError):
-      self.atre.exec("GETENV aaaaaaaaaaa")
-    self.assertIsNone(self.atre.exec(""))
-    self.atre.close_serial()
+    def test_session_key(self):
+        # Try to get unexisting key
+        with self.assertRaises(KeyError):
+            self.atre.get_session_value("foobar")
 
-  def test_exec_step(self):
-    self.atre = ATRuntimeEnvironment(True)
-    #Configure virtual communicator
-    self.atre.configure_virtual_communicator("virtualAdapter", 115200, 10, "\r", read_callback, write_callback, in_waiting)
-    #Parse script
-    try:
-      self.atre.parse_ATScript("%s%s" % (self.script_dir, SCRIPT_RUN))
-    except (ATScriptNotFound, ATScriptSyntaxError) as err:
-      self.assertTrue(False, "Could not parse AT script: %s" % err)
-    #Open serial
-    self.atre.open_serial()
-    res = True
-    while res:
-      try:
-        res = self.atre.exec_next()
-      except (ATRuntimeError, ATSerialPortError, ATREUninitializedError) as err:
-        self.assertTrue(False, "Runtime error: %s" % err)
-    self.atre.close_serial()
-    #With errors
-    self.atre.init_session([])
-    #Parse script
-    try:
-      self.atre.parse_ATScript("%s%s" % (self.script_dir, SCRIPT_ATRE_ERR))
-    except (ATScriptNotFound, ATScriptSyntaxError) as err:
-      self.assertTrue(False, "Could not parse AT script: %s" % err)
-    #Open serial
-    self.atre.open_serial()
-    with self.assertRaises(ATRuntimeError):
-      self.atre.exec_next()
-    self.atre.close_serial()
+    def test_run(self):
+        self.atre = ATRuntimeEnvironment(True)
+        # Configure virtual communicator
+        # Parse script
+        try:
+            self.atre.parse_ATScript("%s%s" % (self.script_dir, SCRIPT_RUN))
+        except (ATScriptNotFound, ATScriptSyntaxError) as err:
+            self.assertTrue(False, "Could not parse AT script: %s" % err)
+        # Assert uninitialized atre
+        with self.assertRaises(ATREUninitializedError):
+            self.atre.run()
+        # Initialize communicator and then run
+        self.atre.configure_virtual_communicator(
+            "virtualAdapter", 115200, 10, "\r", read_callback, write_callback, in_waiting)
+        try:
+            self.atre.run()
+        except (ATRuntimeError, ATSerialPortError, ATREUninitializedError) as err:
+            self.assertTrue(False, "Runtime error: %s" % err)
 
+    def test_exec(self):
+        self.atre = ATRuntimeEnvironment(True)
+        # Exec single command string
+        with self.assertRaises(ATREUninitializedError):
+            self.atre.exec("AT;;OK")
+        self.atre.configure_virtual_communicator(
+            "virtualAdapter", 115200, 10, "\r", read_callback, write_callback, in_waiting)
+        self.atre.open_serial()
+        self.atre.exec("AT;;OK;;100")  # Tests delay too
+        # Test bad response
+        with self.assertRaises(ATRuntimeError):
+            self.atre.exec("AT;;NOK")
+        # Test ESK
+        self.atre.exec("PRINT Foobar")
+        with self.assertRaises(ATRuntimeError):
+            self.atre.exec("GETENV aaaaaaaaaaa")
+        self.assertIsNone(self.atre.exec(""))
+        self.atre.close_serial()
 
-  def test_fail_parse(self):
-    self.atre = ATRuntimeEnvironment(True)
-    #Configure virtual communicator
-    self.atre.configure_virtual_communicator("virtualAdapter", 115200, 10, "\r", read_callback, write_callback, in_waiting)
-    #Parse script
-    with self.assertRaises(ATScriptNotFound):
-      self.atre.parse_ATScript("/tmp/unexisting_script.ats")
-    with self.assertRaises(ATScriptSyntaxError):
-      self.atre.parse_ATScript("%s%s" % (self.script_dir, SCRIPT_ERR))
-      
-  def test_add_command(self):
-    self.atre = ATRuntimeEnvironment(True)
-    #Configure virtual communicator
-    self.atre.configure_virtual_communicator("virtualAdapter", 115200, 10, "\r", read_callback, write_callback, in_waiting)
-    cmd = ATCommand("AT", "OK")
-    self.assertTrue(self.atre.add_command(cmd), "ATRE add_command failed")
+    def test_exec_step(self):
+        self.atre = ATRuntimeEnvironment(True)
+        # Configure virtual communicator
+        self.atre.configure_virtual_communicator(
+            "virtualAdapter", 115200, 10, "\r", read_callback, write_callback, in_waiting)
+        # Parse script
+        try:
+            self.atre.parse_ATScript("%s%s" % (self.script_dir, SCRIPT_RUN))
+        except (ATScriptNotFound, ATScriptSyntaxError) as err:
+            self.assertTrue(False, "Could not parse AT script: %s" % err)
+        # Open serial
+        self.atre.open_serial()
+        res = True
+        while res:
+            try:
+                res = self.atre.exec_next()
+            except (ATRuntimeError, ATSerialPortError, ATREUninitializedError) as err:
+                self.assertTrue(False, "Runtime error: %s" % err)
+        self.atre.close_serial()
+        # With errors
+        self.atre.init_session([])
+        # Parse script
+        try:
+            self.atre.parse_ATScript(
+                "%s%s" % (self.script_dir, SCRIPT_ATRE_ERR))
+        except (ATScriptNotFound, ATScriptSyntaxError) as err:
+            self.assertTrue(False, "Could not parse AT script: %s" % err)
+        # Open serial
+        self.atre.open_serial()
+        with self.assertRaises(ATRuntimeError):
+            self.atre.exec_next()
+        self.atre.close_serial()
 
-  def test_serial(self):
-    self.atre = ATRuntimeEnvironment(True)
-    #Open before init
-    with self.assertRaises(ATREUninitializedError):
-      self.atre.open_serial()
-    #Close before init
-    with self.assertRaises(ATREUninitializedError):
-      self.atre.close_serial()
-    #Configure virtual communicator
-    self.atre.configure_virtual_communicator("virtualAdapter", 115200, 10, "\r", read_callback, write_callback, in_waiting)
-    self.atre.open_serial()
-    self.atre.open_serial() #Re-open, nothing strange should happen
-    self.atre.close_serial()
-    self.atre.close_serial() #Re-close, nothing strange should happen
+    def test_fail_parse(self):
+        self.atre = ATRuntimeEnvironment(True)
+        # Configure virtual communicator
+        self.atre.configure_virtual_communicator(
+            "virtualAdapter", 115200, 10, "\r", read_callback, write_callback, in_waiting)
+        # Parse script
+        with self.assertRaises(ATScriptNotFound):
+            self.atre.parse_ATScript("/tmp/unexisting_script.ats")
+        with self.assertRaises(ATScriptSyntaxError):
+            self.atre.parse_ATScript("%s%s" % (self.script_dir, SCRIPT_ERR))
 
-  def test_exceptions(self):
-    #AtSerialPortError
-    msg = "Could not open Serial Device"
-    exc = ATSerialPortError(msg)
-    self.assertIsNotNone(str(exc))
-    self.assertEqual(repr(exc), msg)
-    #ATScriptNotFound
-    msg = "Could not open file /tmp/foobar.ats"
-    exc = ATScriptNotFound(msg)
-    self.assertIsNotNone(str(exc))
-    self.assertEqual(repr(exc), msg)
-    #ATScriptSyntaxError
-    msg = "Error while parsing AT script"
-    exc = ATScriptSyntaxError(msg)
-    self.assertIsNotNone(str(exc))
-    self.assertEqual(repr(exc), msg)
-    #ATREUninitializedError
-    msg = "Uninitialized AT Runtime Environment"
-    exc = ATREUninitializedError(msg)
-    self.assertIsNotNone(str(exc))
-    self.assertEqual(repr(exc), msg)
-    #ATRuntimeError
-    msg = "Runtime Error"
-    exc = ATRuntimeError(msg)
-    self.assertIsNotNone(str(exc))
-    self.assertEqual(repr(exc), msg)
+    def test_add_command(self):
+        self.atre = ATRuntimeEnvironment(True)
+        # Configure virtual communicator
+        self.atre.configure_virtual_communicator(
+            "virtualAdapter", 115200, 10, "\r", read_callback, write_callback, in_waiting)
+        cmd = ATCommand("AT", "OK")
+        self.assertTrue(self.atre.add_command(cmd), "ATRE add_command failed")
+
+    def test_serial(self):
+        self.atre = ATRuntimeEnvironment(True)
+        # Open before init
+        with self.assertRaises(ATREUninitializedError):
+            self.atre.open_serial()
+        # Close before init
+        with self.assertRaises(ATREUninitializedError):
+            self.atre.close_serial()
+        # Configure virtual communicator
+        self.atre.configure_virtual_communicator(
+            "virtualAdapter", 115200, 10, "\r", read_callback, write_callback, in_waiting)
+        self.atre.open_serial()
+        self.atre.open_serial()  # Re-open, nothing strange should happen
+        self.atre.close_serial()
+        self.atre.close_serial()  # Re-close, nothing strange should happen
+
+    def test_exceptions(self):
+        # AtSerialPortError
+        msg = "Could not open Serial Device"
+        exc = ATSerialPortError(msg)
+        self.assertIsNotNone(str(exc))
+        self.assertEqual(repr(exc), msg)
+        # ATScriptNotFound
+        msg = "Could not open file /tmp/foobar.ats"
+        exc = ATScriptNotFound(msg)
+        self.assertIsNotNone(str(exc))
+        self.assertEqual(repr(exc), msg)
+        # ATScriptSyntaxError
+        msg = "Error while parsing AT script"
+        exc = ATScriptSyntaxError(msg)
+        self.assertIsNotNone(str(exc))
+        self.assertEqual(repr(exc), msg)
+        # ATREUninitializedError
+        msg = "Uninitialized AT Runtime Environment"
+        exc = ATREUninitializedError(msg)
+        self.assertIsNotNone(str(exc))
+        self.assertEqual(repr(exc), msg)
+        # ATRuntimeError
+        msg = "Runtime Error"
+        exc = ATRuntimeError(msg)
+        self.assertIsNotNone(str(exc))
+        self.assertEqual(repr(exc), msg)
 
 
 if __name__ == "__main__":
-  unittest.main()
+    unittest.main()
