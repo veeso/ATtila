@@ -303,10 +303,13 @@ class ATSession(object):
         # compose regex with to_collect[0] + (.*) + to_collect[1]
         regex = to_collect.replace(key_group, "")
         # Escape regex
-        collect_expr_parts = to_collect.split(key_group)
-        # Collect regex part to build regex; exape parts
+        if to_collect == key_group:
+            collect_expr_parts = []
+        else:
+            collect_expr_parts = to_collect.split(key_group)
+        # Collect regex part to build regex; excape parts
+        part_to_remove = []
         if len(collect_expr_parts) > 0:
-            part_to_remove = []
             for i in range(len(collect_expr_parts)):
                 if not collect_expr_parts[i]:  # Skip empty tokens
                     continue

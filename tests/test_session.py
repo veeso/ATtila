@@ -269,6 +269,13 @@ class TestSession(unittest.TestCase):
         self.assertEqual(response.response, next_command.expected_response,
                          "The response should be OK, but is %s" % response.response)
 
+    def test_particular_cases(self):
+        """
+        Test particular cases
+        """
+        session = ATSession([])
+        self.assertIsNone(session._ATSession__get_value_from_response("", ["OK"]))
+        self.assertIsNotNone(session._ATSession__get_value_from_response("?{value}", ["123456", "OK"]))
 
 if __name__ == "__main__":
     unittest.main()
