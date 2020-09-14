@@ -9,7 +9,7 @@ Current Version: **1.2.0 (30/05/2020)**
 - [ATtila](#attila)
   - [Introduction](#introduction)
   - [Requirements](#requirements)
-  - [Implementation](#implementation)
+  - [Get Started](#get-started)
     - [Virtual Device](#virtual-device)
   - [ATScripts](#atscripts)
   - [Contributions](#contributions)
@@ -65,10 +65,10 @@ Usage: attila [OPTION]... [FILE]
 ## Requirements
 
 - Python3.5 (>= 1.2.0)
-  - Python3.4 (up to 1.1.x)
+  - Python3.4 (up to 1.1.x - switch to ```1.1.x``` branch)
 - pyserial3
 
-## Implementation
+## Get Started
 
 In order to build your own implementation using ATtila these are the steps you'll need to follow:
 
@@ -192,7 +192,8 @@ See Changelog [HERE](CHANGELOG.md)
 
 ## Branches
 
-- master: stable only
+- master: stable only with latest features
+- 1.1.x: LTS with Python3.4 support; this version will receive only patch for major issues
 - dev: main development branch
 - other features
 
@@ -200,26 +201,4 @@ See Changelog [HERE](CHANGELOG.md)
 
 ## License
 
-```txt
-MIT License
-
-Copyright (c) 2019 Christian Visintin
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
+View [LICENSE HERE](LICENSE)
