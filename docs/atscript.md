@@ -21,8 +21,8 @@ ATScript is the most important feature of ATtila, since it allows to execute a s
 Basically in an AT scripts there are three things:
 
 - **Commands**: describe what you want to send to the device and how to treat its response.
-- **Environment Setup Keywords**: describes how to establish and manage the communication.
-- **Comments**: you can obviously put comments in the ATScripts, the ATScriptParser will just ignore them. A comment statement must start with '#' character.
+- **Environment Setup Keywords (ESK)**: describes how to establish and manage the communication.
+- **Comments**: you can obviously put comments in the ATScripts, the `ATScriptParser` will just ignore them. A comment statement must start with `#` character.
 
 ## ATScript Commands
 
@@ -34,7 +34,7 @@ As far as we’ve learned up to now, we know that a command has the following pa
 - the **doppelganger** and it's expected response
 - **collectables**
 - a **delay** (milliseconds to wait before its execution)
-- a **timeout**
+- a **timeout** (if the remote device didn't provide a response after timeout has elapsed, the command will be considered as failed)
 
 So basically, to think it easy, the syntax for commands will be a combination of them:
 
@@ -46,7 +46,7 @@ To see practical applications of them, let's see a few examples.
 
 ### Examples
 
-We’ll start with a simple one: the "AT" command
+We’ll start with a simple one: the `AT` command
 
 The most basic usable syntax is just:
 
@@ -58,14 +58,15 @@ AT
 
 #### Command and expected response
 
-but you probably want at least to verify if its response is what you expect:
+but you probably want at least to verify if its response is what you expect, so we'll write:
 
 ```txt
 AT;;OK
 ```
 
-We told ATtila that we expect to find “OK” in the command response.
-We can also use a regex in the expected response, for example if a command returns 16 hex digits, we can use
+We told ATtila that we expect to find `OK` in the command response.
+We can also use a regex in the expected response.
+For example if a command returns 16 hex digits, we can use:
 
 ```txt
 AT+GSN;;^[0-9,A-F]{16}$
@@ -83,8 +84,8 @@ These commands don’t have all the available parameters, we still need to go de
 
 ### Doppelgangers
 
-In the previous example we’ve seen the basic parameters associated to a command, but now I want to introduce you the doppelganger feature included in ATScripts. Imagine for instance that we want to set the SIM pin, but only if it requires to be unlocked (This is a situation I’ve encountered many times at job where there could be devices with locked and unlocked PIN, but the chat script was the same).
-We’ll use AT+CPIN?, in case the SIM is unlocked it will return “+CPIN:READY”; we want to set the PIN only if returns something else. (If locked, returns “CPIN:SIM PIN”)
+In the previous example we’ve seen the basic parameters associated to a command, but now I want to introduce you the **doppelganger** feature, included in ATScripts. Imagine for instance that we want to set the SIM pin, but only if it requires to be unlocked (This is a situation I’ve encountered many times at wprls where there could be devices with locked and unlocked PIN, but the chat script was the same).
+We’ll use `AT+CPIN?` command to check the SIM PIN status. In case the SIM is unlocked it will return `+CPIN:READY`; we want to set the PIN only if returns something else. (If locked, returns `CPIN:SIM PIN`)
 The command we’ll use is:
 
 ```txt
@@ -92,7 +93,7 @@ AT+CPIN?;;READY;;0;;5;;;;AT+CPIN=7782;;OK
 ```
 
 What does this command mean?
-It tells ATtila to send AT+CPIN? and that we expect to find "READY" string in the response. If READY is found in the response it will proceed with the next command, but what happens for example if the device answers with “+CPIN: SIM PIN”? The ATSession will set as next command its doppelganger, which is AT+CPIN=7782, which will be executed as the next command.
+It tells ATtila to send `AT+CPIN?` and that we expect to find `READY` string in the response. If `READY` is found in the response it will proceed with the next command, but what happens for example if the device answers `+CPIN: SIM PIN?` The ATSession will set as next command its doppelganger, which is `AT+CPIN=7782`, which will be executed as the next command. The expected response for the doppelganger, follows the doppelganger command itself, in this case, again `OK`.
 
 ### Collectables
 
@@ -104,10 +105,10 @@ Imagine for example you want to collect the current signal quality and store it 
 AT+CSQ;;+CSQ;;0;;5;;["AT+CSQ=?{rssi},","AT+CSQ=${rssi},?{ber}"]
 ```
 
-This command has two collectables, which are the rssi and the Ber. We know that AT+CSQ, in case of a positive response (+CSQ:...), will return the **rssi and the ber** after “AT+CSQ=” separated by a comma. Imagine that we want to get both. The first value we want is located after “AT+CSQ=” and terminates with the ',' comma before the ber. So we tell ATtila to get a value between these two strings and to store it into a session value called “rssi”. The other value will be located after the other part of the string; we can as you can see, reuse the rssi value in the second collectable (since rssi is already set).
+This command has two collectables, which are the rssi and the Ber. We know that `AT+CSQ`, in case of a positive response (`+CSQ:...`), will return the **rssi and the ber** after `AT+CSQ=` separated by a comma. Imagine that we want to get both. The first value we want is located after `AT+CSQ=` and terminates with the `,` comma before the ber. So we tell ATtila to get a value between these two strings and to store it into a session value called `rssi`. The other value will be located after the other part of the string; we can as you can see, reuse the rssi value in the second collectable (since rssi is already set).
 The syntax which describes the start of a collectable is **?{SESSION_KEY}**.
 
-This was a simple case, where we knew the value where between 'AT+CSQ=...,' and after 'AT+CSQ=rssi,...'. But sometimes we have to get a value which hasn't anything around. An example of this case is AT+CGSN, which returns the IMEI. The IMEI is returned on a line, with nothing around:
+This was a simple case, where we knew the value was between `AT+CSQ=...,` and after `AT+CSQ=rssi,...`. But sometimes we have to get a value which hasn't anything around. An example of this case is `AT+CGSN`, which returns the IMEI. The IMEI is returned on a line, with nothing around it:
 
 ```txt
 AT+CGSN
@@ -121,8 +122,8 @@ How can we get this value using collectables? Well, we can, but making a collect
 AT+CGSN;;OK;;;;;;["?{IMEI::^[0-9]{15}$}"]
 ```
 
-This means we're looking for a value between nothing, but which has to respect the regex we provided which is ```^[0-9]{15}$```. If a number of 15 digits is found in the response, this value will be stored into the session storage into a key named "IMEI".
-The separator between the **key name** and the **key regex** is ```::```
+This means we're looking for a value between nothing, but which has to respect the regex we provided which is `^[0-9]{15}$`. If a number of 15 digits is found in the response, this value will be stored into the session storage into a key named `IMEI`.
+The separator between the **key name** and the **key regex** is `::`
 This mechanism can also be used to solve ambiguity in the response to get the value that we really want.
 
 For example we can make a more severe check on the CSQ using:
@@ -133,15 +134,15 @@ AT+CSQ;;OK;;;;;;["AT+CSQ=?{rssi::[0-9]{1,2}},","AT+CSQ=${rssi},?{ber::[0-9]{1,2}
 
 ### Session Values
 
-We’ve seen that session values are values we can store using collectables and also setting environment variables and through Environment Setup Keywords, but we’ll see that in the next chapter.
-A session value **is just a key associated to a value**, stored in the **session storage**. The session storage is a dictionary made up of all the session values, it lives only for the current command set, when a new session is instanced, the session storage is empty again.
+We’ve seen that session values are values we can store using collectables and also setting environment variables and through Environment Setup Keywords (ESK), but we’ll see that in the next chapter.
+A session value **is just a key associated to a value**, stored in the **session storage**. The session storage is a dictionary made up of all the session values. It lives only for the current script, when a new session is instanced, the session storage is empty again.
 *It’s not that complicated.*
 
 We can rethink the previous example of CPIN using session values.
-The script which set the SIM PIN only if locked, could be a part of an image installed on plenty of devices, but we can’t have a different script for each device and using a script which replace runtime the text with the configured PIN is not such a good way to do things.
+Imagine we have the same image on plenty of devices and they have to connect to the internet via a modem which has a PIN, sometimes locked, sometimes unlocked and anyway the PIN is always different. It's not practical to have a different script for each device or using a script which replaces runtime the text with the configured PIN.
 Here is where the power of session values comes in help!
-The SIM pin could be for instance, written example in a configuration file and we want to set it as a session value.
-If before the execution of our script, we execute “export SIM_PIN=7782” and then we execute this row in ATila using GETENV (we'll see what GETENV is in the next chapter) somewhere in the script before its execution.
+The SIM pin could be for instance, written in a configuration file.
+If before the execution of our script, we execute “export SIM_PIN=7782” and then we execute this row in ATila using GETENV (we'll see what GETENV is in the next chapter)
 
 ```txt
 GETENV SIM_PIN
@@ -156,7 +157,7 @@ But as we seen in the previous chapter, Session values can also be used to get c
 
 As said before, ATScripts are not made only up of commands, but also of another thing called **Environment Setup Keywords (ESKs)**.
 Let’s start from talking briefly about how ATtila works. ATtila has two main components: the **AT Runtime Environment (ATRE)** and the **ATSession**. The AT Runtime Environment instances a session and executes it following its commands, when the session execution ends, a new session can be instanced and the previous one gets destroyed, while the runtime environment persists. While **commands describe the ATSession execution path**, the **ESKs describe the setup for the AT Runtime Environment**, not only at the initial setup, but also at any time during runtime. ESKs can also be used to invoke the ATRE to execute some commands as we'll see..
-So, to summarize, **ESKs are commands you can put (but are not mandatory) in your scripts and tell the Runtime Environment how to configure its components or extra instructions to be executed**.
+So, to summarize, **ESKs are commands you can put (but are not mandatory) in your scripts and tell the Runtime Environment how to configure its components or to execute some special instructions**.
 Let’s see then which ESKs are supported.
 
 | ESK      | Value                         | Description                                                                                              |

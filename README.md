@@ -13,7 +13,7 @@ Current Version: **1.2.0 (30/05/2020)**
   - [Requirements 🛒](#requirements-)
   - [Get Started 🛠](#get-started-)
     - [Virtual Device ⌨](#virtual-device-)
-  - [ATScripts](#atscripts)
+  - [ATScripts 💻](#atscripts-)
   - [Contributions 🤝🏻](#contributions-)
   - [Known Issues 🧻](#known-issues-)
   - [Changelog 🕑](#changelog-)
@@ -29,16 +29,18 @@ pip3 install attila
 ## About ATtila 📢
 
 ATtila is both a **Python3 🐍 module and a CLI utility**.
-The module's purpose is to ease the communication with an RF module which uses AT commands. It is both possible to send single AT commands indicating what response is expected and AT scritps which indicate all the commands to send, the expected response for each command, what information to store for each command and define an alternative behaviour in case of unexpected responses.  
+The module's purpose is to ease the communication with devices through serial port, automating the scripts execution workflow; in particular ATtila is designed for RF modules which use AT commands.
+
+It is both possible to send single AT commands indicating what is the expected response, what information to store for each command and define an alternative behaviour in case of an unexpected responses.  
 These are the main functionalities that ATtila provides:
 
-- Façade to communicate with the serial device
-- Sending AT commands and define the expected response for it using regex
+- Façade to communicate with the serial devices
+- Sending AT commands and define the expected response for it
 - Collect values from response and store them in the session storage
-- Define a command to execute in case the command fails
-- Sending individual AT command to RF module/modem through serial port and get the response for them
+- Define a command to execute in case the previously executed command fails
+- Sending individual AT command to RF module/modem through serial port and get the response
 
-ATtila comes, as said before, with a binary (which can be used instead of the classic "chat" binary) or for anything you want.
+ATtila comes, as said before, with a binary (which can be used instead of the classic `chat` binary) to pair with `pppd`, or for anything you want.
 You can run ATtila binary with
 
 ```sh
@@ -72,11 +74,11 @@ Usage: attila [OPTION]... [FILE]
 
 ## Get Started 🛠
 
-In order to build your own implementation using ATtila these are the steps you'll need to follow:
+In order to build your own implementation using ATtila these are the steps you need to follow:
 
 1. Import the AT Runtime Environment into your project
 
-    The first thing you have to do is import the AT Runtime Environment and the exceptions it can raise in your project
+    The first thing you have to do is to import the AT Runtime Environment and the exceptions it can raise in your project
 
     ```py
     from attila.atre import ATRuntimeEnvironment
@@ -99,7 +101,7 @@ In order to build your own implementation using ATtila these are the steps you'l
 
 4. Open the serial port
 
-    Be careful, this function can return a ATSerialPortError
+    Be careful, this function can return an `ATSerialPortError`
 
     ```py
     atrunenv.open_serial()
@@ -109,7 +111,7 @@ In order to build your own implementation using ATtila these are the steps you'l
 
     1. Parse an ATScript
 
-        parse_ATScript can raise ATScriptNotFound or ATScriptSyntaxError
+        parse_ATScript can raise `ATScriptNotFound` or `ATScriptSyntaxError`
 
         ```py
         atrunenv.parse_ATScript(script_file)
@@ -128,15 +130,16 @@ In order to build your own implementation using ATtila these are the steps you'l
         ```
 
 6. Execute commands:
+
     1. Run everything at once and then get a list of ATResponse
 
-        if abort_on_failure is True, the ATRE will raise ATRuntimeError during execution  
+        if `abort_on_failure` is `True`, the ATRE will raise `ATRuntimeError` during execution  
 
         ```py
         response_list = atrunenv.run()
         ```
 
-    2. Run one command a time (if abort_on_failure is True, the ATRE will raise ATRuntimeError):
+    2. Run one command a time (if `abort_on_failure` is True, the ATRE will raise `ATRuntimeError`):
 
         ```py
         response = atrunenv.exec_next()
@@ -156,19 +159,19 @@ In order to build your own implementation using ATtila these are the steps you'l
 
 ### Virtual Device ⌨
 
-Since version 1.1.0, it is possible to use a virtual serial device, instead of a real one. This has been introduced for tests purpose, but can actually used in cases where you need to emulate a serial device and you want to keep using ATtila.
-In this case, in the ATRE, instead of using configure_communicator use:
+Since version 1.1.0, it is possible to use a virtual serial device, instead of a real one. This has been introduced for test purposes, but can actually be used in case you need to emulate a serial device and you want to keep using ATtila.
+In this case, in the ATRE, instead of using `configure_communicator` use:
 
 ```py
 def configure_virtual_communicator(self, serial_port, baud_rate, timeout = None, line_break = "\r\n", read_callback = None, write_callback = None, in_waiting_callback = None)
 ```
 
-The virtual communicator, in addition to the standard one, requires a read, a write and an in waiting callback. These callbacks must replace the I/O operations of the serial device, with something else (e.g. a socket with an HTTP request)
+The virtual communicator, in addition to the standard one, requires a `read`, a `write` and an `in_waiting` callback. These callbacks must replace the I/O operations of the serial device, with something else (e.g. a socket with an HTTP request)
 
-## ATScripts
+## ATScripts 💻
 
 ATtila uses its own syntax to communicate with the serial device, which is called **ATScript** (ATS).
-The basic syntax for it is:
+The basic syntax for it, is:
 
 ```txt
 COMMAND;;RESPONSE_EXPR;;DELAY;;TIMEOUT;;["COLLECTABLE1",...];;DOPPELGANGER;;DOPPELGANGER_RESPONSE
@@ -182,7 +185,7 @@ To know more about ATS see the [ATScript documentation](./docs/atscript.md)
 
 Contributions are welcome! 😉
 
-If you think you can contribute to ATtila, please follow ATtila's [Contributions Guide](CONTRIBUTING.md)
+If you think you can contribute to ATtila, please follow ATtila's [Contributions Guidelines](CONTRIBUTING.md)
 
 ---
 
