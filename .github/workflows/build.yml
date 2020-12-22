@@ -28,6 +28,6 @@ jobs:
       run: |
         nosetests -v --with-coverage --cover-tests --cover-package=attila tests/
     - name: Upload to codecov.io
-        uses: codecov/codecov-action@v1
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
+      uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
