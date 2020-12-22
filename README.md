@@ -1,22 +1,24 @@
 # ATtila
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-teal.svg)](https://opensource.org/licenses/MIT) [![Stars](https://img.shields.io/github/stars/ChristianVisintin/ATtila.svg)](https://github.com/ChristianVisintin/ATtila) [![Issues](https://img.shields.io/github/issues/ChristianVisintin/ATtila.svg)](https://github.com/ChristianVisintin/ATtila/) [![PyPI version](https://badge.fury.io/py/attila.svg)](https://pypi.org/project/attila/) [![Build](https://api.travis-ci.org/ChristianVisintin/ATtila.svg?branch=master)](https://travis-ci.org/ChristianVisintin/ATtila) [![codecov](https://codecov.io/gh/ChristianVisintin/ATtila/branch/master/graph/badge.svg)](https://codecov.io/gh/ChristianVisintin/ATtila)
+[![License: MIT](https://img.shields.io/badge/License-MIT-teal.svg)](https://opensource.org/licenses/MIT) [![Stars](https://img.shields.io/github/stars/ChristianVisintin/ATtila.svg)](https://github.com/ChristianVisintin/ATtila) [![Issues](https://img.shields.io/github/issues/ChristianVisintin/ATtila.svg)](https://github.com/ChristianVisintin/ATtila/) [![PyPI version](https://badge.fury.io/py/attila.svg)](https://pypi.org/project/attila/) [![Downloads](https://pepy.tech/badge/attila)](https://pepy.tech/project/attila)  
+
+[![Build](https://github.com/ChristianVisintin/ATtila/workflows/Build/badge.svg)](https://github.com/ChristianVisintin/ATtila/actions) [![codecov](https://codecov.io/gh/ChristianVisintin/ATtila/branch/master/graph/badge.svg)](https://codecov.io/gh/ChristianVisintin/ATtila)
 
 Developed by *Christian Visintin*
 
 Current Version: **1.2.0 (30/05/2020)**
 
 - [ATtila](#attila)
-  - [Introduction](#introduction)
-  - [Requirements](#requirements)
-  - [Get Started](#get-started)
-    - [Virtual Device](#virtual-device)
+  - [About ATtila 📢](#about-attila-)
+  - [Requirements 🛒](#requirements-)
+  - [Get Started 🛠](#get-started-)
+    - [Virtual Device ⌨](#virtual-device-)
   - [ATScripts](#atscripts)
-  - [Contributions](#contributions)
-  - [Known Issues](#known-issues)
-  - [Changelog](#changelog)
-  - [Branches](#branches)
-  - [License](#license)
+  - [Contributions 🤝🏻](#contributions-)
+  - [Known Issues 🧻](#known-issues-)
+  - [Changelog 🕑](#changelog-)
+  - [Branches 🌳](#branches-)
+  - [License 📜](#license-)
 
 ---
 
@@ -24,7 +26,7 @@ Current Version: **1.2.0 (30/05/2020)**
 pip3 install attila
 ```
 
-## Introduction
+## About ATtila 📢
 
 ATtila is both a **Python3 🐍 module and a CLI utility**.
 The module's purpose is to ease the communication with an RF module which uses AT commands. It is both possible to send single AT commands indicating what response is expected and AT scritps which indicate all the commands to send, the expected response for each command, what information to store for each command and define an alternative behaviour in case of unexpected responses.  
@@ -62,13 +64,13 @@ Usage: attila [OPTION]... [FILE]
   -h                    Show this page
 ```
 
-## Requirements
+## Requirements 🛒
 
 - Python3.5 (>= 1.2.0)
   - Python3.4 (up to 1.1.x - switch to ```1.1.x``` branch)
 - pyserial3
 
-## Get Started
+## Get Started 🛠
 
 In order to build your own implementation using ATtila these are the steps you'll need to follow:
 
@@ -152,7 +154,7 @@ In order to build your own implementation using ATtila these are the steps you'l
     atrunenv.close_serial()
     ```
 
-### Virtual Device
+### Virtual Device ⌨
 
 Since version 1.1.0, it is possible to use a virtual serial device, instead of a real one. This has been introduced for tests purpose, but can actually used in cases where you need to emulate a serial device and you want to keep using ATtila.
 In this case, in the ATRE, instead of using configure_communicator use:
@@ -176,21 +178,27 @@ To know more about ATS see the [ATScript documentation](./docs/atscript.md)
 
 ---
 
-## Contributions
+## Contributions 🤝🏻
 
 Contributions are welcome! 😉
 
 If you think you can contribute to ATtila, please follow ATtila's [Contributions Guide](CONTRIBUTING.md)
 
-## Known Issues
+---
+
+## Known Issues 🧻
 
 None, as far as I know at least.
 
-## Changelog
+---
 
-See Changelog [HERE](CHANGELOG.md)
+## Changelog 🕑
 
-## Branches
+View Changelog [HERE](CHANGELOG.md)
+
+---
+
+## Branches 🌳
 
 - master: stable only with latest features
 - 1.1.x: LTS with Python3.4 support; this version will receive only patch for major issues
@@ -199,6 +207,6 @@ See Changelog [HERE](CHANGELOG.md)
 
 ---
 
-## License
+## License 📜
 
 View [LICENSE HERE](LICENSE)
