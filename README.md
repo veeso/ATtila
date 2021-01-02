@@ -1,8 +1,8 @@
 # ATtila
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-teal.svg)](https://opensource.org/licenses/MIT) [![Stars](https://img.shields.io/github/stars/ChristianVisintin/ATtila.svg)](https://github.com/ChristianVisintin/ATtila) [![Issues](https://img.shields.io/github/issues/ChristianVisintin/ATtila.svg)](https://github.com/ChristianVisintin/ATtila/) [![PyPI version](https://badge.fury.io/py/attila.svg)](https://pypi.org/project/attila/) [![Downloads](https://pepy.tech/badge/attila)](https://pepy.tech/project/attila)  
+[![License: MIT](https://img.shields.io/badge/License-MIT-teal.svg)](https://opensource.org/licenses/MIT) [![Stars](https://img.shields.io/github/stars/veeso/ATtila.svg)](https://github.com/veeso/ATtila) [![Issues](https://img.shields.io/github/issues/veeso/ATtila.svg)](https://github.com/veeso/ATtila/) [![PyPI version](https://badge.fury.io/py/attila.svg)](https://pypi.org/project/attila/) [![Downloads](https://pepy.tech/badge/attila)](https://pepy.tech/project/attila)  
 
-[![Build](https://github.com/ChristianVisintin/ATtila/workflows/Build/badge.svg)](https://github.com/ChristianVisintin/ATtila/actions) [![codecov](https://codecov.io/gh/ChristianVisintin/ATtila/branch/master/graph/badge.svg)](https://codecov.io/gh/ChristianVisintin/ATtila)
+[![Build](https://github.com/veeso/ATtila/workflows/Build/badge.svg)](https://github.com/veeso/ATtila/actions) [![codecov](https://codecov.io/gh/veeso/ATtila/branch/master/graph/badge.svg)](https://codecov.io/gh/veeso/ATtila)
 
 Developed by *Christian Visintin*
 

@@ -17,7 +17,7 @@ setup(
     long_description_content_type="text/markdown",
     author='Christian Visintin',
     author_email='christian.visintin1997@gmail.com',
-    url='https://github.com/ChristianVisintin/ATtila',
+    url='https://github.com/veeso/ATtila',
     license="MIT",
     python_requires='>=3.5',
     include_package_data=True,
