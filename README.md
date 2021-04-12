@@ -18,6 +18,7 @@ Current Version: **1.2.0 (30/05/2020)**
   - [Known Issues 🧻](#known-issues-)
   - [Changelog 🕑](#changelog-)
   - [Branches 🌳](#branches-)
+  - [Buy me a coffee ☕](#buy-me-a-coffee-)
   - [License 📜](#license-)
 
 ---
@@ -207,6 +208,14 @@ View Changelog [HERE](CHANGELOG.md)
 - 1.1.x: LTS with Python3.4 support; this version will receive only patch for major issues
 - dev: main development branch
 - other features
+
+---
+
+## Buy me a coffee ☕
+
+If you like ATtila and you're grateful for the work I've done, please consider a little donation 🥳
+
+[![Buy-me-a-coffee](https://img.buymeacoffee.com/button-api/?text=Buy%20me%20a%20coffee&emoji=&slug=veeso&button_colour=404040&font_colour=ffffff&font_family=Comic&outline_colour=ffffff&coffee_colour=FFDD00)](https://www.buymeacoffee.com/veeso)
 
 ---
 
