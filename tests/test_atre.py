@@ -42,7 +42,7 @@ response_ptr = 0
 response_assoc = {
     "ATD*99***1#": "CONNECT\r\n",
     "AT+CGDATA=\"PPP\",1": "CONNECT\r\n",
-    "AT+CSQ": "32,99\r\n\r\nOK\r\n",
+    "AT+CSQ": "+CSQ: 32,99\r\n\r\nOK\r\n",
     "AT+CPIN?": "+CPIN: READY\r\n",
     "AT+CGSN": "123456789\r\nOK\r\n",
     "AT+CGDCONT=1,\"IP\",\"apn.foo.bar\"": "OK\r\n",
@@ -157,7 +157,7 @@ class TestATRE(unittest.TestCase):
         self.assertEqual(self.atre._ATRuntimeEnvironment__communicator.rtscts, False)
         self.assertEqual(self.atre._ATRuntimeEnvironment__communicator.dsrdtr, False)
 
-    def test_session_key(self):
+    def test_session_key_missing(self):
         # Try to get unexisting key
         with self.assertRaises(KeyError):
             self.atre.get_session_value("foobar")
@@ -231,6 +231,14 @@ class TestATRE(unittest.TestCase):
         self.atre.open_serial()
         with self.assertRaises(ATRuntimeError):
             self.atre.exec_next()
+        self.atre.close_serial()
+
+    def test_session_key_existing(self):
+        self.atre.configure_virtual_communicator(
+            "virtualAdapter", 115200, 10, "\r\n", read_callback, write_callback, in_waiting)
+        self.atre.open_serial()
+        self.atre.exec('AT+CSQ;;OK;;0;;5;;["+CSQ: ?{rssi},"]')
+        assert self.atre.get_session_value("rssi") == 32
         self.atre.close_serial()
 
     def test_fail_parse(self):
