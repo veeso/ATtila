@@ -1,25 +1,3 @@
-# ATtila
-# Developed by Christian Visintin
-#
-# MIT License
-# Copyright (c) 2019 Christian Visintin
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
-#
-
 from .exceptions import ATSerialPortError
 
 from serial import Serial, SerialException, SerialTimeoutException
@@ -168,7 +146,7 @@ class ATCommunicator(object):
 
         :returns bool
         """
-        return self._device != None
+        return self._device is not None
 
     def exec(self, command: str, timeout: int = None) -> Tuple[List[str], int]:
         """
@@ -196,7 +174,10 @@ class ATCommunicator(object):
             if self._line_break:
                 self._device.write(
                     b"%s%s"
-                    % (command.encode("utf-8"), self._line_break.encode("utf-8"))
+                    % (
+                        command.encode("utf-8"),
+                        self._line_break.encode("utf-8"),
+                    )
                 )
             else:
                 self._device.write(b"%s" % command.encode("utf-8"))
@@ -208,18 +189,6 @@ class ATCommunicator(object):
         t_now = t_start
         data_still_available = True
         sleep_time_based_on_baud = 100 / self.baud_rate  # Milliseconds
-        available_data = 0
-        prev_available_data = -1
-        sleep_time = 1000 / self.baud_rate
-        # Wait for all data to be ready
-        # while t_now < t_timeout and available_data > prev_available_data:
-        #  sleep(sleep_time)
-        #  t_now = int(time() * 1000)
-        #  if available_data > 0:
-        #    prev_available_data = available_data
-        #  available_data = self._device.inWaiting()
-        # if available_data > 0:
-        #  data = self._device.read(available_data).decode("utf-8")
 
         # Try to read until there are data available and t_now < t_timeout
         while t_now < t_timeout and data_still_available:
@@ -228,8 +197,6 @@ class ATCommunicator(object):
             read_bytes = self._device.read(self._device.in_waiting)
             if not read_bytes:
                 continue
-            # Sleep for a while in order to give data the time to come
-            last_byte = read_bytes[len(read_bytes) - 1]
             # Mini sleep to wait for incoming data
             t_waiting_elapsed = 0
             mini_sleep_time = 0.001

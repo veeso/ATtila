@@ -1,25 +1,3 @@
-# ATtila
-# Developed by Christian Visintin
-#
-# MIT License
-# Copyright (c) 2019 Christian Visintin
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
-#
-
 from signal import signal, SIGTERM, SIGINT
 from getopt import getopt, GetoptError
 import logging
@@ -88,10 +66,12 @@ class _Getch(object):
 
 class _GetchUnix(object):
     def __init__(self):
-        import tty, sys
+        pass
 
     def __call__(self):
-        import sys, tty, termios
+        import sys
+        import termios
+        import tty
 
         fd = sys.stdin.fileno()
         old_settings = termios.tcgetattr(fd)
@@ -105,7 +85,7 @@ class _GetchUnix(object):
 
 class _GetchWindows(object):
     def __init__(self):
-        import msvcrt
+        pass
 
     def __call__(self):
         import msvcrt
@@ -222,7 +202,7 @@ def main():
             elif opt == "-A":
                 try:
                     abort_on_failure = eval(arg)
-                    if abort_on_failure != True and abort_on_failure != False:
+                    if not abort_on_failure and abort_on_failure:
                         opt_error(
                             "Abort on failure has a bad value: '%s', but should be True or False"
                             % abort_on_failure
@@ -232,7 +212,7 @@ def main():
             elif opt == "-R":
                 try:
                     rtscts = eval(arg)
-                    if rtscts != True and rtscts != False:
+                    if rtscts and not rtscts:
                         opt_error(
                             "rtscts has a bad value: '%s', but should be True or False"
                             % rtscts
@@ -242,7 +222,7 @@ def main():
             elif opt == "-D":
                 try:
                     dsrdtr = eval(arg)
-                    if dsrdtr != True and dsrdtr != False:
+                    if not dsrdtr and dsrdtr:
                         opt_error(
                             "dsrdtr has a bad value: '%s', but should be True or False"
                             % dsrdtr
@@ -513,9 +493,13 @@ def main():
             print("Could not close serial port: %s" % err)
         exit(1)
     except ATREUninitializedError as err:
-        logging.error("Couldn't close serial port, since device was not initialized")
+        logging.error(
+            "Couldn't close serial port, since device was not initialized: %s" % err
+        )
         if verbose and not to_stdout:
-            print("Couldn't close serial port, since device was not initialized")
+            print(
+                "Couldn't close serial port, since device was not initialized: %s" % err
+            )
     # Execution terminated
     logging.info("attila terminated with exit code 0")
     if not to_stdout and verbose:

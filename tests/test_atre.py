@@ -1,25 +1,3 @@
-# ATtila
-# Developed by Christian Visintin
-#
-# MIT License
-# Copyright (c) 2019 Christian Visintin
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
-#
-
 import unittest
 
 from attila.atre import ATRuntimeEnvironment
@@ -219,7 +197,8 @@ class TestATRE(unittest.TestCase):
     def test_configure_communicator(self):
         self.atre.configure_communicator("/dev/ttyS0", 115200, 5, "\r\n", False, False)
         self.assertEqual(
-            self.atre._ATRuntimeEnvironment__communicator.serial_port, "/dev/ttyS0"
+            self.atre._ATRuntimeEnvironment__communicator.serial_port,
+            "/dev/ttyS0",
         )
         self.assertEqual(
             self.atre._ATRuntimeEnvironment__communicator.baud_rate, 115200
@@ -261,7 +240,11 @@ class TestATRE(unittest.TestCase):
         )
         try:
             self.atre.run()
-        except (ATRuntimeError, ATSerialPortError, ATREUninitializedError) as err:
+        except (
+            ATRuntimeError,
+            ATSerialPortError,
+            ATREUninitializedError,
+        ) as err:
             self.assertTrue(False, "Runtime error: %s" % err)
 
     def test_exec(self):
@@ -313,7 +296,11 @@ class TestATRE(unittest.TestCase):
         while res:
             try:
                 res = self.atre.exec_next()
-            except (ATRuntimeError, ATSerialPortError, ATREUninitializedError) as err:
+            except (
+                ATRuntimeError,
+                ATSerialPortError,
+                ATREUninitializedError,
+            ) as err:
                 self.assertTrue(False, "Runtime error: %s" % err)
         self.atre.close_serial()
         # With errors

@@ -7,27 +7,30 @@ on: [push, pull_request]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.5', '3.6', '3.7', '3.8']
+        python-version: [3.5, 3.6, 3.7, 3.8]
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install coverage unittest2 codecov nose
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: Test with nosetests
-      run: |
-        nosetests -v --with-coverage --cover-tests --cover-package=attila tests/
-    - name: Upload to codecov.io
-      uses: codecov/codecov-action@v1
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install coverage unittest2 codecov nose black flake8
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Test with nosetests
+        run: |
+          nosetests -v --with-coverage --cover-tests --cover-package=attila tests/
+      - name: Run fmt (black)
+        run: black -l 88 --check attila/
+      - name: Run linter (flake8)
+        run: flake8 --ignore E501,W503 --max-line-length 88 attila/
+      - name: Upload to codecov.io
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
