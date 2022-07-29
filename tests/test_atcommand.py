@@ -114,12 +114,6 @@ class TestATCommands(unittest.TestCase):
             response_ok,
             "Response should be an ATResponse instance",
         )
-        response_nok = "OK"
-        cmd.response = response_nok
-        self.assertIsNone(
-            cmd.response,
-            "Response should be None, since a string has been passed",
-        )
 
 
 if __name__ == "__main__":
