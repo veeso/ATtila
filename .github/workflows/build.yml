@@ -29,7 +29,7 @@ jobs:
       - name: Run fmt (black)
         run: black -l 88 --check attila/
       - name: Run linter (flake8)
-        run: flake8 --ignore E501,W503 --max-line-length 88 attila/
+        run: flake8 attila/
       - name: Upload to codecov.io
         uses: codecov/codecov-action@v1
         with:

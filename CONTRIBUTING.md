@@ -5,6 +5,7 @@
   - [Pull Request Process](#pull-request-process)
   - [Developer's guide](#developers-guide)
   - [Tests Units](#tests-units)
+  - [Linting and format](#linting-and-format)
 
 When contributing to this repository, please first discuss the change you wish to make via issue with the owners of this repository before making a change.
 
@@ -47,6 +48,30 @@ Don't you have nose?
 
 ```sh
 sudo -H pip3 install nose coverage unittest2 codecov
+```
+
+## Linting and format
+
+This is the current configuration for linting and format:
+
+for code format, we use `Black`
+
+```sh
+pip3 install black
+```
+
+with the default configuration.
+
+For linting we use `flake8`
+
+```sh
+pip3 install flake8
+```
+
+and has to be run with:
+
+```sh
+flake8 attila/
 ```
 
 ---
