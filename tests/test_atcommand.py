@@ -97,11 +97,6 @@ class TestATCommands(unittest.TestCase):
             ),
             "Bad collectables",
         )
-        cmd.collectables = "foobar"
-        self.assertIsNone(
-            cmd.collectables,
-            "Collectables should be None, since a string has been provided, but it's not",
-        )
         # Doppelganger
         cmd.doppel_ganger = cmd3
         self.assertEqual(cmd.doppel_ganger, cmd3)
