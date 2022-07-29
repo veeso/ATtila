@@ -5,23 +5,6 @@
 Developed by [@veeso](https://veeso.github.io)
 Current version: 1.2.1 (29/07/2022)
 
----
-
-- [ATtila](#attila)
-  - [About ATtila 📢](#about-attila-)
-  - [Requirements 🛒](#requirements-)
-  - [Get Started 🛠](#get-started-)
-    - [Virtual Device ⌨](#virtual-device-)
-  - [ATScripts 💻](#atscripts-)
-  - [Contributions 🤝🏻](#contributions-)
-  - [Known Issues 🧻](#known-issues-)
-  - [Changelog 🕑](#changelog-)
-  - [Branches 🌳](#branches-)
-  - [Support the developer ☕](#support-the-developer-)
-  - [License 📜](#license-)
-
----
-
 ```sh
 pip3 install attila
 ```
