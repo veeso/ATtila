@@ -28,13 +28,22 @@ from time import time
 from time import sleep
 from typing import List, Optional, Tuple
 
+
 class ATCommunicator(object):
     """
     ATCommunicator class provides an interface to communicate with an
     RF module using AT commands through a serial port
     """
 
-    def __init__(self, serial_port: str, baud_rate: int, default_timeout: int = 10, line_break: str = "\r\n", rtscts: Optional[bool] = True, dsrdtr: Optional[bool] = True):
+    def __init__(
+        self,
+        serial_port: str,
+        baud_rate: int,
+        default_timeout: int = 10,
+        line_break: str = "\r\n",
+        rtscts: Optional[bool] = True,
+        dsrdtr: Optional[bool] = True,
+    ):
         """
         Class constructor. Instantiates a new :class:`.ATCommunicator.` object with the provided parameters.
 
@@ -124,8 +133,14 @@ class ATCommunicator(object):
         if self._device:
             self.close()
         try:
-            self._device = Serial(self._serial_port, self._baud_rate, timeout=0.1,
-                                  write_timeout = self._default_timeout, rtscts = self._rtscts, dsrdtr = self._dsrdtr)
+            self._device = Serial(
+                self._serial_port,
+                self._baud_rate,
+                timeout=0.1,
+                write_timeout=self._default_timeout,
+                rtscts=self._rtscts,
+                dsrdtr=self._dsrdtr,
+            )
         except (OSError, SerialException) as error:
             raise ATSerialPortError(str(error))
         except Exception as error:  # Catch other exceptions too
@@ -179,8 +194,10 @@ class ATCommunicator(object):
         t_start = int(time() * 1000)
         try:
             if self._line_break:
-                self._device.write(b"%s%s" % (command.encode(
-                    "utf-8"), self._line_break.encode("utf-8")))
+                self._device.write(
+                    b"%s%s"
+                    % (command.encode("utf-8"), self._line_break.encode("utf-8"))
+                )
             else:
                 self._device.write(b"%s" % command.encode("utf-8"))
         except SerialTimeoutException as err:
@@ -217,7 +234,10 @@ class ATCommunicator(object):
             t_waiting_elapsed = 0
             mini_sleep_time = 0.001
             # Wait until in waiting is 0 and waiting elapsed millis is < of sleep time based on baud
-            while self._device.in_waiting == 0 and sleep_time_based_on_baud > t_waiting_elapsed:
+            while (
+                self._device.in_waiting == 0
+                and sleep_time_based_on_baud > t_waiting_elapsed
+            ):
                 sleep(mini_sleep_time)  # 1ms
                 t_waiting_elapsed += mini_sleep_time
             # Check if there are still data available

@@ -24,8 +24,15 @@ from signal import signal, SIGTERM, SIGINT
 from getopt import getopt, GetoptError
 import logging
 from sys import argv, exit, stdout
-from attila.exceptions import ATREUninitializedError, ATRuntimeError, ATScriptNotFound, ATScriptSyntaxError, ATSerialPortError
+from attila.exceptions import (
+    ATREUninitializedError,
+    ATRuntimeError,
+    ATScriptNotFound,
+    ATScriptSyntaxError,
+    ATSerialPortError,
+)
 from attila.atre import ATRuntimeEnvironment
+
 PROGRAM_NAME = "attila"
 
 # Import ATtila
@@ -34,7 +41,8 @@ PROGRAM_NAME = "attila"
 # Getopt
 # Signals
 
-USAGE = "Usage: %s [OPTION]... [FILE]\n\
+USAGE = (
+    "Usage: %s [OPTION]... [FILE]\n\
   \n\
   With no FILE, run in interactive mode\n\
   \n\
@@ -50,7 +58,9 @@ USAGE = "Usage: %s [OPTION]... [FILE]\n\
   \t-v\t\t\tBe more verbose\n\
   \t-q\t\t\tBe quiet (print only PRINT ESKs and ERRORS)\n\
   \t-h\t\t\tShow this page\n\
-  " % PROGRAM_NAME
+  "
+    % PROGRAM_NAME
+)
 
 LOG_LEVEL_DEBUG = 4
 LOG_LEVEL_INFO = 3
@@ -62,15 +72,19 @@ LOG_LEVEL_CRITICAL = 0
 sigterm_called = False
 interactive_mode = True
 
+
 class _Getch(object):
     """Gets a single character from standard input. Does not echo to the screen."""
+
     def __init__(self):
         try:
             self.impl = _GetchWindows()
         except ImportError:
             self.impl = _GetchUnix()
 
-    def __call__(self): return self.impl()
+    def __call__(self):
+        return self.impl()
+
 
 class _GetchUnix(object):
     def __init__(self):
@@ -78,6 +92,7 @@ class _GetchUnix(object):
 
     def __call__(self):
         import sys, tty, termios
+
         fd = sys.stdin.fileno()
         old_settings = termios.tcgetattr(fd)
         try:
@@ -87,13 +102,16 @@ class _GetchUnix(object):
             termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
         return ch
 
+
 class _GetchWindows(object):
     def __init__(self):
         import msvcrt
 
     def __call__(self):
         import msvcrt
+
         return msvcrt.getch()
+
 
 def sigterm_handler(_signo, _stack_frame):
     """
@@ -105,6 +123,7 @@ def sigterm_handler(_signo, _stack_frame):
     sigterm_called = True
     if interactive_mode:
         print("Press ENTER to QUIT")
+
 
 def opt_error(message: str):
     """
@@ -205,7 +224,9 @@ def main():
                     abort_on_failure = eval(arg)
                     if abort_on_failure != True and abort_on_failure != False:
                         opt_error(
-                            "Abort on failure has a bad value: '%s', but should be True or False" % abort_on_failure)
+                            "Abort on failure has a bad value: '%s', but should be True or False"
+                            % abort_on_failure
+                        )
                 except NameError:
                     opt_error("Abort on failure has a bad value")
             elif opt == "-R":
@@ -213,7 +234,9 @@ def main():
                     rtscts = eval(arg)
                     if rtscts != True and rtscts != False:
                         opt_error(
-                            "rtscts has a bad value: '%s', but should be True or False" % rtscts)
+                            "rtscts has a bad value: '%s', but should be True or False"
+                            % rtscts
+                        )
                 except NameError:
                     opt_error("rtscts has a bad value")
             elif opt == "-D":
@@ -221,7 +244,9 @@ def main():
                     dsrdtr = eval(arg)
                     if dsrdtr != True and dsrdtr != False:
                         opt_error(
-                            "dsrdtr has a bad value: '%s', but should be True or False" % dsrdtr)
+                            "dsrdtr has a bad value: '%s', but should be True or False"
+                            % dsrdtr
+                        )
                 except NameError:
                     opt_error("dsrdtr has a bad value")
             elif opt == "-v":
@@ -241,12 +266,20 @@ def main():
         if logfile == "stdout":
             to_stdout = True
             stdout_handler = logging.StreamHandler(stdout)
-            stdout_handler.setFormatter(logging.Formatter(
-                "%(asctime)s [%(levelname)s]: %(message)s", datefmt="%Y-%m-%dT%H:%M:%S"))
+            stdout_handler.setFormatter(
+                logging.Formatter(
+                    "%(asctime)s [%(levelname)s]: %(message)s",
+                    datefmt="%Y-%m-%dT%H:%M:%S",
+                )
+            )
             logging.getLogger().addHandler(stdout_handler)
         else:
-            logging.basicConfig(filename=logfile, level=log_level,
-                                format="%(asctime)s [%(levelname)s]: %(message)s", datefmt="%Y-%m-%dT%H:%M:%S")
+            logging.basicConfig(
+                filename=logfile,
+                level=log_level,
+                format="%(asctime)s [%(levelname)s]: %(message)s",
+                datefmt="%Y-%m-%dT%H:%M:%S",
+            )
     else:
         logging.getLogger().disabled = True
     # Instance ATRuntime environment
@@ -254,12 +287,15 @@ def main():
     # Configure serial
     if device and baud_rate:
         atrunenv.configure_communicator(
-            device, baud_rate, default_timeout, line_break, rtscts, dsrdtr)
-        logging.info("Setup communicator (device: %s, baud_rate: %d)" %
-                     (device, baud_rate))
+            device, baud_rate, default_timeout, line_break, rtscts, dsrdtr
+        )
+        logging.info(
+            "Setup communicator (device: %s, baud_rate: %d)" % (device, baud_rate)
+        )
         if verbose and not to_stdout:
-            print("Setup communicator (device: %s, baud_rate: %d)" %
-                  (device, baud_rate))
+            print(
+                "Setup communicator (device: %s, baud_rate: %d)" % (device, baud_rate)
+            )
         # Open serial
         try:
             atrunenv.open_serial()
@@ -284,8 +320,7 @@ def main():
         try:
             atrunenv.parse_ATScript(script_file)
         except ATScriptNotFound as err:
-            logging.error("Could not find script file %s: %s" %
-                          (script_file, err))
+            logging.error("Could not find script file %s: %s" % (script_file, err))
             if not to_stdout:
                 print("Could not find script file %s: %s" % (script_file, err))
             exit(1)
@@ -303,17 +338,41 @@ def main():
                     continue
                 # Handle response
                 if response.response and response.command:
-                    logging.info("%s (%d ms) >> %s" % (
-                        response.command.command, response.execution_time, response.response))
+                    logging.info(
+                        "%s (%d ms) >> %s"
+                        % (
+                            response.command.command,
+                            response.execution_time,
+                            response.response,
+                        )
+                    )
                     if not to_stdout and not quiet:
-                        print("%s (%d ms) >> %s" % (response.command.command,
-                                                    response.execution_time, response.response))
+                        print(
+                            "%s (%d ms) >> %s"
+                            % (
+                                response.command.command,
+                                response.execution_time,
+                                response.response,
+                            )
+                        )
                 else:  # Command failed (this snippet gets executed only if aof is false)
-                    logging.error("%s (%d ms) >> %s" % (
-                        response.command.command, response.execution_time, "\n".join(response.full_response)))
+                    logging.error(
+                        "%s (%d ms) >> %s"
+                        % (
+                            response.command.command,
+                            response.execution_time,
+                            "\n".join(response.full_response),
+                        )
+                    )
                     if not to_stdout and not quiet:
-                        print("%s (%d ms) >> %s" % (response.command.command,
-                                                    response.execution_time, "\n".join(response.full_response)))
+                        print(
+                            "%s (%d ms) >> %s"
+                            % (
+                                response.command.command,
+                                response.execution_time,
+                                "\n".join(response.full_response),
+                            )
+                        )
             except ATSerialPortError as err:
                 logging.error("Serial Port error: %s" % err)
                 if not to_stdout:
@@ -334,69 +393,93 @@ def main():
         history = []
         history_index = 0
         sigterm_called = False
-        print(">> ", end = '', flush = True)
+        print(">> ", end="", flush=True)
         while not sigterm_called:
             stdin = getch()
-            #Handle input
+            # Handle input
             asciich = ord(stdin)
-            if asciich == 3 or asciich == 4: #CTRL + C, CTRL + D
+            if asciich == 3 or asciich == 4:  # CTRL + C, CTRL + D
                 sigterm_called = True
                 continue
-            elif asciich == 27: #Arrow
+            elif asciich == 27:  # Arrow
                 arrow_key = getch() + getch()
-                if arrow_key == "[A": #Up
-                    #history len 1 =>
+                if arrow_key == "[A":  # Up
+                    # history len 1 =>
                     if history_index - 1 >= 0:
                         history_index -= 1
                         command_line = history[history_index]
-                        print("\r\033[K>> %s" % command_line, end = '', flush = True)
+                        print("\r\033[K>> %s" % command_line, end="", flush=True)
                     continue
-                elif arrow_key == "[B": #Down
+                elif arrow_key == "[B":  # Down
                     if history_index + 1 < len(history):
                         history_index += 1
                         command_line = history[history_index]
-                        print("\r\033[K>> %s" % command_line, end = '', flush = True)
+                        print("\r\033[K>> %s" % command_line, end="", flush=True)
                     elif history_index + 1 >= len(history):
                         command_line = ""
                         history_index = len(history)
-                        print("\r\033[K>> %s" % command_line, end = '', flush = True)
+                        print("\r\033[K>> %s" % command_line, end="", flush=True)
                     continue
                 else:
-                    continue #Ignore
-            elif asciich == 8 or asciich == 127: #Backspace
+                    continue  # Ignore
+            elif asciich == 8 or asciich == 127:  # Backspace
                 command_line = command_line[:-1]
-                print("\r\033[K>> %s" % command_line, end = '', flush = True)
+                print("\r\033[K>> %s" % command_line, end="", flush=True)
                 continue
-            elif asciich != 13 and asciich != 10: #Not a newline
-                #Append char to buffer
+            elif asciich != 13 and asciich != 10:  # Not a newline
+                # Append char to buffer
                 command_line += stdin
-                print(stdin, end = '', flush = True)
+                print(stdin, end="", flush=True)
                 continue
-            #Newline
+            # Newline
             if not command_line:
                 print()
-                print(">> ", end = '', flush = True)
+                print(">> ", end="", flush=True)
                 command_line = ""
                 continue
             print()
-            #Push command to history
+            # Push command to history
             history.append(command_line)
             # Parse and execute command
             try:
                 response = atrunenv.exec(command_line)
                 if response:  # Was a command (otherwise was probably ESK)
                     if response.response:  # Command was successful
-                        logging.info("%s (%d ms) >> %s" % (
-                            response.command.command, response.execution_time, response.response))
+                        logging.info(
+                            "%s (%d ms) >> %s"
+                            % (
+                                response.command.command,
+                                response.execution_time,
+                                response.response,
+                            )
+                        )
                         if not to_stdout and not quiet:
-                            print("<< %s (%d ms) >> %s" % (
-                                response.command.command, response.execution_time, response.response))
+                            print(
+                                "<< %s (%d ms) >> %s"
+                                % (
+                                    response.command.command,
+                                    response.execution_time,
+                                    response.response,
+                                )
+                            )
                     else:  # Command error
-                        logging.error("%s (%d ms) >> %s" % (
-                            response.command.command, response.execution_time, "\n".join(response.full_response)))
+                        logging.error(
+                            "%s (%d ms) >> %s"
+                            % (
+                                response.command.command,
+                                response.execution_time,
+                                "\n".join(response.full_response),
+                            )
+                        )
                         if not to_stdout and not quiet:
-                            print("<< %s (%d ms) >> %s" % (
-                                response.command.command, response.execution_time, "\n".join(response.full_response)))
+                            print(
+                                "<< %s (%d ms) >> %s"
+                                % (
+                                    response.command.command,
+                                    response.execution_time,
+                                    "\n".join(response.full_response),
+                                )
+                            )
                 else:
                     logging.info("%s >> OK" % command_line)
                     if not to_stdout and not quiet:
@@ -417,10 +500,10 @@ def main():
                 logging.error("Uninitialized error: %s" % err)
                 if not to_stdout:
                     print("Uninitialized error: %s" % err)
-            #Reset command line and history index
+            # Reset command line and history index
             command_line = ""
             history_index = len(history)
-            print(">> ", end = '', flush = True)
+            print(">> ", end="", flush=True)
     # Close serial
     try:
         atrunenv.close_serial()
@@ -430,14 +513,14 @@ def main():
             print("Could not close serial port: %s" % err)
         exit(1)
     except ATREUninitializedError as err:
-        logging.error(
-            "Couldn't close serial port, since device was not initialized")
+        logging.error("Couldn't close serial port, since device was not initialized")
         if verbose and not to_stdout:
             print("Couldn't close serial port, since device was not initialized")
     # Execution terminated
     logging.info("attila terminated with exit code 0")
     if not to_stdout and verbose:
         print("attila terminated with exit code 0")
+
 
 if __name__ == "__main__":
     main()

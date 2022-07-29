@@ -31,12 +31,21 @@ from typing import Callable, Optional, List, Tuple
 
 class ATVirtualCommunicator(ATCommunicator):
     """
-    ATVirtualCommunicator class provides a virtual interface to communicate with an 
-    RF module using AT commands through a serial port 
+    ATVirtualCommunicator class provides a virtual interface to communicate with an
+    RF module using AT commands through a serial port
     This module should be used in test environment only
     """
 
-    def __init__(self, serial_port: str, baud_rate: int, default_timeout: int = 10, line_break: str = "\r\n", read_callback: Optional[Callable[[], str]] = None, write_callback: Optional[Callable[[str], None]] = None, in_waiting_callback: Optional[Callable[[], int]] = None):
+    def __init__(
+        self,
+        serial_port: str,
+        baud_rate: int,
+        default_timeout: int = 10,
+        line_break: str = "\r\n",
+        read_callback: Optional[Callable[[], str]] = None,
+        write_callback: Optional[Callable[[str], None]] = None,
+        in_waiting_callback: Optional[Callable[[], int]] = None,
+    ):
         """
         Class constructor. Instantiates a new :class:`.ATCommunicator.` object with the provided parameters.
 
@@ -111,8 +120,14 @@ class ATVirtualCommunicator(ATCommunicator):
         if not self._serial_port:
             raise ATSerialPortError("Serial port is not set")
         try:
-            self._device = VirtualSerial(self._serial_port, self._baud_rate, timeout=0.5, read_callback=self.__readCB,
-                                         write_callback=self.__writeCB, in_waiting_callback=self.__inwaitingCB)
+            self._device = VirtualSerial(
+                self._serial_port,
+                self._baud_rate,
+                timeout=0.5,
+                read_callback=self.__readCB,
+                write_callback=self.__writeCB,
+                in_waiting_callback=self.__inwaitingCB,
+            )
         except (OSError, VirtualSerialException) as error:
             raise ATSerialPortError(error)
 
@@ -138,7 +153,9 @@ class ATVirtualCommunicator(ATCommunicator):
         """
         return super().is_open()
 
-    def exec(self, command: str, timeout: Optional[int] = None) -> Tuple[List[str], int]:
+    def exec(
+        self, command: str, timeout: Optional[int] = None
+    ) -> Tuple[List[str], int]:
         """
         Execute AT command
 

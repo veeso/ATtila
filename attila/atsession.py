@@ -27,11 +27,12 @@ from .atresponse import ATResponse
 import re
 from typing import List, Optional, Union, Tuple
 
+
 class ATSession(object):
     """
     This class represents an AT sessions, which is a set of commands to execute - "a script".
     It takes care of preparing the next command to execute based on the response of the previous one
-    and of validating the response of the last command. 
+    and of validating the response of the last command.
     """
 
     def __init__(self, commands: List[str] = []):
@@ -83,7 +84,15 @@ class ATSession(object):
         self._commands.append(command)
         return True
 
-    def add_new_command(self, command: str, exp_response: str, tout:int = None, delay: int = 0, collectables: Optional[List[str]] = None, dganger: Optional[ATCommand] = None) -> bool:
+    def add_new_command(
+        self,
+        command: str,
+        exp_response: str,
+        tout: int = None,
+        delay: int = 0,
+        collectables: Optional[List[str]] = None,
+        dganger: Optional[ATCommand] = None,
+    ) -> bool:
         """
         Add a new command at the end of the command list
 
@@ -104,8 +113,9 @@ class ATSession(object):
         """
         if not command:
             return False
-        new_command = ATCommand(command, exp_response,
-                                tout, delay, collectables, dganger)
+        new_command = ATCommand(
+            command, exp_response, tout, delay, collectables, dganger
+        )
         self._commands.append(new_command)
         return True
 
@@ -184,23 +194,22 @@ class ATSession(object):
             if not response_str:
                 self._last_command_failed = True
         # Instance ATResponse
-        atresponse = ATResponse(response_str, response,
-                                current_command, execution_time)
+        atresponse = ATResponse(response_str, response, current_command, execution_time)
         # If last command failed => set doppelganger as next command
         if self._last_command_failed:
             # @! Response NOK
             doppelganger = current_command.doppel_ganger
             if doppelganger:
                 # Add command to command list
-                self._commands.insert(
-                    self._current_command_index, doppelganger)
+                self._commands.insert(self._current_command_index, doppelganger)
         else:
             # @! Response OK
             # Try to get collectables
             if vars_to_collect:
                 for to_collect in vars_to_collect:  # String
                     collected = self.__get_value_from_response(
-                        to_collect, response)  # collected => tuple(key, value)
+                        to_collect, response
+                    )  # collected => tuple(key, value)
                     if collected:
                         self._session_storage[collected[0]] = collected[1]
                         atresponse.add_collectable(collected[0], collected[1])
@@ -270,11 +279,12 @@ class ATSession(object):
         :raises KeyError
         """
         if not self._session_storage.get(key):
-            raise KeyError(
-                "Could not find %s in current session storage" % key)
+            raise KeyError("Could not find %s in current session storage" % key)
         return self._session_storage.get(key)
 
-    def __get_value_from_response(self, to_collect: str, response: List[str]) -> Optional[Tuple[str, Union[str, int]]]:
+    def __get_value_from_response(
+        self, to_collect: str, response: List[str]
+    ) -> Optional[Tuple[str, Union[str, int]]]:
         """
         Get a value from response.
         The collectable syntax is '...?{KEY_NAME}...'
@@ -298,7 +308,7 @@ class ATSession(object):
         if len(key_parts) > 1:
             key_regex = key_parts[1]
         key_name = key_parts[0]
-        #part_to_remove = to_collect.replace(key_group, "")
+        # part_to_remove = to_collect.replace(key_group, "")
         key_value = None
         # compose regex with to_collect[0] + (.*) + to_collect[1]
         regex = to_collect.replace(key_group, "")
@@ -313,8 +323,7 @@ class ATSession(object):
             for i in range(len(collect_expr_parts)):
                 if not collect_expr_parts[i]:  # Skip empty tokens
                     continue
-                collect_expr_parts[i] = self.replace_session_keys(
-                    collect_expr_parts[i])
+                collect_expr_parts[i] = self.replace_session_keys(collect_expr_parts[i])
                 # First collect this part in parts to remove
                 part_to_remove.append(collect_expr_parts[i])
                 # Then escape regex

@@ -24,11 +24,18 @@ import unittest
 
 from attila.atre import ATRuntimeEnvironment
 from attila.atcommand import ATCommand
-from attila.exceptions import ATREUninitializedError, ATRuntimeError, ATScriptNotFound, ATScriptSyntaxError, ATSerialPortError
+from attila.exceptions import (
+    ATREUninitializedError,
+    ATRuntimeError,
+    ATScriptNotFound,
+    ATScriptSyntaxError,
+    ATSerialPortError,
+)
 from attila.esk import ESK, ESKValue
 
 from os.path import dirname
-#Tempfile
+
+# Tempfile
 from tempfile import NamedTemporaryFile
 
 SCRIPT = "commands_esk.ats"
@@ -41,13 +48,14 @@ response_ptr = 0
 
 response_assoc = {
     "ATD*99***1#": "CONNECT\r\n",
-    "AT+CGDATA=\"PPP\",1": "CONNECT\r\n",
+    'AT+CGDATA="PPP",1': "CONNECT\r\n",
     "AT+CSQ": "32,99\r\n\r\nOK\r\n",
     "AT+CPIN?": "+CPIN: READY\r\n",
     "AT+CGSN": "123456789\r\nOK\r\n",
-    "AT+CGDCONT=1,\"IP\",\"apn.foo.bar\"": "OK\r\n",
-    "AT": "OK\r\n"
+    'AT+CGDCONT=1,"IP","apn.foo.bar"': "OK\r\n",
+    "AT": "OK\r\n",
 }
+
 
 def create_virtual_response(command):
     """
@@ -58,7 +66,7 @@ def create_virtual_response(command):
     """
     global response
     global response_ptr
-    #Remove newlines from command
+    # Remove newlines from command
     if command.endswith("\r\n"):
         command = command[:-2]
     response_str = response_assoc.get(command)
@@ -68,33 +76,37 @@ def create_virtual_response(command):
     else:
         response = "ERROR\r\n"
 
+
 def in_waiting():
     global response
     global response_ptr
     return response_ptr < len(response)
 
+
 def read_callback(nbytes):
     global response
     global response_ptr
-    ret = response[response_ptr:response_ptr + nbytes]
+    ret = response[response_ptr : response_ptr + nbytes]
     response_ptr += nbytes
     return ret
+
 
 def write_callback(command):
     cmd = command.decode("utf-8")
     create_virtual_response(cmd)
 
+
 class TestATRE(unittest.TestCase):
     """
-      Test ATRuntime Environment commands preparation and evaluation
-      NOTE: this tests doesn't test communicator!
+    Test ATRuntime Environment commands preparation and evaluation
+    NOTE: this tests doesn't test communicator!
     """
 
     def __init__(self, methodName):
         super().__init__(methodName)
         self.atre = ATRuntimeEnvironment()
         self.script_dir = "%s/scripts/" % dirname(__file__)
-        #Verify constructor
+        # Verify constructor
         self.assertEqual(self.atre.aof, True)
 
     def test_session_reset(self):
@@ -110,31 +122,87 @@ class TestATRE(unittest.TestCase):
         self.assertIsNotNone(esk, "Could not parse ESK AOF")
         esks.append((esk, 0))
         self.atre.set_ESKs(esks)
-        #Test ESKs
-        self.assertTrue(self.atre._ATRuntimeEnvironment__process_ESK(ESK.to_ESKValue(ESK.AOF, "True")))
-        self.assertTrue(self.atre._ATRuntimeEnvironment__process_ESK(ESK.to_ESKValue(ESK.BAUDRATE, "9600")))
-        self.assertTrue(self.atre._ATRuntimeEnvironment__process_ESK(ESK.to_ESKValue(ESK.BREAK, "CRLF")))
-        #Use a different ATRE for device
+        # Test ESKs
+        self.assertTrue(
+            self.atre._ATRuntimeEnvironment__process_ESK(
+                ESK.to_ESKValue(ESK.AOF, "True")
+            )
+        )
+        self.assertTrue(
+            self.atre._ATRuntimeEnvironment__process_ESK(
+                ESK.to_ESKValue(ESK.BAUDRATE, "9600")
+            )
+        )
+        self.assertTrue(
+            self.atre._ATRuntimeEnvironment__process_ESK(
+                ESK.to_ESKValue(ESK.BREAK, "CRLF")
+            )
+        )
+        # Use a different ATRE for device
         new_atre = ATRuntimeEnvironment()
-        self.assertTrue(new_atre._ATRuntimeEnvironment__process_ESK(ESK.to_ESKValue(ESK.DEVICE, "/dev/ttyS1")))
-        self.assertTrue(self.atre._ATRuntimeEnvironment__process_ESK(ESK.to_ESKValue(ESK.DSRDTR, "True")))
-        self.assertTrue(self.atre._ATRuntimeEnvironment__process_ESK(ESK.to_ESKValue(ESK.EXEC, "echo foo")))
-        self.assertTrue(self.atre._ATRuntimeEnvironment__process_ESK(ESK.to_ESKValue(ESK.GETENV, "PATH")))
-        self.assertTrue(self.atre._ATRuntimeEnvironment__process_ESK(ESK.to_ESKValue(ESK.PRINT, "foobar")))
-        self.assertTrue(self.atre._ATRuntimeEnvironment__process_ESK(ESK.to_ESKValue(ESK.RTSCTS, "True")))
-        self.assertTrue(self.atre._ATRuntimeEnvironment__process_ESK(ESK.to_ESKValue(ESK.SET, "PIN=1522")))
-        self.assertTrue(self.atre._ATRuntimeEnvironment__process_ESK(ESK.to_ESKValue(ESK.TIMEOUT, "5")))
+        self.assertTrue(
+            new_atre._ATRuntimeEnvironment__process_ESK(
+                ESK.to_ESKValue(ESK.DEVICE, "/dev/ttyS1")
+            )
+        )
+        self.assertTrue(
+            self.atre._ATRuntimeEnvironment__process_ESK(
+                ESK.to_ESKValue(ESK.DSRDTR, "True")
+            )
+        )
+        self.assertTrue(
+            self.atre._ATRuntimeEnvironment__process_ESK(
+                ESK.to_ESKValue(ESK.EXEC, "echo foo")
+            )
+        )
+        self.assertTrue(
+            self.atre._ATRuntimeEnvironment__process_ESK(
+                ESK.to_ESKValue(ESK.GETENV, "PATH")
+            )
+        )
+        self.assertTrue(
+            self.atre._ATRuntimeEnvironment__process_ESK(
+                ESK.to_ESKValue(ESK.PRINT, "foobar")
+            )
+        )
+        self.assertTrue(
+            self.atre._ATRuntimeEnvironment__process_ESK(
+                ESK.to_ESKValue(ESK.RTSCTS, "True")
+            )
+        )
+        self.assertTrue(
+            self.atre._ATRuntimeEnvironment__process_ESK(
+                ESK.to_ESKValue(ESK.SET, "PIN=1522")
+            )
+        )
+        self.assertTrue(
+            self.atre._ATRuntimeEnvironment__process_ESK(
+                ESK.to_ESKValue(ESK.TIMEOUT, "5")
+            )
+        )
         tempfile = NamedTemporaryFile()
-        self.assertTrue(self.atre._ATRuntimeEnvironment__process_ESK(ESK.to_ESKValue(ESK.WRITE, "%s HELLO WORLD!" % tempfile.name)))
-        #Bad cases
-        self.assertFalse(self.atre._ATRuntimeEnvironment__process_ESK(ESK.to_ESKValue(ESK.DEVICE, "/dev/ttyS1")))
+        self.assertTrue(
+            self.atre._ATRuntimeEnvironment__process_ESK(
+                ESK.to_ESKValue(ESK.WRITE, "%s HELLO WORLD!" % tempfile.name)
+            )
+        )
+        # Bad cases
+        self.assertFalse(
+            self.atre._ATRuntimeEnvironment__process_ESK(
+                ESK.to_ESKValue(ESK.DEVICE, "/dev/ttyS1")
+            )
+        )
 
     def test_write(self):
-        #Test write
+        # Test write
         tempfile = NamedTemporaryFile()
-        self.assertTrue(self.atre._ATRuntimeEnvironment__write_file(tempfile.name, "HELLO WORLD!"))
-        #Try bad write
-        self.assertFalse(self.atre._ATRuntimeEnvironment__write_file("/", "HELLO WORLD!"))
+        self.assertTrue(
+            self.atre._ATRuntimeEnvironment__write_file(tempfile.name, "HELLO WORLD!")
+        )
+        # Try bad write
+        self.assertFalse(
+            self.atre._ATRuntimeEnvironment__write_file("/", "HELLO WORLD!")
+        )
 
     def test_reconfigure_communicator(self):
         self.assertTrue(self.atre._ATRuntimeEnvironment__reconfigure_communicator())
@@ -150,10 +218,18 @@ class TestATRE(unittest.TestCase):
 
     def test_configure_communicator(self):
         self.atre.configure_communicator("/dev/ttyS0", 115200, 5, "\r\n", False, False)
-        self.assertEqual(self.atre._ATRuntimeEnvironment__communicator.serial_port, "/dev/ttyS0")
-        self.assertEqual(self.atre._ATRuntimeEnvironment__communicator.baud_rate, 115200)
-        self.assertEqual(self.atre._ATRuntimeEnvironment__communicator.default_timeout, 5)
-        self.assertEqual(self.atre._ATRuntimeEnvironment__communicator.line_break, "\r\n")
+        self.assertEqual(
+            self.atre._ATRuntimeEnvironment__communicator.serial_port, "/dev/ttyS0"
+        )
+        self.assertEqual(
+            self.atre._ATRuntimeEnvironment__communicator.baud_rate, 115200
+        )
+        self.assertEqual(
+            self.atre._ATRuntimeEnvironment__communicator.default_timeout, 5
+        )
+        self.assertEqual(
+            self.atre._ATRuntimeEnvironment__communicator.line_break, "\r\n"
+        )
         self.assertEqual(self.atre._ATRuntimeEnvironment__communicator.rtscts, False)
         self.assertEqual(self.atre._ATRuntimeEnvironment__communicator.dsrdtr, False)
 
@@ -175,7 +251,14 @@ class TestATRE(unittest.TestCase):
             self.atre.run()
         # Initialize communicator and then run
         self.atre.configure_virtual_communicator(
-            "virtualAdapter", 115200, 10, "\r", read_callback, write_callback, in_waiting)
+            "virtualAdapter",
+            115200,
+            10,
+            "\r",
+            read_callback,
+            write_callback,
+            in_waiting,
+        )
         try:
             self.atre.run()
         except (ATRuntimeError, ATSerialPortError, ATREUninitializedError) as err:
@@ -187,7 +270,14 @@ class TestATRE(unittest.TestCase):
         with self.assertRaises(ATREUninitializedError):
             self.atre.exec("AT;;OK")
         self.atre.configure_virtual_communicator(
-            "virtualAdapter", 115200, 10, "\r\n", read_callback, write_callback, in_waiting)
+            "virtualAdapter",
+            115200,
+            10,
+            "\r\n",
+            read_callback,
+            write_callback,
+            in_waiting,
+        )
         self.atre.open_serial()
         self.atre.exec("AT;;OK;;100")  # Tests delay too
         # Test bad response
@@ -204,7 +294,14 @@ class TestATRE(unittest.TestCase):
         self.atre = ATRuntimeEnvironment(True)
         # Configure virtual communicator
         self.atre.configure_virtual_communicator(
-            "virtualAdapter", 115200, 10, "\r", read_callback, write_callback, in_waiting)
+            "virtualAdapter",
+            115200,
+            10,
+            "\r",
+            read_callback,
+            write_callback,
+            in_waiting,
+        )
         # Parse script
         try:
             self.atre.parse_ATScript("%s%s" % (self.script_dir, SCRIPT_RUN))
@@ -223,8 +320,7 @@ class TestATRE(unittest.TestCase):
         self.atre.init_session([])
         # Parse script
         try:
-            self.atre.parse_ATScript(
-                "%s%s" % (self.script_dir, SCRIPT_ATRE_ERR))
+            self.atre.parse_ATScript("%s%s" % (self.script_dir, SCRIPT_ATRE_ERR))
         except (ATScriptNotFound, ATScriptSyntaxError) as err:
             self.assertTrue(False, "Could not parse AT script: %s" % err)
         # Open serial
@@ -237,7 +333,14 @@ class TestATRE(unittest.TestCase):
         self.atre = ATRuntimeEnvironment(True)
         # Configure virtual communicator
         self.atre.configure_virtual_communicator(
-            "virtualAdapter", 115200, 10, "\r", read_callback, write_callback, in_waiting)
+            "virtualAdapter",
+            115200,
+            10,
+            "\r",
+            read_callback,
+            write_callback,
+            in_waiting,
+        )
         # Parse script
         with self.assertRaises(ATScriptNotFound):
             self.atre.parse_ATScript("/tmp/unexisting_script.ats")
@@ -248,7 +351,14 @@ class TestATRE(unittest.TestCase):
         self.atre = ATRuntimeEnvironment(True)
         # Configure virtual communicator
         self.atre.configure_virtual_communicator(
-            "virtualAdapter", 115200, 10, "\r", read_callback, write_callback, in_waiting)
+            "virtualAdapter",
+            115200,
+            10,
+            "\r",
+            read_callback,
+            write_callback,
+            in_waiting,
+        )
         cmd = ATCommand("AT", "OK")
         self.assertTrue(self.atre.add_command(cmd), "ATRE add_command failed")
 
@@ -262,7 +372,14 @@ class TestATRE(unittest.TestCase):
             self.atre.close_serial()
         # Configure virtual communicator
         self.atre.configure_virtual_communicator(
-            "virtualAdapter", 115200, 10, "\r", read_callback, write_callback, in_waiting)
+            "virtualAdapter",
+            115200,
+            10,
+            "\r",
+            read_callback,
+            write_callback,
+            in_waiting,
+        )
         self.atre.open_serial()
         self.atre.open_serial()  # Re-open, nothing strange should happen
         self.atre.close_serial()

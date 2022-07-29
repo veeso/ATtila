@@ -20,6 +20,7 @@
 # SOFTWARE.
 #
 
+
 class ATSerialPortError(Exception):
     """
     ATSerialPortError class provides an exception in case of an error on the serial port

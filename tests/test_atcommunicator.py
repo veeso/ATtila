@@ -26,7 +26,7 @@ from attila.atcommunicator import ATCommunicator, ATSerialPortError
 
 class TestATCommunicator(unittest.TestCase):
     """
-      Test ATCommunicator instance, setters and getters
+    Test ATCommunicator instance, setters and getters
     """
 
     def __init__(self, methodName):

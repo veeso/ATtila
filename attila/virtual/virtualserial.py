@@ -24,8 +24,17 @@ from attila.virtual.exceptions import VirtualSerialException
 
 from typing import Callable, Optional
 
+
 class VirtualSerial(object):
-    def __init__(self, serial_port: str, baudrate: int, timeout: int = 0, read_callback: Optional[Callable[[], str]] = None, write_callback: Optional[Callable[[str], None]] = None, in_waiting_callback: Optional[Callable[[], int]] = None):
+    def __init__(
+        self,
+        serial_port: str,
+        baudrate: int,
+        timeout: int = 0,
+        read_callback: Optional[Callable[[], str]] = None,
+        write_callback: Optional[Callable[[str], None]] = None,
+        in_waiting_callback: Optional[Callable[[], int]] = None,
+    ):
         """
         Class constructor. Instantiates a new :class:`.virtual.VirtualSerial` object with the provided parameters.
 
@@ -89,8 +98,7 @@ class VirtualSerial(object):
         Open virtual serial
         """
         if not self.serial_port or not self.baudrate:
-            raise VirtualSerialException(
-                "Could not open %s" % self.serial_port)
+            raise VirtualSerialException("Could not open %s" % self.serial_port)
         return True
 
     def close(self):
@@ -98,8 +106,7 @@ class VirtualSerial(object):
         Open virtual serial
         """
         if not self.serial_port or not self.baudrate:
-            raise VirtualSerialException(
-                "Could not close %s" % self.serial_port)
+            raise VirtualSerialException("Could not close %s" % self.serial_port)
         return True
 
     def write(self, data: bytes) -> bool:

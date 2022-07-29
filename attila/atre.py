@@ -24,7 +24,13 @@ from .atsession import ATSession
 from .atcommand import ATCommand, ATResponse
 from .esk import ESKValue, ESK
 from .atscriptparser import ATScriptParser
-from .exceptions import ATScriptNotFound, ATScriptSyntaxError, ATSerialPortError, ATREUninitializedError, ATRuntimeError
+from .exceptions import (
+    ATScriptNotFound,
+    ATScriptSyntaxError,
+    ATSerialPortError,
+    ATREUninitializedError,
+    ATRuntimeError,
+)
 from .atcommunicator import ATCommunicator
 from .virtual.atvirtualcommunicator import ATVirtualCommunicator
 
@@ -32,6 +38,7 @@ from os import environ, system
 from time import sleep
 
 from typing import Callable, List, Optional, Tuple, Union
+
 
 class ATRuntimeEnvironment(object):
     """
@@ -61,7 +68,15 @@ class ATRuntimeEnvironment(object):
     def aof(self):
         return self.__aof
 
-    def configure_communicator(self, serial_port: str, baud_rate: int, timeout: int = None, line_break: str = "\r\n", rtscts: Optional[bool] = True, dsrdtr: Optional[bool] = True) -> None:
+    def configure_communicator(
+        self,
+        serial_port: str,
+        baud_rate: int,
+        timeout: int = None,
+        line_break: str = "\r\n",
+        rtscts: Optional[bool] = True,
+        dsrdtr: Optional[bool] = True,
+    ) -> None:
         """
         Configure ATRE communicator
 
@@ -91,7 +106,16 @@ class ATRuntimeEnvironment(object):
         self.__communicator.dsrdtr = dsrdtr
         self.__communicator.rtscts = rtscts
 
-    def configure_virtual_communicator(self, serial_port: str, baud_rate: int, timeout: int = None, line_break: str = "\r\n", read_callback: Optional[Callable[[], str]] = None, write_callback: Optional[Callable[[str], None]] = None, in_waiting_callback: Optional[Callable[[], int]] = None) -> None:
+    def configure_virtual_communicator(
+        self,
+        serial_port: str,
+        baud_rate: int,
+        timeout: int = None,
+        line_break: str = "\r\n",
+        read_callback: Optional[Callable[[], str]] = None,
+        write_callback: Optional[Callable[[str], None]] = None,
+        in_waiting_callback: Optional[Callable[[], int]] = None,
+    ) -> None:
         """
         Configure ATRE Virtual communicator
 
@@ -115,7 +139,14 @@ class ATRuntimeEnvironment(object):
                 self.__communicator.close()
         self.__virtual_communicator = True
         self.__communicator = ATVirtualCommunicator(
-            serial_port, baud_rate, timeout, line_break, read_callback, write_callback, in_waiting_callback)
+            serial_port,
+            baud_rate,
+            timeout,
+            line_break,
+            read_callback,
+            write_callback,
+            in_waiting_callback,
+        )
 
     def init_session(self, commands: List[ATCommand]) -> None:
         """
@@ -176,8 +207,7 @@ class ATRuntimeEnvironment(object):
         """
         # Open serial port to initialize communication with device
         if not self.__communicator or not self.__session:
-            raise ATREUninitializedError(
-                "AT Runtime Environment is not initialized")
+            raise ATREUninitializedError("AT Runtime Environment is not initialized")
         try:
             self.open_serial()
         except ATSerialPortError as err:
@@ -229,13 +259,19 @@ class ATRuntimeEnvironment(object):
                 sleep(atcmd.delay / 1000)
             # Execute command on device
             response, execution_time = self.__communicator.exec(
-                atcmd.command, atcmd.timeout)
+                atcmd.command, atcmd.timeout
+            )
             # Validate response
-            response = self.__session.validate_response(
-                response, execution_time)
-            if self.__session.last_command_failed and not atcmd.doppel_ganger and self.__aof:
-                raise ATRuntimeError("Command '%s' got a bad response: '%s' (and hasn't any doppelganger)!" % (
-                    atcmd.command, response.full_response))
+            response = self.__session.validate_response(response, execution_time)
+            if (
+                self.__session.last_command_failed
+                and not atcmd.doppel_ganger
+                and self.__aof
+            ):
+                raise ATRuntimeError(
+                    "Command '%s' got a bad response: '%s' (and hasn't any doppelganger)!"
+                    % (atcmd.command, response.full_response)
+                )
             return response
         elif len(esks) > 0:
             # Process ESK
@@ -258,10 +294,11 @@ class ATRuntimeEnvironment(object):
         for esk in esks:
             if not self.__process_ESK(esk) and self.__aof:
                 raise ATRuntimeError(
-                    "Runtime Error while processing ESK (%s %s)" % (esk.keyword, esk.value))
+                    "Runtime Error while processing ESK (%s %s)"
+                    % (esk.keyword, esk.value)
+                )
         # Then remove already executed esks esks
-        self.__esks = [i for i in self.__esks if i[1]
-                       != self.__current_command]
+        self.__esks = [i for i in self.__esks if i[1] != self.__current_command]
         # Get next command
         next_command = self.__session.get_next_command()
         if not next_command:
@@ -272,15 +309,22 @@ class ATRuntimeEnvironment(object):
         # Send command to communicator
         try:
             response, execution_time = self.__communicator.exec(
-                next_command.command, next_command.timeout)
+                next_command.command, next_command.timeout
+            )
         except ATSerialPortError as err:
             raise err
         # Validate response
         response = self.__session.validate_response(response, execution_time)
         # Check if last command failed; if it hasn't a doppelganger and abort on failure is True, then raise RuntimeError
-        if self.__session.last_command_failed and not next_command.doppel_ganger and self.__aof:
-            raise ATRuntimeError("Command '%s' got a bad response: '%s' (and hasn't any doppelganger)!" % (
-                next_command.command, response.full_response))
+        if (
+            self.__session.last_command_failed
+            and not next_command.doppel_ganger
+            and self.__aof
+        ):
+            raise ATRuntimeError(
+                "Command '%s' got a bad response: '%s' (and hasn't any doppelganger)!"
+                % (next_command.command, response.full_response)
+            )
         if not self.__session.last_command_failed:
             self.__current_command += 1
         return response
@@ -395,8 +439,13 @@ class ATRuntimeEnvironment(object):
             if self.__communicator.is_open():
                 self.__communicator.close()
         self.configure_communicator(
-            self.__communicator.serial_port, self.__communicator.baud_rate, self.__communicator.default_timeout, 
-            self.__communicator.line_break, self.__communicator.rtscts, self.__communicator.dsrdtr)
+            self.__communicator.serial_port,
+            self.__communicator.baud_rate,
+            self.__communicator.default_timeout,
+            self.__communicator.line_break,
+            self.__communicator.rtscts,
+            self.__communicator.dsrdtr,
+        )
         if self.__communicator.serial_port and self.__communicator.baud_rate:
             try:
                 self.__communicator.open()
@@ -419,7 +468,7 @@ class ATRuntimeEnvironment(object):
         """
         content = self.__session.replace_session_keys(content)
         try:
-            hnd = open(file_path, 'w')
+            hnd = open(file_path, "w")
             hnd.write(content)
             hnd.close()
         except IOError:

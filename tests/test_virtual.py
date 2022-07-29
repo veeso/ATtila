@@ -21,7 +21,10 @@
 #
 
 import unittest
-from attila.virtual.atvirtualcommunicator import ATVirtualCommunicator, ATSerialPortError
+from attila.virtual.atvirtualcommunicator import (
+    ATVirtualCommunicator,
+    ATSerialPortError,
+)
 from attila.virtual.virtualserial import VirtualSerial, VirtualSerialException
 
 response = None
@@ -39,10 +42,10 @@ def create_virtual_response(command):
     global response_ptr
     response_assoc = {
         "ATD*99***1#": "CONNECT\r\n",
-        "AT+CGDATA=\"PPP\",1": "CONNECT\r\n",
+        'AT+CGDATA="PPP",1': "CONNECT\r\n",
         "AT+CSQ": "+CSQ: 32,99\r\n\r\nOK\r\n",
         "AT+CPIN?": "+CPIN: READY\r\n",
-        "AT+CGSN": "123456789\r\nOK\r\n"
+        "AT+CGSN": "123456789\r\nOK\r\n",
     }
     response_str = response_assoc.get(command)
     response_ptr = 0
@@ -62,7 +65,7 @@ def read_callback(nbytes):
     global response
     global response_ptr
     if nbytes > 0:
-        ret = response[response_ptr:response_ptr + nbytes]
+        ret = response[response_ptr : response_ptr + nbytes]
         response_ptr += nbytes
     elif nbytes == 0:
         lines = response.splitlines()
@@ -84,7 +87,7 @@ def write_callback(command):
 
 class TestATCommunicator(unittest.TestCase):
     """
-      Test ATCommunicator instance, setters and getters
+    Test ATCommunicator instance, setters and getters
     """
 
     def __init__(self, methodName):
@@ -93,7 +96,8 @@ class TestATCommunicator(unittest.TestCase):
     def test_communicator(self):
         # Test setters / getters
         com = ATVirtualCommunicator(
-            "/dev/ttyS0", 9600, 10, "\r\n", read_callback, write_callback, in_waiting)
+            "/dev/ttyS0", 9600, 10, "\r\n", read_callback, write_callback, in_waiting
+        )
         self.assertEqual(com.serial_port, "/dev/ttyS0")
         self.assertEqual(com.baud_rate, 9600)
         self.assertEqual(com.default_timeout, 10)
@@ -116,8 +120,7 @@ class TestATCommunicator(unittest.TestCase):
         # Execute
         resp = com.exec("AT")
         print("AT Response: %s" % resp[0])
-        self.assertNotEqual(
-            len(resp), 0, "Response should not have 0 as length")
+        self.assertNotEqual(len(resp), 0, "Response should not have 0 as length")
         com.close()
         # Bad cases
         com.serial_port = None
@@ -128,8 +131,9 @@ class TestATCommunicator(unittest.TestCase):
         self.assertFalse(com.is_open())
 
     def test_virtual_serial(self):
-        device = VirtualSerial("/dev/virtual", 115200, 1,
-                               read_callback, write_callback, in_waiting)
+        device = VirtualSerial(
+            "/dev/virtual", 115200, 1, read_callback, write_callback, in_waiting
+        )
         self.assertEqual(device.serial_port, "/dev/virtual")
         self.assertEqual(device.baudrate, 115200)
         self.assertEqual(device.timeout, 1)
@@ -156,7 +160,8 @@ class TestATCommunicator(unittest.TestCase):
         self.assertEqual(repr(exc), msg)
         # Open / Close exceptions
         com = ATVirtualCommunicator(
-            "/dev/virtual", None, 1, read_callback, write_callback, in_waiting)
+            "/dev/virtual", None, 1, read_callback, write_callback, in_waiting
+        )
         com.open()
         with self.assertRaises(ATSerialPortError):
             com.close()

@@ -23,6 +23,7 @@
 from enum import Enum
 from typing import Optional, Union, Any
 
+
 class ESKValue(object):
     """
     This class represents an Environment Setup Keyword value
@@ -61,6 +62,7 @@ class ESK(Enum):
     """
     This class represents an Environment Setup Keyword
     """
+
     DEVICE = 0
     BAUDRATE = 1
     TIMEOUT = 2
@@ -207,7 +209,7 @@ class ESK(Enum):
                 return None
             # Tuple of file and file content
             file_path = write_attr[0]
-            file_content = ' '.join(write_attr[1:])
+            file_content = " ".join(write_attr[1:])
             return ESKValue(esk, (file_path, file_content))
         else:
             return None

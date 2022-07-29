@@ -20,6 +20,7 @@
 # SOFTWARE.
 #
 
+
 class VirtualSerialException(Exception):
     """
     VirtualSerialError class provides an exception in case of an error on the virtual serial port

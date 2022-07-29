@@ -29,8 +29,8 @@ from attila.esk import ESK, ESKValue
 
 class TestEsk(unittest.TestCase):
     """
-      Test ATRuntime Environment commands preparation and evaluation
-      NOTE: this tests doesn't test communicator!
+    Test ATRuntime Environment commands preparation and evaluation
+    NOTE: this tests doesn't test communicator!
     """
 
     def __init__(self, methodName):
@@ -75,8 +75,10 @@ class TestEsk(unittest.TestCase):
         self.assertEqual(ESK.to_ESKValue(ESK.RTSCTS, "false").value, False)
         self.assertEqual(ESK.to_ESKValue(ESK.DSRDTR, "True").value, True)
         self.assertEqual(ESK.to_ESKValue(ESK.DSRDTR, "false").value, False)
-        self.assertEqual(ESK.to_ESKValue(
-            ESK.WRITE, "/tmp/foo.txt {\"csq\":${CSQ} }").value, ("/tmp/foo.txt", "{\"csq\":${CSQ} }"))
+        self.assertEqual(
+            ESK.to_ESKValue(ESK.WRITE, '/tmp/foo.txt {"csq":${CSQ} }').value,
+            ("/tmp/foo.txt", '{"csq":${CSQ} }'),
+        )
         # Bad cases
         self.assertFalse(ESK.to_ESKValue(None, "FOOBAR"))
         self.assertIsNone(ESK.to_ESKValue(ESK.DEVICE, None))
@@ -92,21 +94,24 @@ class TestEsk(unittest.TestCase):
         self.assertIsNone(ESK.to_ESKValue(ESK.DSRDTR, ""))
         self.assertIsNone(ESK.to_ESKValue(ESK.WRITE, None))
         self.assertIsNone(ESK.to_ESKValue(ESK.WRITE, ""))
-        self.assertIsNone(ESK.to_ESKValue(
-            ESK.WRITE, "/tmp/foo.txt"))  # No string
+        self.assertIsNone(ESK.to_ESKValue(ESK.WRITE, "/tmp/foo.txt"))  # No string
 
     def tests_setters_getters(self):
         esk = ESKValue("DEVICE", "/dev/ttyS0")
-        self.assertEqual(esk.keyword, "DEVICE",
-                         "Keyword should be DEVICE, but is %s" % esk.keyword)
-        self.assertEqual(esk.value, "/dev/ttyS0",
-                         "Value should be /dev/ttyS0, but is %s" % esk.value)
+        self.assertEqual(
+            esk.keyword, "DEVICE", "Keyword should be DEVICE, but is %s" % esk.keyword
+        )
+        self.assertEqual(
+            esk.value, "/dev/ttyS0", "Value should be /dev/ttyS0, but is %s" % esk.value
+        )
         esk.keyword = "BAUDRATE"
         esk.value = 9600
-        self.assertEqual(esk.keyword, "BAUDRATE",
-                         "Keyword should be BAUDRATEss, but is %s" % esk.keyword)
         self.assertEqual(
-            esk.value, 9600, "Value should be 9600, but is %d" % esk.value)
+            esk.keyword,
+            "BAUDRATE",
+            "Keyword should be BAUDRATEss, but is %s" % esk.keyword,
+        )
+        self.assertEqual(esk.value, 9600, "Value should be 9600, but is %d" % esk.value)
 
 
 if __name__ == "__main__":

@@ -26,6 +26,7 @@ from .esk import ESK, ESKValue
 
 from typing import List, Optional, Tuple
 
+
 class ATScriptParser(object):
     """
     This class represents an AT script parser, which is the component which purpose is to parse an ATScript.
@@ -58,7 +59,8 @@ class ATScriptParser(object):
                 esks.append((eks, execution_index))
             elif error:  # If error is set, it means line is EKS, but has invalid syntax
                 raise ATScriptSyntaxError(
-                    "Syntax error at line %d: %s (%s)" % (line_no, error, row))
+                    "Syntax error at line %d: %s (%s)" % (line_no, error, row)
+                )
             else:  # Otherwise, if both are None, it is a command
                 # Try as ommand
                 command, error = self.__parse_command(row)
@@ -68,13 +70,18 @@ class ATScriptParser(object):
                     execution_index += 1
                 elif error:
                     raise ATScriptSyntaxError(
-                        "Syntax error at line %d: %s (%s)" % (line_no, error, row))
+                        "Syntax error at line %d: %s (%s)" % (line_no, error, row)
+                    )
                 else:
                     raise ATScriptSyntaxError(
-                        "Syntax error at line %d: %s -- Don't know how to interpret this line, sorry..." % (line_no, row))
+                        "Syntax error at line %d: %s -- Don't know how to interpret this line, sorry..."
+                        % (line_no, row)
+                    )
         return result
 
-    def parse_file(self, file_path: str) -> Tuple[List[ATCommand], List[Tuple[ESKValue, int]]]:
+    def parse_file(
+        self, file_path: str
+    ) -> Tuple[List[ATCommand], List[Tuple[ESKValue, int]]]:
         """
         Parse an ATScript file
 
@@ -183,8 +190,15 @@ class ATScriptParser(object):
         if has_doppelganger:
             # Instance doppelganger
             doppelganger = ATCommand(
-                command_tokens[5], doppelganger_response, timeout, delay, collectables, None)
+                command_tokens[5],
+                doppelganger_response,
+                timeout,
+                delay,
+                collectables,
+                None,
+            )
         # Instance new AT command
-        command = ATCommand(atcommand, expected_response,
-                            timeout, delay, collectables, doppelganger)
+        command = ATCommand(
+            atcommand, expected_response, timeout, delay, collectables, doppelganger
+        )
         return (command, error)

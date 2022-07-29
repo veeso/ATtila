@@ -24,12 +24,21 @@ from typing import List, Optional
 
 from .atresponse import ATResponse
 
+
 class ATCommand(object):
     """
     This class represents an AT command
     """
 
-    def __init__(self, cmd: str, exp_response: Optional[str] = None, tout: Optional[int] = None, delay: Optional[int] = 0, collectables: Optional[List[str]] = None, dganger = None):
+    def __init__(
+        self,
+        cmd: str,
+        exp_response: Optional[str] = None,
+        tout: Optional[int] = None,
+        delay: Optional[int] = 0,
+        collectables: Optional[List[str]] = None,
+        dganger=None,
+    ):
         """
         Class constructor. Instantiates a new :class:`.ATCommand.` object with the provided parameters.
 
