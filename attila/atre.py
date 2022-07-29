@@ -39,7 +39,7 @@ class ATRuntimeEnvironment(object):
         self.__esks = []
         self.__virtual_communicator = False
         # ES Params
-        self.__aof = abort_on_failure
+        self.__aof: bool = abort_on_failure
         self.__current_command = 0
 
     @property
@@ -233,6 +233,8 @@ class ATRuntimeEnvironment(object):
             self.__session.add_command(command)
             atcmd = self.__session.get_next_command()
             # Delay
+            if atcmd is None:
+                return None
             if atcmd.delay:
                 sleep(atcmd.delay / 1000)
             # Execute command on device
@@ -268,7 +270,9 @@ class ATRuntimeEnvironment(object):
         :raises ATSerialPortError, ATRuntimeError
         """
         # Before executing command, check if an ESK has to be executed
-        esks = [i[0] for i in self.__esks if i[1] == self.__current_command]
+        esks: List[ESKValue] = [
+            i[0] for i in self.__esks if i[1] == self.__current_command
+        ]
         for esk in esks:
             if not self.__process_ESK(esk) and self.__aof:
                 raise ATRuntimeError(

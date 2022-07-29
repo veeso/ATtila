@@ -38,13 +38,13 @@ class ATCommunicator(object):
         :type rtscts: bool
         :type dsrdtr: bool
         """
-        self._device = None
-        self._serial_port = serial_port
-        self._baud_rate = baud_rate
-        self.default_timeout = default_timeout
-        self._line_break = line_break
-        self._rtscts = rtscts
-        self._dsrdtr = dsrdtr
+        self._device: Optional[Serial] = None
+        self._serial_port: str = serial_port
+        self._baud_rate: int = baud_rate
+        self.default_timeout: Optional[int] = default_timeout
+        self._line_break: str = line_break
+        self._rtscts: Optional[bool] = rtscts
+        self._dsrdtr: Optional[bool] = dsrdtr
 
     @property
     def serial_port(self):
@@ -216,7 +216,7 @@ class ATCommunicator(object):
             # End of read
 
         data = data.decode("utf-8")
-        lines = data.splitlines()
+        lines: List[str] = data.splitlines()
         t_end = int(time() * 1000)
         for i in range(len(lines)):
             # Remove newline

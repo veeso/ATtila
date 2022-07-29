@@ -2,6 +2,7 @@ from signal import signal, SIGTERM, SIGINT
 from getopt import getopt, GetoptError
 import logging
 from sys import argv, exit, stdout
+from typing import Any
 from attila.exceptions import (
     ATREUninitializedError,
     ATRuntimeError,
@@ -93,7 +94,7 @@ class _GetchWindows(object):
         return msvcrt.getch()
 
 
-def sigterm_handler(_signo, _stack_frame):
+def sigterm_handler(_signo: Any, _stack_frame: Any):
     """
     Handle sigterm (or sigint) setting sigterm_called to True
     """
@@ -387,7 +388,7 @@ def main():
                     # history len 1 =>
                     if history_index - 1 >= 0:
                         history_index -= 1
-                        command_line = history[history_index]
+                        command_line: str = history[history_index]
                         print("\r\033[K>> %s" % command_line, end="", flush=True)
                     continue
                 elif arrow_key == "[B":  # Down

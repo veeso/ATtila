@@ -42,7 +42,7 @@ class ATVirtualCommunicator(ATCommunicator):
         self._device = None
         self._serial_port = serial_port
         self._baud_rate = baud_rate
-        self.default_timeout = default_timeout
+        self.default_timeout: int = default_timeout
         self._line_break = line_break
         self.__writeCB = write_callback
         self.__readCB = read_callback
@@ -53,7 +53,7 @@ class ATVirtualCommunicator(ATCommunicator):
         return self._serial_port
 
     @serial_port.setter
-    def serial_port(self, serial_port):
+    def serial_port(self, serial_port: str):
         self._serial_port = serial_port
 
     @property
@@ -61,7 +61,7 @@ class ATVirtualCommunicator(ATCommunicator):
         return self._baud_rate
 
     @baud_rate.setter
-    def baud_rate(self, baud_rate):
+    def baud_rate(self, baud_rate: int):
         self._baud_rate = baud_rate
 
     @property

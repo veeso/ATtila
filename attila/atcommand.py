@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Any
 
 from .atresponse import ATResponse
 
@@ -15,7 +15,7 @@ class ATCommand(object):
         tout: Optional[int] = None,
         delay: Optional[int] = 0,
         collectables: Optional[List[str]] = None,
-        dganger=None,
+        dganger: Optional[Any] = None,
     ):
         """
         Class constructor. Instantiates a new :class:`.ATCommand.` object with the provided parameters.
@@ -33,14 +33,14 @@ class ATCommand(object):
         :type collectables: list of string
         :type dganger: ATCommand
         """
-        self._command = cmd
+        self._command: str = cmd
         self._expected_response = exp_response
         self._timeout = tout
         self._delay = delay
         if type(collectables) != list:
-            self._collectables = None
+            self._collectables: Optional[List[str]] = None
         else:
-            self._collectables = collectables
+            self._collectables: List[str] = collectables
         if isinstance(dganger, ATCommand):
             self._doppel_ganger = dganger
         else:
@@ -52,7 +52,7 @@ class ATCommand(object):
         return self._command
 
     @command.setter
-    def command(self, cmd):
+    def command(self, cmd: str):
         self._command = cmd
 
     @property
@@ -69,10 +69,7 @@ class ATCommand(object):
 
     @response.setter
     def response(self, response: ATResponse):
-        if isinstance(response, ATResponse):
-            self._response = response
-        else:
-            self._response = None
+        self._response = response
 
     @property
     def timeout(self):
@@ -101,18 +98,15 @@ class ATCommand(object):
         return self._collectables
 
     @collectables.setter
-    def collectables(self, collectables: list):
-        if type(collectables) == list:
-            self._collectables = collectables
-        else:
-            self._collectables = None
+    def collectables(self, collectables: Optional[List[str]]):
+        self._collectables = collectables
 
     @property
     def doppel_ganger(self):
         return self._doppel_ganger
 
     @doppel_ganger.setter
-    def doppel_ganger(self, dganger):
+    def doppel_ganger(self, dganger: Any):
         if isinstance(dganger, ATCommand):
             self._doppel_ganger = dganger
         else:

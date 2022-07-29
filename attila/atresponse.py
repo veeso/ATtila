@@ -1,5 +1,7 @@
 from typing import List, Union
 
+from .atcommand import ATCommand
+
 
 class ATResponse(object):
     """
@@ -11,7 +13,7 @@ class ATResponse(object):
         self,
         resp: str,
         fullresponse: List[str],
-        command,
+        command: ATCommand,
         executiontime: int = 0,
     ):
         """

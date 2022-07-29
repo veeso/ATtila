@@ -2,7 +2,7 @@ from .atcommand import ATCommand
 from .atresponse import ATResponse
 
 import re
-from typing import List, Optional, Union, Tuple
+from typing import List, Dict, Optional, Union, Tuple
 
 
 class ATSession(object):
@@ -12,7 +12,7 @@ class ATSession(object):
     and of validating the response of the last command.
     """
 
-    def __init__(self, commands: Optional[List[str]]):
+    def __init__(self, commands: Optional[List[ATCommand]]):
         """
         Class constructor. Instantiates a new :class:`.ATSession.` object with the provided parameters.
 
@@ -21,8 +21,8 @@ class ATSession(object):
         """
         if commands is None:
             commands = []
-        self._commands = commands
-        self._session_storage = {}
+        self._commands: List[ATCommand] = commands
+        self._session_storage: Dict[str, Union[str, int]] = {}
         self._current_command_index = 0
         self._last_command_failed = False
 
@@ -204,14 +204,16 @@ class ATSession(object):
         :returns string
         """
         # Get session variable
-        while re.search("\\${(.*?)}", haystack):
+        while True:
             reg_result = re.search("\\${(.*?)}", haystack)
+            if reg_result is None:
+                break
             key_group = reg_result.group(0)
             key_name = key_group[2:-1]
             # @! Okay, there is a session variable to replace
             # Search for session variable
             session_value = self._session_storage.get(key_name)
-            if not session_value:
+            if session_value is None:
                 # If not found set to empty
                 session_value = ""
             # Replace session variable
@@ -243,7 +245,7 @@ class ATSession(object):
         :param key
         :param value
         :type key: String
-        :type value: Any
+        :type value: Union[str, int]
         """
         self._session_storage[key] = value
 
@@ -254,7 +256,7 @@ class ATSession(object):
 
         :param key
         :type key: String
-        :returns any
+        :returns Union[str, int]
         :raises KeyError
         """
         try:
@@ -298,7 +300,7 @@ class ATSession(object):
         else:
             collect_expr_parts = to_collect.split(key_group)
         # Collect regex part to build regex; excape parts
-        part_to_remove = []
+        part_to_remove: List[str] = []
         if len(collect_expr_parts) > 0:
             for i in range(len(collect_expr_parts)):
                 if not collect_expr_parts[i]:  # Skip empty tokens
@@ -317,7 +319,8 @@ class ATSession(object):
             regex = "(.*)"
         # Iterate over lines
         for line in response:
-            if re.search(regex, line):
+            search = re.search(regex, line)
+            if search is not None:
                 # If a key regex is set, check if line complies
                 if key_regex:
                     key_regex_match = re.search(key_regex, line)
@@ -326,7 +329,7 @@ class ATSession(object):
                     else:
                         # Line doesn't comply
                         continue
-                key_value = re.search(regex, line).group()
+                key_value = search.group()
                 for part in part_to_remove:
                     key_value = key_value.replace(part, "")
                 try:

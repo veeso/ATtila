@@ -2,40 +2,6 @@ from enum import Enum
 from typing import Optional, Any
 
 
-class ESKValue(object):
-    """
-    This class represents an Environment Setup Keyword value
-    """
-
-    def __init__(self, keyword, value: Any):
-        """
-        Class constructor. Instantiates a new :class:`.ESKValue.` object with the provided paramters
-
-        :param keyword: keyword type
-        :param value associated
-        :type keyword: ESK
-        :type value: Any
-        """
-        self._keyword = keyword
-        self._value = value
-
-    @property
-    def keyword(self):
-        return self._keyword
-
-    @keyword.setter
-    def keyword(self, kw):
-        self._keyword = kw
-
-    @property
-    def value(self):
-        return self._value
-
-    @value.setter
-    def value(self, val):
-        self._value = val
-
-
 class ESK(Enum):
     """
     This class represents an Environment Setup Keyword
@@ -91,7 +57,7 @@ class ESK(Enum):
             return None
 
     @staticmethod
-    def to_ESKValue(esk, attr: str) -> Optional[object]:
+    def to_ESKValue(esk: Any, attr: str) -> Optional[object]:
         """
         Check if attributes for this esk have a valid syntax
 
@@ -191,3 +157,37 @@ class ESK(Enum):
             return ESKValue(esk, (file_path, file_content))
         else:
             return None
+
+
+class ESKValue(object):
+    """
+    This class represents an Environment Setup Keyword value
+    """
+
+    def __init__(self, keyword: ESK, value: Any):
+        """
+        Class constructor. Instantiates a new :class:`.ESKValue.` object with the provided paramters
+
+        :param keyword: keyword type
+        :param value associated
+        :type keyword: ESK
+        :type value: Any
+        """
+        self._keyword = keyword
+        self._value = value
+
+    @property
+    def keyword(self):
+        return self._keyword
+
+    @keyword.setter
+    def keyword(self, kw: ESK):
+        self._keyword = kw
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, val: Any):
+        self._value = val
