@@ -1,6 +1,7 @@
 # Changelog
 
 - [Changelog](#changelog)
+  - [1.2.1](#121)
   - [ATtila 1.2.0 (30/05/2020)](#attila-120-30052020)
   - [ATtila 1.1.6 (25/03/2020)](#attila-116-25032020)
   - [ATtila 1.1.5 (09/03/2020)](#attila-115-09032020)
@@ -11,6 +12,14 @@
   - [ATtila 1.1.0 (26/10/2019)](#attila-110-26102019)
   - [ATtila 1.0.4 (13/10/2019)](#attila-104-13102019)
   - [ATtila 1.0.3 (12/10/2019)](#attila-103-12102019)
+
+## 1.2.1
+
+Released on 29/07/2022
+
+- [Fixed get_session_value returning None](https://github.com/veeso/ATtila/pull/4)
+- Better typing definition
+- Code improvements
 
 ## ATtila 1.2.0 (30/05/2020)
 
