@@ -1,12 +1,59 @@
 # ATtila
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-teal.svg)](https://opensource.org/licenses/MIT) [![Stars](https://img.shields.io/github/stars/veeso/ATtila.svg)](https://github.com/veeso/ATtila) [![Issues](https://img.shields.io/github/issues/veeso/ATtila.svg)](https://github.com/veeso/ATtila/) [![PyPI version](https://badge.fury.io/py/attila.svg)](https://pypi.org/project/attila/) [![Downloads](https://pepy.tech/badge/attila)](https://pepy.tech/project/attila)  
+<p align="center">
+  <a href="CHANGELOG.md" target="_blank">Changelog</a>
+  ·
+  <a href="#get-started-" target="_blank">Get started</a>
+  ·
+  <a href="docs/atscript.md" target="_blank">Documentation</a>
+</p>
 
-[![Build](https://github.com/veeso/ATtila/workflows/Build/badge.svg)](https://github.com/veeso/ATtila/actions) [![codecov](https://codecov.io/gh/veeso/ATtila/branch/master/graph/badge.svg)](https://codecov.io/gh/veeso/ATtila)
+<p align="center">~ Communicate easily with modems and RF modules using AT commands ~</p>
 
-Developed by *Christian Visintin*
+<p align="center">Developed by <a href="https://veeso.github.io/" target="_blank">@veeso</a></p>
+<p align="center">Current version: 1.2.1 (29/07/2022)</p>
 
-Current Version: **1.2.0 (30/05/2020)**
+<p align="center">
+  <a href="https://opensource.org/licenses/MIT"
+    ><img
+      src="https://img.shields.io/badge/License-MIT-teal.svg"
+      alt="License-MIT"
+  /></a>
+  <a href="https://github.com/veeso/ATtila/stargazers"
+    ><img
+      src="https://img.shields.io/github/stars/veeso/ATtila.svg"
+      alt="Repo stars"
+  /></a>
+  <a href="https://pypi.org/project/attila/"
+    ><img
+      src="https://badge.fury.io/py/attila.svg"
+      alt="latest version"
+  /></a>
+  <a href="https://pepy.tech/project/attila"
+    ><img
+      src="https://pepy.tech/badge/attila"
+      alt="download counters"
+  /></a>
+  <a href="https://ko-fi.com/veeso">
+    <img
+      src="https://img.shields.io/badge/donate-ko--fi-red"
+      alt="Ko-fi"
+  /></a>
+</p>
+<p align="center">
+  <a href="https://github.com/veeso/ATtila/actions"
+    ><img
+      src="https://github.com/veeso/ATtila/workflows/Build/badge.svg"
+      alt="Build CI"
+  /></a>
+  <a href="https://codecov.io/gh/veeso/ATtila"
+    ><img
+      src="https://codecov.io/gh/veeso/ATtila/branch/main/graph/badge.svg"
+      alt="Coveragg"
+  /></a>
+</p>
+
+---
 
 - [ATtila](#attila)
   - [About ATtila 📢](#about-attila-)
@@ -18,7 +65,7 @@ Current Version: **1.2.0 (30/05/2020)**
   - [Known Issues 🧻](#known-issues-)
   - [Changelog 🕑](#changelog-)
   - [Branches 🌳](#branches-)
-  - [Buy me a coffee ☕](#buy-me-a-coffee-)
+  - [Support the developer ☕](#support-the-developer-)
   - [License 📜](#license-)
 
 ---
@@ -211,11 +258,14 @@ View Changelog [HERE](CHANGELOG.md)
 
 ---
 
-## Buy me a coffee ☕
+## Support the developer ☕
 
 If you like ATtila and you're grateful for the work I've done, please consider a little donation 🥳
 
-[![Buy-me-a-coffee](https://img.buymeacoffee.com/button-api/?text=Buy%20me%20a%20coffee&emoji=&slug=veeso&button_colour=404040&font_colour=ffffff&font_family=Comic&outline_colour=ffffff&coffee_colour=FFDD00)](https://www.buymeacoffee.com/veeso)
+You can make a donation on the following platforms:
+
+[![ko-fi](https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/veeso)
+[![PayPal](https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://www.paypal.me/chrisintin)
 
 ---
 
