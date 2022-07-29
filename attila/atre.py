@@ -348,7 +348,7 @@ class ATRuntimeEnvironment(object):
         :raises KeyError
         """
         try:
-            self.__session.get_session_value(key)
+            return self.__session.get_session_value(key)
         except KeyError as err:
             raise err
 

@@ -189,7 +189,7 @@ class ATSession(object):
                     collected = self.__get_value_from_response(
                         to_collect, response
                     )  # collected => tuple(key, value)
-                    if collected:
+                    if collected is not None:
                         self._session_storage[collected[0]] = collected[1]
                         atresponse.add_collectable(collected[0], collected[1])
         # Instance response object
@@ -257,9 +257,10 @@ class ATSession(object):
         :returns any
         :raises KeyError
         """
-        if not self._session_storage.get(key):
+        try:
+            return self._session_storage[key]
+        except KeyError:
             raise KeyError("Could not find %s in current session storage" % key)
-        return self._session_storage.get(key)
 
     def __get_value_from_response(
         self, to_collect: str, response: List[str]
@@ -334,7 +335,7 @@ class ATSession(object):
                     break
                 break
         # Return values
-        if key_value:
+        if key_value is not None:
             return (key_name, key_value)
         else:
             return None
