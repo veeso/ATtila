@@ -229,17 +229,23 @@ To know more about ATS see the [ATScript documentation](./docs/atscript.md)
 
 ---
 
+## Support the developer ☕
+
+If you like ATtila and you're grateful for the work I've done, please consider a little donation 🥳
+
+You can make a donation on the following platforms:
+
+[![ko-fi](https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/veeso)
+[![PayPal](https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://www.paypal.me/chrisintin)
+[![bitcoin](https://img.shields.io/badge/Bitcoin-ff9416?style=for-the-badge&logo=bitcoin&logoColor=white)](https://btc.com/bc1qvlmykjn7htz0vuprmjrlkwtv9m9pan6kylsr8w) [![ethereum](https://img.shields.io/badge/Ethereum-3C3C3D?style=for-the-badge&logo=Ethereum&logoColor=white)](https://etherscan.io/address/0xE57E761Aa806c9afe7e06Fb0601B17beC310f9c4)
+
+---
+
 ## Contributions 🤝🏻
 
 Contributions are welcome! 😉
 
 If you think you can contribute to ATtila, please follow ATtila's [Contributions Guidelines](CONTRIBUTING.md)
-
----
-
-## Known Issues 🧻
-
-None, as far as I know at least.
 
 ---
 
@@ -255,17 +261,6 @@ View Changelog [HERE](CHANGELOG.md)
 - 1.1.x: LTS with Python3.4 support; this version will receive only patch for major issues
 - dev: main development branch
 - other features
-
----
-
-## Support the developer ☕
-
-If you like ATtila and you're grateful for the work I've done, please consider a little donation 🥳
-
-You can make a donation on the following platforms:
-
-[![ko-fi](https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/veeso)
-[![PayPal](https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://www.paypal.me/chrisintin)
 
 ---
 
