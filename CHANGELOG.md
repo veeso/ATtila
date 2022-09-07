@@ -1,6 +1,7 @@
 # Changelog
 
 - [Changelog](#changelog)
+  - [1.2.2](#122)
   - [1.2.1](#121)
   - [ATtila 1.2.0 (30/05/2020)](#attila-120-30052020)
   - [ATtila 1.1.6 (25/03/2020)](#attila-116-25032020)
@@ -12,6 +13,12 @@
   - [ATtila 1.1.0 (26/10/2019)](#attila-110-26102019)
   - [ATtila 1.0.4 (13/10/2019)](#attila-104-13102019)
   - [ATtila 1.0.3 (12/10/2019)](#attila-103-12102019)
+
+## 1.2.2
+
+Released on 07/09/2022
+
+- Changed `ATResponse.response` to `Optional[str]`
 
 ## 1.2.1
 
