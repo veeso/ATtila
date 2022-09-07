@@ -1,4 +1,4 @@
-from typing import List, Union, Any
+from typing import List, Union, Any, Optional
 
 
 class ATResponse(object):
@@ -9,7 +9,7 @@ class ATResponse(object):
 
     def __init__(
         self,
-        resp: str,
+        resp: Optional[str],
         fullresponse: List[str],
         command: Any,
         executiontime: int = 0,
@@ -21,7 +21,7 @@ class ATResponse(object):
         :param fullresponse: entire response received from command execution
         :param command: command associated to response
         :param executiontime: execution time of the command in milliseconds
-        :type resp: string
+        :type resp: Optional[str]
         :type fullresponse: list of string
         :type command: ATCommand
         :type executiontime: int
