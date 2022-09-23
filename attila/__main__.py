@@ -1,5 +1,6 @@
 from signal import signal, SIGTERM, SIGINT
 from getopt import getopt, GetoptError
+import importlib
 import logging
 from sys import argv, exit, stdout
 from typing import Any
@@ -69,7 +70,7 @@ class _GetchUnix(object):
     def __init__(self):
         pass
 
-    def __call__(self):
+    def __call__(self) -> Any:
         import sys
         import termios
         import tty
@@ -86,9 +87,12 @@ class _GetchUnix(object):
 
 class _GetchWindows(object):
     def __init__(self):
+        if importlib.util.find_spec("msvcrt") is None:
+            raise ImportError("msvcrt")
+
         pass
 
-    def __call__(self):
+    def __call__(self) -> Any:
         import msvcrt
 
         return msvcrt.getch()

@@ -1,6 +1,7 @@
 # Changelog
 
 - [Changelog](#changelog)
+  - [1.2.3](#123)
   - [1.2.2](#122)
   - [1.2.1](#121)
   - [ATtila 1.2.0 (30/05/2020)](#attila-120-30052020)
@@ -13,6 +14,12 @@
   - [ATtila 1.1.0 (26/10/2019)](#attila-110-26102019)
   - [ATtila 1.0.4 (13/10/2019)](#attila-104-13102019)
   - [ATtila 1.0.3 (12/10/2019)](#attila-103-12102019)
+
+## 1.2.3
+
+Released on 23/09/2022
+
+- Fixed possible import error on macos
 
 ## 1.2.2
 

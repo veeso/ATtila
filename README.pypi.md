@@ -3,7 +3,7 @@
 > Communicate easily with modems and RF modules using AT commands
 
 Developed by [@veeso](https://veeso.github.io)
-Current version: 1.2.2 (07/09/2022)
+Current version: 1.2.3 (23/09/2022)
 
 ```sh
 pip3 install attila

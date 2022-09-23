@@ -11,7 +11,7 @@
 <p align="center">~ Communicate easily with modems and RF modules using AT commands ~</p>
 
 <p align="center">Developed by <a href="https://veeso.github.io/" target="_blank">@veeso</a></p>
-<p align="center">Current version: 1.2.2 (07/09/2022)</p>
+<p align="center">Current version: 1.2.3 (23/09/2022)</p>
 
 <p align="center">
   <a href="https://opensource.org/licenses/MIT"
